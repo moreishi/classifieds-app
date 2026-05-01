@@ -111,6 +111,34 @@ class SampleDataSeeder extends Seeder
 
         $this->command->info("Listings: {$created} created");
 
+        // ── Photos for listings (via picsum.photos) ──
+        $photoCount = 0;
+        if (!function_exists('imagecreatefromstring')) {
+            $this->command->warn('GD extension not available — skipping photo seeding.');
+        } else {
+            $picsumIds = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24];
+            foreach ($seededListings as $i => $listing) {
+                if (rand(0, 2) === 0) { // 33% skip, 66% get photos
+                    continue;
+                }
+
+                $numPhotos = rand(1, 3);
+                for ($j = 0; $j < $numPhotos; $j++) {
+                    try {
+                        $picsumId = $picsumIds[$i % count($picsumIds)];
+                        $url = "https://picsum.photos/id/" . ($picsumId + $j) . "/600/400";
+                        $listing->addMediaFromUrl($url)
+                            ->toMediaCollection('photos');
+                        $photoCount++;
+                    } catch (\Exception $e) {
+                        // Skip if network unavailable or GD missing
+                        break;
+                    }
+                }
+            }
+            $this->command->info("Photos: {$photoCount} added to " . min($photoCount, count($seededListings)) . " listings");
+        }
+
         // ── Credit Transactions for users ──
         $users = User::where('credit_balance', '>', 0)->get();
         $txCount = 0;
