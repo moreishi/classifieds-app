@@ -11,7 +11,7 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: true
-      APP_KEY:
+      APP_KEY: base64:3FvZ2R0PfWfMlQhX+RPGxJTw7ZnG1OVx7JPF+7/G1ZM=
       APP_URL: http://localhost:8200
       DB_CONNECTION: mysql
       DB_HOST: mysql
@@ -67,7 +67,7 @@ services:
     environment:
       APP_ENV: local
       APP_DEBUG: true
-      APP_KEY:
+      APP_KEY: base64:3FvZ2R0PfWfMlQhX+RPGxJTw7ZnG1OVx7JPF+7/G1ZM=
       DB_CONNECTION: mysql
       DB_HOST: mysql
       DB_PORT: 3306

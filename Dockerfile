@@ -32,6 +32,11 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+
 # Nginx config
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 
@@ -62,10 +67,9 @@ RUN npm ci
 # Copy the rest
 COPY . .
 
-# Storage bootstrap
+# Storage bootstrap (build-time only — runtime handled by entrypoint)
 RUN mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
-    chown -R www-data:www-data storage bootstrap/cache database && \
-    php artisan storage:link
+    chown -R www-data:www-data storage bootstrap/cache database
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
@@ -80,9 +84,7 @@ RUN npm ci && npm run build
 
 COPY . .
 
-RUN set -eux; \
-    mkdir -p storage/framework/{sessions,views,cache/data} storage/logs; \
-    php artisan storage:link; \
+RUN mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
     chown -R www-data:www-data storage bootstrap/cache database
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
