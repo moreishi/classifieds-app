@@ -20,6 +20,7 @@ RUN apk add --no-cache \
     $PHPIZE_DEPS
 
 # PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 RUN docker-php-ext-install \
     mbstring \
     pdo \
