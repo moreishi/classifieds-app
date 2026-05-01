@@ -26,6 +26,7 @@ Route::get('/up', fn () => response()->json(['status' => 'ok']));
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/listings/create', CreateListing::class)->name('listings.create');
 Route::get('/listing/{slug}/edit', EditListing::class)->name('listings.edit');
+    Route::get('/my-listings', \App\Livewire\MyListings::class)->name('listings.my');
     Route::get('/offers', OffersInbox::class)->name('offers.index');
     Route::get('/transactions', Transactions::class)->name('transactions.index');
     Route::get('/notifications', NotificationsPage::class)->name('notifications.index');

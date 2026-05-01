@@ -132,16 +132,16 @@ class EditListing extends Component
         ]);
 
         foreach ($this->newPhotos as $photo) {
-            $tmpPath = tempnam(sys_get_temp_dir(), 'listing_');
-            file_put_contents($tmpPath, $photo->get());
-            $this->listing->addMedia($tmpPath)
+            $this->listing
+                ->addMedia($photo->path())
                 ->usingName($photo->getClientOriginalName())
+                ->withCustomProperties(['mime_type' => $photo->getMimeType()])
                 ->toMediaCollection('photos');
         }
 
         session()->flash('message', 'Listing updated successfully!');
 
-        $this->redirectRoute('listing.show', $this->listing->slug, navigate: true);
+        $this->redirectRoute('listing.show', $slug);
     }
 
     public function render()

@@ -51,8 +51,12 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('listings.my')">
+                                {{ __('My Listings') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('listings.trashed')">
-                                {{ __('Trashed Listings') }}
+                                {{ __('Trashed') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="route('profile.edit')">
