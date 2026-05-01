@@ -32,7 +32,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ListingSeeder::class,
-            SampleDataSeeder::class,
         ]);
+
+        // Sample data (listings, users, credit transactions, photos) is optional.
+        // Run: php artisan db:seed --class=SampleDataSeeder
+        // or:   php artisan migrate:fresh --seeder=SampleDataSeeder
+        if (env('APP_ENV') === 'development' && env('SEED_SAMPLE_DATA', false)) {
+            $this->call([SampleDataSeeder::class]);
+        }
     }
 }
