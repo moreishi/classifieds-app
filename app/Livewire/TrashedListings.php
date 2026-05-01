@@ -30,6 +30,8 @@ class TrashedListings extends Component
         $listing->forceDelete();
 
         session()->flash('message', 'Listing permanently deleted.');
+
+        $this->redirectRoute('listings.trashed');
     }
 
     public function render()
