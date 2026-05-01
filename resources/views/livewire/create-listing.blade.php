@@ -9,7 +9,7 @@
         @endif
 
         <form wire:submit="submit" class="space-y-6">
-            {{-- Category --}
+            {{-- Category --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Category</label>
                 <select wire:model="categoryId"
@@ -22,7 +22,7 @@
                 @error('categoryId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Title --}
+            {{-- Title --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Title</label>
                 <input type="text" wire:model="title" maxlength="100"
@@ -32,7 +32,7 @@
                 @error('title') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Description --}
+            {{-- Description --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Description</label>
                 <textarea wire:model="description" rows="5"
@@ -41,7 +41,7 @@
                 @error('description') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Price --}
+            {{-- Price --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Price (₱)</label>
                 <input type="number" wire:model="price" min="1"
@@ -50,7 +50,7 @@
                 @error('price') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Condition --}
+            {{-- Condition --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Condition</label>
                 <select wire:model="condition"
@@ -63,7 +63,7 @@
                 </select>
             </div>
 
-            {{-- City --}
+            {{-- City --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">City</label>
                 <select wire:model="cityId"
@@ -75,7 +75,7 @@
                 @error('cityId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
             </div>
 
-            {{-- Photos --}
+            {{-- Photos --}}
             <div>
                 <label class="block text-sm font-medium text-gray-700">Photos (1-5, max 5MB each)</label>
                 <input type="file" wire:model="photos" multiple accept="image/jpeg,image/png,image/webp"

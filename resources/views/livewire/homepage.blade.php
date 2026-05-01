@@ -21,7 +21,7 @@
                 </div>
             </div>
 
-            {{-- City selector --}
+            {{-- City selector --}}
             <div class="flex justify-center mt-6 gap-2 text-sm text-blue-200">
                 <span>📍</span>
                 <select class="bg-blue-700 text-white rounded-lg px-3 py-1 border border-blue-500 focus:outline-none">
@@ -34,7 +34,7 @@
         </div>
     </div>
 
-    {{-- Category Grid --}
+    {{-- Category Grid --}}
     <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -48,7 +48,7 @@
         </div>
     </div>
 
-    {{-- Featured Listings --}
+    {{-- Featured Listings --}}
     <div class="max-w-7xl mx-auto px-4 pb-16 sm:px-6 lg:px-8">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Featured from Iskina</h2>
 

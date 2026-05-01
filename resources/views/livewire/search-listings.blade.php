@@ -1,5 +1,5 @@
 <div>
-    {{-- Category Header --}
+    {{-- Category Header --}}
     <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
             <div class="flex items-center gap-3 mb-4">
@@ -10,7 +10,7 @@
                 </div>
             </div>
 
-            {{-- Search within category --}
+            {{-- Search within category --}}
             <div class="relative max-w-xl">
                 <input
                     type="text"
@@ -24,7 +24,7 @@
 
     <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-8">
-            {{-- Filters sidebar --}
+            {{-- Filters sidebar --}}
             <aside class="lg:w-64 shrink-0">
                 <div class="bg-white rounded-xl border p-4 space-y-5">
                     <h3 class="font-semibold text-gray-900">Filters</h3>
@@ -75,7 +75,7 @@
                 </div>
             </aside>
 
-            {{-- Results --}
+            {{-- Results --}}
             <div class="flex-1 min-w-0">
                 <p class="text-sm text-gray-500 mb-4">{{ $listings->total() }} listings found</p>
 

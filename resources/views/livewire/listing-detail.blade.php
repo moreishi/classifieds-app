@@ -1,14 +1,14 @@
 <div>
     <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {{-- Main content --}
+            {{-- Main content --}}
             <div class="lg:col-span-2 space-y-6">
-                {{-- Photo gallery --}
+                {{-- Photo gallery --}}
                 <div class="bg-gray-100 rounded-xl h-80 flex items-center justify-center text-gray-400">
                     No photos yet
                 </div>
 
-                {{-- Title & Price --}
+                {{-- Title & Price --}}
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">{{ $listing->title }}</h1>
                     <p class="text-3xl font-bold text-blue-600 mt-2">₱{{ number_format($listing->price / 100) }}</p>
@@ -21,13 +21,13 @@
                     </div>
                 </div>
 
-                {{-- Description --}
+                {{-- Description --}}
                 <div class="prose max-w-none">
                     <h2 class="text-lg font-semibold text-gray-900">Description</h2>
                     <p class="text-gray-700 whitespace-pre-wrap">{{ $listing->description }}</p>
                 </div>
 
-                {{-- Offer history --}
+                {{-- Offer history --}}
                 @if($listing->offers->count() > 0)
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">Offers</h2>
@@ -35,7 +35,7 @@
                     </div>
                 @endif
 
-                {{-- Reviews --}
+                {{-- Reviews --}}
                 @if($listing->reviews->count() > 0)
                     <div>
                         <h2 class="text-lg font-semibold text-gray-900">Reviews</h2>
@@ -53,9 +53,9 @@
                 @endif
             </div>
 
-            {{-- Sidebar --}
+            {{-- Sidebar --}}
             <aside class="space-y-4">
-                {{-- Seller Card --}
+                {{-- Seller Card --}}
                 <div class="bg-white rounded-xl border p-5">
                     <h3 class="font-semibold text-gray-900">Seller</h3>
                     <div class="mt-3 flex items-center gap-3">
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                {{-- Actions --}
+                {{-- Actions --}}
                 @auth
                     <button
                         wire:click="$dispatch('open-offer-modal', { listingId: {{ $listing->id }} })"
