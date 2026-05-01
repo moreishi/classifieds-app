@@ -41,7 +41,7 @@
                             @endif
 
                             {{-- Status Badge --}}
-                            <div class="absolute top-2 right-2">
+                            <div class="absolute top-3 right-3">
                                 @if($listing->status === 'sold')
                                     <span class="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded-full">Sold</span>
                                 @else
