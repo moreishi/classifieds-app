@@ -1,0 +1,60 @@
+<div>
+    <div class="max-w-3xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Trashed Listings</h1>
+                <p class="text-sm text-gray-500 mt-1">Deleted listings can be restored within 30 days.</p>
+            </div>
+            <a href="<?php echo e(route('listings.create')); ?>"
+               class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                + New Listing
+            </a>
+        </div>
+
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('message')): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                <?php echo e(session('message')); ?>
+
+            </div>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($listings->isEmpty()): ?>
+            <div class="text-center py-16 bg-gray-50 rounded-xl">
+                <p class="text-gray-500 text-lg">No trashed listings</p>
+                <p class="text-gray-400 text-sm mt-1">Deleted listings will appear here for 30 days.</p>
+            </div>
+        <?php else: ?>
+            <div class="space-y-3">
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $listings; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $listing): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between">
+                        <div class="min-w-0 flex-1">
+                            <h3 class="font-semibold text-gray-900 truncate"><?php echo e($listing->title); ?></h3>
+                            <div class="flex items-center gap-3 mt-1 text-sm text-gray-500">
+                                <span>₱<?php echo e(number_format($listing->price / 100)); ?></span>
+                                <span>📍 <?php echo e($listing->city?->name ?? '—'); ?></span>
+                                <span class="text-red-500">Deleted <?php echo e($listing->deleted_at->diffForHumans()); ?></span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 ml-4">
+                            <button wire:click="restore(<?php echo e($listing->id); ?>)"
+                                    class="px-3 py-1.5 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors">
+                                Restore
+                            </button>
+                            <button wire:click="forceDelete(<?php echo e($listing->id); ?>)"
+                                    wire:confirm="Permanently delete '<?php echo e($listing->title); ?>'? This cannot be undone."
+                                    class="px-3 py-1.5 bg-red-100 text-red-700 text-sm rounded-lg hover:bg-red-200 transition-colors">
+                                Delete Forever
+                            </button>
+                        </div>
+                    </div>
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+            </div>
+
+            <div class="mt-6">
+                <?php echo e($listings->links()); ?>
+
+            </div>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    </div>
+</div>
+<?php /**PATH /home/kc/projects/classifieds-app/resources/views/livewire/trashed-listings.blade.php ENDPATH**/ ?>
