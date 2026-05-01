@@ -76,15 +76,33 @@ CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 # ── Production stage ──────────────────────────────────
 FROM base AS production
 
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Composer install (no dev) — cached before app code
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
 
+# npm install & build (no dev)
 COPY package.json package-lock.json ./
-RUN npm ci && npm run build
+RUN npm ci && npm run build && rm -rf node_modules
 
+# Application code
 COPY . .
 
-RUN mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
+# Generate optimized cache
+RUN composer dump-autoload --optimize && \
+    php artisan storage:link && \
+    mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
     chown -R www-data:www-data storage bootstrap/cache database
+
+# Remove dev artifacts
+RUN rm -rf .git tests phpunit.xml .editorconfig .gitattributes .prettierrc
+
+# Production Nginx config
+COPY docker/nginx.production.conf /etc/nginx/http.d/default.conf
+
+# Production supervisor config (queue worker autostarts)
+COPY docker/supervisord.production.conf /etc/supervisor/conf.d/supervisord.conf
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

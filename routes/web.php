@@ -20,6 +20,9 @@ Route::get('/search', SearchResults::class)->name('search');
 
 Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
 
+// Health check for Docker / Coolify
+Route::get('/up', fn () => response()->json(['status' => 'ok']));
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/listings/create', CreateListing::class)->name('listings.create');
 Route::get('/listing/{slug}/edit', EditListing::class)->name('listings.edit');
