@@ -15,6 +15,8 @@ RUN apk add --no-cache \
     freetype-dev \
     libpng-dev \
     libjpeg-turbo-dev \
+    icu-dev \
+    libzip-dev \
     $PHPIZE_DEPS
 
 # PHP extensions
