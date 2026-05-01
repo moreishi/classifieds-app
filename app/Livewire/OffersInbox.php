@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Offer;
+use App\Services\TransactionService;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -12,16 +13,19 @@ class OffersInbox extends Component
 
     public string $tab = 'received'; // received | sent
 
-    public function accept(int $offerId): void
+    public function accept(int $offerId, TransactionService $tx): void
     {
-        $offer = Offer::where('seller_id', auth()->id())->findOrFail($offerId);
-        $offer->update(['status' => 'accepted']);
+        $offer = Offer::with(['listing', 'buyer'])
+            ->where('seller_id', auth()->id())
+            ->findOrFail($offerId);
 
-        // Decline all other pending offers on this listing
-        Offer::where('listing_id', $offer->listing_id)
-            ->where('id', '!=', $offerId)
-            ->where('status', 'pending')
-            ->update(['status' => 'declined']);
+        try {
+            $receipt = $tx->acceptOffer($offer);
+            $this->dispatch('offer-accepted', receiptId: $receipt->id);
+            session()->flash('message', 'Offer accepted! Transaction receipt created.');
+        } catch (\RuntimeException $e) {
+            session()->flash('error', $e->getMessage());
+        }
     }
 
     public function decline(int $offerId): void

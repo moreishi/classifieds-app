@@ -1,5 +1,17 @@
 <div>
     <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        @if(session('message'))
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+                {{ session('message') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="flex items-center justify-between mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Offers</h1>
 

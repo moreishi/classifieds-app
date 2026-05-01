@@ -2,9 +2,8 @@
 
 namespace App\Livewire;
 
-use App\Models\TransactionReceipt;
 use App\Models\Listing;
-use App\Models\Offer;
+use App\Models\TransactionReceipt;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -13,13 +12,14 @@ class Transactions extends Component
 {
     use WithPagination;
 
-    public string $tab = 'receipts'; // receipts | generate
+    public string $tab = 'all'; // all | as_buyer | as_seller
 
-    // Generate receipt form
+    // Generate receipt form (legacy, for sellers who want offline receipts)
     public int $listingId = 0;
     public string $buyerEmail = '';
     public string $buyerName = '';
     public int $amount = 0;
+    public bool $showForm = false;
 
     protected function rules(): array
     {
@@ -43,7 +43,8 @@ class Transactions extends Component
             'buyer_email' => $this->buyerEmail,
             'buyer_name' => $this->buyerName,
             'reference_number' => 'ISK-' . strtoupper(Str::random(12)),
-            'amount' => $this->amount * 100, // convert to centavos
+            'amount' => $this->amount * 100,
+            'status' => 'completed',
             'receipt_sent_at' => now(),
         ]);
 
@@ -54,14 +55,23 @@ class Transactions extends Component
 
     public function render()
     {
-        $receipts = TransactionReceipt::with('listing')
-            ->where('seller_id', auth()->id())
+        $receipts = TransactionReceipt::with(['listing', 'seller'])
+            ->where(function ($q) {
+                // User is either the seller OR the buyer
+                $q->where('seller_id', auth()->id())
+                  ->orWhere('buyer_email', auth()->user()->email);
+            })
+            ->when($this->tab === 'as_buyer', function ($q) {
+                $q->where('buyer_email', auth()->user()->email);
+            })
+            ->when($this->tab === 'as_seller', function ($q) {
+                $q->where('seller_id', auth()->id());
+            })
             ->orderByDesc('created_at')
             ->paginate(20);
 
         $listings = Listing::where('user_id', auth()->id())
-            ->where('status', 'sold')
-            ->orWhere('status', 'active')
+            ->whereIn('status', ['active', 'sold'])
             ->get();
 
         return view('livewire.transactions', [
