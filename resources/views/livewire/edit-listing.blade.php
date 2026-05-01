@@ -150,6 +150,18 @@
                     <span wire:loading>Saving...</span>
                 </button>
             </div>
+
+            <hr class="border-gray-200">
+
+            <div>
+                <button type="button"
+                        wire:click="delete"
+                        wire:confirm="Are you sure you want to delete '{{ $listing->title }}'? It can be restored within 30 days."
+                        class="w-full py-3 rounded-xl font-semibold border border-red-300 text-red-600 hover:bg-red-50 transition-colors">
+                    Delete Listing
+                </button>
+                <p class="text-xs text-gray-400 mt-1 text-center">Deleted listings stay in trash for 30 days.</p>
+            </div>
         </form>
     </div>
 </div>

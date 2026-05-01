@@ -19,7 +19,8 @@
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <p class="text-sm text-gray-500">Free Listings</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->free_listings_used }} / {{ match(auth()->user()->reputation_tier) { 'pro' => 5, 'trusted' => 3, 'verified' => 2, default => 1 } }} used</p>
+                    @php $remaining = app(\App\Services\CreditService::class)->freeListingsRemaining(auth()->user()); @endphp
+                    <p class="text-2xl font-bold text-gray-900">{{ $remaining }} / {{ \App\Services\CreditService::freeListingsLimit(auth()->user()->reputation_tier) }} remaining</p>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <p class="text-sm text-gray-500">Referral Code</p>

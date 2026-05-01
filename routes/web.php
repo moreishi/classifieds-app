@@ -29,6 +29,7 @@ Route::get('/listing/{slug}/edit', EditListing::class)->name('listings.edit');
     Route::get('/offers', OffersInbox::class)->name('offers.index');
     Route::get('/transactions', Transactions::class)->name('transactions.index');
     Route::get('/notifications', NotificationsPage::class)->name('notifications.index');
+    Route::get('/listings/trashed', \App\Livewire\TrashedListings::class)->name('listings.trashed');
     Route::get('/receipt/{receipt}/download', [ReceiptController::class, 'download'])->name('receipt.download');
 });
 

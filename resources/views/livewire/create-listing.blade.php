@@ -27,7 +27,8 @@
                 </select>
                 @error('categoryId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                 <p class="mt-1 text-xs text-gray-500">
-                    Posting fee applies. You have <strong>{{ auth()->user()->free_listings_used }} / {{ match(auth()->user()->reputation_tier) { 'pro' => 5, 'trusted' => 3, 'verified' => 2, default => 1 } }}</strong> free listings this month.
+                    @php $remaining = app(\App\Services\CreditService::class)->freeListingsRemaining(auth()->user()); @endphp
+                    Posting fee applies. You have <strong>{{ $remaining }} / {{ \App\Services\CreditService::freeListingsLimit(auth()->user()->reputation_tier) }}</strong> free listings remaining this month.
                 </p>
             </div>
 

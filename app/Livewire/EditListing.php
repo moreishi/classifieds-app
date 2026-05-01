@@ -87,6 +87,17 @@ class EditListing extends Component
             ->toArray();
     }
 
+    public function delete(): void
+    {
+        abort_unless(auth()->id() === $this->listing->user_id, 403);
+
+        $this->listing->delete();
+
+        session()->flash('message', 'Listing moved to trash. You can restore it within 30 days.');
+
+        $this->redirectRoute('dashboard', navigate: true);
+    }
+
     public function submit(): void
     {
         $this->validate();

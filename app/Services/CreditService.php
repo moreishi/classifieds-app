@@ -96,6 +96,22 @@ class CreditService
         return strtoupper(substr(md5(uniqid()), 0, 8));
     }
 
+    public static function freeListingsLimit(string $reputationTier): int
+    {
+        return match ($reputationTier) {
+            'pro' => 5,
+            'trusted' => 3,
+            'verified' => 2,
+            default => 1, // 'newbie'
+        };
+    }
+
+    public function freeListingsRemaining(User $user): int
+    {
+        $limit = self::freeListingsLimit($user->reputation_tier);
+        return max(0, $limit - $user->free_listings_used);
+    }
+
     private function hasFreeListingAvailable(User $user): bool
     {
         // Reset free listings if the month has rolled over
@@ -106,14 +122,7 @@ class CreditService
             ]);
         }
 
-        $limit = match ($user->reputation_tier) {
-            'pro' => 5,
-            'trusted' => 3,
-            'verified' => 2,
-            default => 1, // 'newbie'
-        };
-
-        return $user->free_listings_used < $limit;
+        return $this->freeListingsRemaining($user) > 0;
     }
 
     private function useFreeListing(User $user): bool
