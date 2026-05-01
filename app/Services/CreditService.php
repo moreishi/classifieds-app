@@ -14,18 +14,22 @@ class CreditService
     /**
      * Check if a user can post a listing (has credits or free listings).
      */
-    public function canPostListing(User $user, Listing $listing): bool
+    public function canPostListing(User $user, ?Listing $listing = null): bool
     {
         // Check free listings first
         if ($this->hasFreeListingAvailable($user)) {
             return true;
         }
 
-        // Check category-specific pricing override
-        $category = $listing->category;
-        $price = $category->pricingOverride?->post_price
-            ?? $category->post_price
-            ?? self::LISTING_FEE;
+        // Check category-specific pricing override (or default fee if no listing yet)
+        if ($listing) {
+            $category = $listing->category;
+            $price = $category->pricingOverride?->post_price
+                ?? $category->post_price
+                ?? self::LISTING_FEE;
+        } else {
+            $price = self::LISTING_FEE;
+        }
 
         return $user->credit_balance >= $price;
     }

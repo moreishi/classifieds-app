@@ -47,6 +47,12 @@ class CreateListing extends Component
 
         $user = auth()->user();
 
+        // Check credits first — before creating anything
+        if (!$credits->canPostListing($user, null)) {
+            session()->flash('error', 'Insufficient credits. Please top up your account.');
+            return;
+        }
+
         $listing = Listing::create([
             'user_id' => $user->id,
             'category_id' => $this->categoryId,
@@ -61,13 +67,6 @@ class CreateListing extends Component
 
         foreach ($this->photos as $photo) {
             $listing->addMedia($photo)->toMediaCollection('photos');
-        }
-
-        // Check credits before proceeding
-        if (!$credits->canPostListing($user, $listing)) {
-            $listing->delete();
-            session()->flash('error', 'Insufficient credits. Please top up your account.');
-            return;
         }
 
         $credits->chargeForListing($user, $listing);

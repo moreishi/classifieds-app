@@ -41,17 +41,17 @@ class EditListing extends Component
     {
         $listing = Listing::where('slug', $slug)->firstOrFail();
 
-        abort_unless(
-            auth()->id() === $listing->user_id,
-            403,
-            'You can only edit your own listings.'
-        );
+        if (auth()->id() !== $listing->user_id) {
+            session()->flash('error', 'You can only edit your own listings.');
+            $this->redirectRoute('listing.show', $listing->slug, navigate: true);
+            return;
+        }
 
-        abort_if(
-            $listing->status === 'sold',
-            403,
-            'Cannot edit a sold listing.'
-        );
+        if ($listing->status === 'sold') {
+            session()->flash('error', 'This listing has been sold and can no longer be edited.');
+            $this->redirectRoute('listing.show', $listing->slug, navigate: true);
+            return;
+        }
 
         $this->listing = $listing;
         $this->categoryId = $listing->category_id;
