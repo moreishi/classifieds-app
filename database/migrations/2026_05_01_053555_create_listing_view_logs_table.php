@@ -12,8 +12,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('listing_id')->constrained()->cascadeOnDelete();
             $table->string('ip_address', 45)->nullable();
+            $table->string('user_agent', 500)->nullable();
             $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamp('viewed_at');
+            $table->boolean('is_unique')->default(true);
 
             $table->index(['listing_id', 'ip_address', 'viewed_at']);
         });

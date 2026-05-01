@@ -1,24 +1,44 @@
 <div>
-    {{-- Category Header --}}
+    {{-- Header --}}
     <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-4xl">{{ $category->icon }}</span>
-                <div>
-                    <h1 class="text-3xl font-bold text-gray-900">{{ $category->name }}</h1>
-                    <p class="text-gray-500">Post price: ₱{{ number_format($category->post_price / 100) }}</p>
+            @isset($category)
+                {{-- Category browsing --}}
+                <div class="flex items-center gap-3 mb-4">
+                    <span class="text-4xl">{{ $category->icon }}</span>
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-900">{{ $category->name }}</h1>
+                        <p class="text-gray-500">Post price: ₱{{ number_format($category->post_price / 100) }}</p>
+                    </div>
                 </div>
-            </div>
-
-            {{-- Search within category --}}
-            <div class="relative max-w-xl">
-                <input
-                    type="text"
-                    wire:model.live.debounce.300ms="search"
-                    placeholder="Search in {{ $category->name }}..."
-                    class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                />
-            </div>
+                <div class="relative max-w-xl">
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Search in {{ $category->name }}..."
+                        class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    />
+                </div>
+            @else
+                {{-- Search results --}}
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                    @if(strlen($searchTerm) >= 2)
+                        Results for "{{ $searchTerm }}"
+                    @else
+                        Search Iskina.ph
+                    @endif
+                </h1>
+                <div class="relative max-w-xl">
+                    <form wire:submit.prevent="render" class="relative">
+                        <input
+                            type="text"
+                            wire:model="q"
+                            placeholder="Search gadgets, cars, rooms in Cebu..."
+                            class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        />
+                    </form>
+                </div>
+            @endisset
         </div>
     </div>
 
@@ -77,12 +97,12 @@
 
             {{-- Results --}}
             <div class="flex-1 min-w-0">
-                <p class="text-sm text-gray-500 mb-4">{{ $listings->total() }} listings found</p>
+                <p class="text-sm text-gray-500 mb-4">{{ $listings->total() }} listing(s) found</p>
 
                 @if($listings->isEmpty())
                     <div class="text-center py-16 bg-gray-50 rounded-xl">
                         <p class="text-gray-500 text-lg">No listings found</p>
-                        <p class="text-gray-400 text-sm mt-1">Try adjusting your filters</p>
+                        <p class="text-gray-400 text-sm mt-1">Try adjusting your filters or search terms</p>
                     </div>
                 @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

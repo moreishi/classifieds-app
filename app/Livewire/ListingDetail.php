@@ -3,17 +3,21 @@
 namespace App\Livewire;
 
 use App\Models\Listing;
+use App\Services\ListingViewService;
 use Livewire\Component;
 
 class ListingDetail extends Component
 {
     public Listing $listing;
 
-    public function mount(string $slug): void
+    public function mount(string $slug, ListingViewService $viewService): void
     {
         $this->listing = Listing::where('slug', $slug)
             ->with(['user', 'category', 'city', 'reviews', 'offers'])
             ->firstOrFail();
+
+        // Record the view
+        $viewService->recordView($this->listing, request());
     }
 
     public function markAsSold(): void

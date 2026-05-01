@@ -10,13 +10,14 @@ class ListingViewLog extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'listing_id', 'ip_address', 'user_id', 'viewed_at',
+        'listing_id', 'ip_address', 'user_agent', 'user_id', 'viewed_at', 'is_unique',
     ];
 
     protected function casts(): array
     {
         return [
             'viewed_at' => 'datetime',
+            'is_unique' => 'boolean',
         ];
     }
 

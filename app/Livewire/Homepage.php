@@ -11,6 +11,12 @@ class Homepage extends Component
 {
     public string $search = '';
 
+    public function searchListings(): void
+    {
+        $query = http_build_query(array_filter(['q' => $this->search]));
+        $this->redirect('/search?' . $query);
+    }
+
     public function render()
     {
         return view('livewire.homepage', [

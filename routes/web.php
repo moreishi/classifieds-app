@@ -7,12 +7,14 @@ use App\Livewire\Homepage;
 use App\Livewire\ListingDetail;
 use App\Livewire\OffersInbox;
 use App\Livewire\SearchListings;
+use App\Livewire\SearchResults;
 use App\Livewire\Transactions;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Homepage::class)->name('home');
 
 Route::get('/category/{slug}', SearchListings::class)->name('category.show');
+Route::get('/search', SearchResults::class)->name('search');
 
 Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
 

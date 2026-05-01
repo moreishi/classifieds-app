@@ -9,11 +9,12 @@
                 <div class="relative">
                     <input
                         type="text"
-                        wire:model.live="search"
+                        wire:model="search"
+                        wire:keydown.enter="searchListings"
                         placeholder="Search gadgets, cars, rooms in Cebu..."
                         class="w-full px-5 py-4 pr-12 rounded-xl text-gray-900 text-lg shadow-lg focus:ring-2 focus:ring-blue-300 focus:outline-none"
                     />
-                    <button class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600">
+                    <button wire:click="searchListings" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
@@ -21,15 +22,10 @@
                 </div>
             </div>
 
-            {{-- City selector --}}
+            {{-- City selector hint --}}
             <div class="flex justify-center mt-6 gap-2 text-sm text-blue-200">
                 <span>📍</span>
-                <select class="bg-blue-700 text-white rounded-lg px-3 py-1 border border-blue-500 focus:outline-none">
-                    <option>Cebu City</option>
-                    @foreach($cities as $city)
-                        <option value="{{ $city->id }}">{{ $city->name }}</option>
-                    @endforeach
-                </select>
+                <span>Cebu City, Cebu, Philippines</span>
             </div>
         </div>
     </div>
