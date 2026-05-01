@@ -25,16 +25,16 @@
                         <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
                             {{ __('Messages') }}
                             @php
-                                \$unreadTotal = \App\Models\Conversation::where(function (\$q) {
-                                    \$q->where('buyer_id', auth()->id())
+                                $unreadTotal = \App\Models\Conversation::where(function ($q) {
+                                    $q->where('buyer_id', auth()->id())
                                       ->orWhere('seller_id', auth()->id());
-                                })->whereHas('messages', function (\$q) {
-                                    \$q->where('sender_id', '!=', auth()->id())
+                                })->whereHas('messages', function ($q) {
+                                    $q->where('sender_id', '!=', auth()->id())
                                       ->whereNull('read_at');
                                 })->count();
                             @endphp
-                            @if(\$unreadTotal > 0)
-                                <span class="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-blue-600 rounded-full">{{ \$unreadTotal }}</span>
+                            @if($unreadTotal > 0)
+                                <span class="ml-1.5 inline-flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-blue-600 rounded-full">{{ $unreadTotal }}</span>
                             @endif
                         </x-nav-link>
                         <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
@@ -146,16 +146,16 @@
             <x-responsive-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
                 {{ __('Messages') }}
                 @php
-                    \$unreadTotalMobile = \App\Models\Conversation::where(function (\$q) {
-                        \$q->where('buyer_id', auth()->id())
+                    $unreadTotalMobile = \App\Models\Conversation::where(function ($q) {
+                        $q->where('buyer_id', auth()->id())
                           ->orWhere('seller_id', auth()->id());
-                    })->whereHas('messages', function (\$q) {
-                        \$q->where('sender_id', '!=', auth()->id())
+                    })->whereHas('messages', function ($q) {
+                        $q->where('sender_id', '!=', auth()->id())
                           ->whereNull('read_at');
                     })->count();
                 @endphp
-                @if(\$unreadTotalMobile > 0)
-                    <span class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-600 rounded-full">{{ \$unreadTotalMobile }}</span>
+                @if($unreadTotalMobile > 0)
+                    <span class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-600 rounded-full">{{ $unreadTotalMobile }}</span>
                 @endif
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
