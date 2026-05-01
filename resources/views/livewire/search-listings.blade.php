@@ -1,7 +1,7 @@
 <div>
     {{-- Header --}}
     <div class="bg-white border-b">
-        <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
             @isset($category)
                 {{-- Category browsing --}}
                 <div class="flex items-center gap-3 mb-4">
@@ -21,12 +21,12 @@
                 </div>
 
                 @if($subcategories->isNotEmpty())
-                    <div class="flex flex-wrap gap-2 mt-4">
+                    <div class="flex flex-wrap gap-1.5 mt-4">
                         @foreach($subcategories as $sub)
                             <a href="{{ route('category.show', $sub->slug) }}"
-                               class="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 rounded-full transition-colors">
-                                <span class="mr-1.5">{{ $sub->icon }}</span>
-                                {{ $sub->name }}
+                               class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-xs sm:text-sm text-gray-700 rounded-full transition-colors leading-tight">
+                                <span class="shrink-0">{{ $sub->icon }}</span>
+                                <span>{{ $sub->name }}</span>
                             </a>
                         @endforeach
                     </div>
