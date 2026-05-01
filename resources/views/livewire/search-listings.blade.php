@@ -21,12 +21,12 @@
                 </div>
 
                 @if($subcategories->isNotEmpty())
-                    <div class="flex flex-wrap gap-1.5 mt-4">
+                    <div class="flex flex-wrap gap-2 sm:gap-3 mt-4">
                         @foreach($subcategories as $sub)
                             <a href="{{ route('category.show', $sub->slug) }}"
-                               class="inline-flex items-center gap-1 px-2.5 py-1.5 bg-gray-100 hover:bg-gray-200 text-xs sm:text-sm text-gray-700 rounded-full transition-colors leading-tight">
+                               class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-xs sm:text-sm text-gray-700 rounded-full transition-colors leading-tight">
                                 <span class="shrink-0">{{ $sub->icon }}</span>
-                                <span>{{ $sub->name }}</span>
+                                <span class="overflow-hidden text-ellipsis whitespace-nowrap max-w-[140px] sm:max-w-none">{{ $sub->name }}</span>
                             </a>
                         @endforeach
                     </div>
