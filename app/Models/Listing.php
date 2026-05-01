@@ -17,6 +17,11 @@ class Listing extends Model implements HasMedia
 {
     use SoftDeletes, InteractsWithMedia;
 
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('photos')

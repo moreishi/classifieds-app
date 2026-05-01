@@ -83,6 +83,16 @@
 
             {{-- Sidebar --}}
             <aside class="space-y-4">
+                {{-- Edit Button (owner only) --}}
+                @auth
+                    @if(auth()->id() === $listing->user_id && $listing->status !== 'sold')
+                        <a href="{{ route('listings.edit', $listing->slug) }}"
+                           class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                            Edit Listing
+                        </a>
+                    @endif
+                @endauth
+
                 {{-- Seller Card --}}
                 <div class="bg-white rounded-xl border p-5">
                     <h3 class="font-semibold text-gray-900">Seller</h3>

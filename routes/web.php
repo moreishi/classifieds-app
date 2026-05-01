@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceiptController;
 use App\Livewire\CreateListing;
+use App\Livewire\EditListing;
 use App\Livewire\Homepage;
 use App\Livewire\ListingDetail;
 use App\Livewire\OffersInbox;
@@ -20,6 +21,7 @@ Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/listings/create', CreateListing::class)->name('listings.create');
+Route::get('/listing/{slug}/edit', EditListing::class)->name('listings.edit');
     Route::get('/offers', OffersInbox::class)->name('offers.index');
     Route::get('/transactions', Transactions::class)->name('transactions.index');
     Route::get('/receipt/{receipt}/download', [ReceiptController::class, 'download'])->name('receipt.download');
