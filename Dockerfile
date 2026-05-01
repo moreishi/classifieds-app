@@ -79,6 +79,9 @@ CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 # ── Production stage ──────────────────────────────────
 FROM base AS production
 
+# Production Nginx config (overrides base)
+COPY docker/nginx.production.conf /etc/nginx/http.d/default.conf
+
 # Install curl for health checks
 RUN apk add --no-cache curl
 
@@ -101,8 +104,5 @@ RUN composer dump-autoload --optimize && \
 
 # Remove dev artifacts
 RUN rm -rf .git tests phpunit.xml .editorconfig .gitattributes .prettierrc
-
-# Production Nginx config
-COPY docker/nginx.production.conf /etc/nginx/http.d/default.conf
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
