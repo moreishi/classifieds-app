@@ -59,13 +59,23 @@
                        class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
                         @php $thumb = $listing->getFirstMediaUrl('photos', 'thumb') ?: $listing->getFirstMediaUrl('photos'); @endphp
                         @if($thumb)
-                            <div class="h-48 bg-gray-200 overflow-hidden">
+                            <div class="h-48 bg-gray-200 overflow-hidden relative">
                                 <img src="{{ $thumb }}" alt="{{ $listing->title }}"
                                      class="w-full h-full object-cover" />
+                                @auth
+                                    <div class="absolute top-2 right-2 z-10" wire:key="favorite-{{ $listing->id }}" @click.stop>
+                                        <livewire:toggle-favorite :listing="$listing" />
+                                    </div>
+                                @endauth
                             </div>
                         @else
-                            <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400">
+                            <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 relative">
                                 No photo
+                                @auth
+                                    <div class="absolute top-2 right-2 z-10" wire:key="favorite-{{ $listing->id }}" @click.stop>
+                                        <livewire:toggle-favorite :listing="$listing" />
+                                    </div>
+                                @endauth
                             </div>
                         @endif
                         <div class="p-4">

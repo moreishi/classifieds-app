@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -99,6 +100,22 @@ class Listing extends Model implements HasMedia
     public function creditTransactions(): MorphMany
     {
         return $this->morphMany(CreditTransaction::class, 'reference');
+    }
+
+    public function favoritedBy(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'listing_user');
+    }
+
+    public function scopeFavoritedBy(Builder $query, int $userId): Builder
+    {
+        return $query->whereHas('favoritedBy', fn($q) => $q->where('user_id', $userId));
+    }
+
+    public function isFavoritedByAuth(): bool
+    {
+        if (!auth()->check()) return false;
+        return $this->favoritedBy()->where('user_id', auth()->id())->exists();
     }
 
     public function scopeSearch(Builder $query, string $term): Builder

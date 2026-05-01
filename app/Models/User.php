@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -84,5 +85,12 @@ class User extends Authenticatable
             $q->where('buyer_id', $this->id)
               ->orWhere('seller_id', $this->id);
         })->orderBy('last_message_at', 'desc');
+    }
+
+    public function favoriteListings(): BelongsToMany
+    {
+        return $this->belongsToMany(Listing::class, 'listing_user')
+            ->withTimestamps()
+            ->latest('listing_user.created_at');
     }
 }

@@ -85,6 +85,10 @@
                                 @endif
                             </x-dropdown-link>
 
+                            <x-dropdown-link :href="route('favorites.index')">
+                                {{ __('My Favorites') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('listings.my')">
                                 {{ __('My Listings') }}
                             </x-dropdown-link>
