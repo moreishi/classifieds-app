@@ -1,0 +1,77 @@
+<?php
+
+namespace App\Livewire;
+
+use App\Models\Category;
+use App\Models\City;
+use App\Models\Listing;
+use Illuminate\Support\Str;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+
+class CreateListing extends Component
+{
+    use WithFileUploads;
+
+    public int $categoryId;
+    public string $title = '';
+    public string $description = '';
+    public int $price = 0;
+    public ?string $condition = null;
+    public int $cityId;
+    public $photos = [];
+
+    protected function rules(): array
+    {
+        return [
+            'categoryId' => 'required|exists:categories,id',
+            'title' => 'required|max:100',
+            'description' => 'required|min:20',
+            'price' => 'required|integer|min:1',
+            'condition' => 'nullable|in:brand_new,like_new,used,for_parts',
+            'cityId' => 'required|exists:cities,id',
+            'photos' => 'required|array|min:1|max:5',
+            'photos.*' => 'image|max:5120', // 5MB
+        ];
+    }
+
+    public function mount(): void
+    {
+        $this->cityId = City::where('is_active', true)->first()?->id ?? 0;
+    }
+
+    public function submit()
+    {
+        $this->validate();
+
+        $user = auth()->user();
+
+        $listing = Listing::create([
+            'user_id' => $user->id,
+            'category_id' => $this->categoryId,
+            'city_id' => $this->cityId,
+            'title' => $this->title,
+            'slug' => Str::slug($this->title) . '-' . Str::random(6),
+            'description' => $this->description,
+            'price' => $this->price * 100,
+            'condition' => $this->condition,
+            'expires_at' => now()->addDays(30),
+        ]);
+
+        foreach ($this->photos as $photo) {
+            $listing->addMedia($photo)->toMediaCollection('photos');
+        }
+
+        session()->flash('message', 'Listing created successfully!');
+
+        return redirect()->route('listing.show', $listing->slug);
+    }
+
+    public function render()
+    {
+        return view('livewire.create-listing', [
+            'categories' => Category::where('is_active', true)->get(),
+            'cities' => City::where('is_active', true)->get(),
+        ])->layout('layouts.app');
+    }
+}
