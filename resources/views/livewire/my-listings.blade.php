@@ -40,19 +40,18 @@
                                 </div>
                             @endif
 
-                            {{-- Status Badge --}}
-                            <div class="absolute top-3 right-3">
-                                @if($listing->status === 'sold')
-                                    <span class="px-2 py-1 bg-red-600 text-white text-xs font-medium rounded-full">Sold</span>
-                                @else
-                                    <span class="px-2 py-1 bg-green-600 text-white text-xs font-medium rounded-full">Active</span>
-                                @endif
-                            </div>
                         </div>
 
                         {{-- Details --}}
                         <div class="p-4">
-                            <h3 class="font-semibold text-gray-900 truncate">{{ $listing->title }}</h3>
+                            <div class="flex items-center justify-between gap-2">
+                                <h3 class="font-semibold text-gray-900 truncate">{{ $listing->title }}</h3>
+                                @if($listing->status === 'sold')
+                                    <span class="shrink-0 px-2 py-0.5 bg-red-600 text-white text-xs font-medium rounded-full">Sold</span>
+                                @else
+                                    <span class="shrink-0 px-2 py-0.5 bg-green-600 text-white text-xs font-medium rounded-full">Active</span>
+                                @endif
+                            </div>
                             <p class="text-sm text-gray-500 mt-1">₱{{ number_format($listing->price / 100) }}</p>
                             <p class="text-xs text-gray-400 mt-1">{{ $listing->city?->name ?? '—' }}</p>
 
