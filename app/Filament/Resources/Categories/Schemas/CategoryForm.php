@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\KeyValue;
@@ -13,6 +14,11 @@ class CategoryForm
     {
         return $schema
             ->components([
+                Select::make('parent_id')
+                    ->label('Parent Category')
+                    ->relationship('parent', 'name')
+                    ->searchable()
+                    ->placeholder('None (top-level)'),
                 TextInput::make('name')
                     ->required()
                     ->maxLength(100),

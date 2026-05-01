@@ -3,12 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'icon', 'post_price',
+        'parent_id', 'name', 'slug', 'icon', 'post_price',
         'free_listings_unverified', 'free_listings_verified',
         'fields', 'is_active',
     ];
@@ -19,6 +20,16 @@ class Category extends Model
             'fields' => 'array',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function parent(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function children(): HasMany
+    {
+        return $this->hasMany(self::class, 'parent_id');
     }
 
     public function listings(): HasMany

@@ -16,6 +16,10 @@ class CategoriesTable
                 TextColumn::make('icon')
                     ->label('')
                     ->size('lg'),
+                TextColumn::make('parent.name')
+                    ->label('Parent')
+                    ->sortable()
+                    ->placeholder('—'),
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
