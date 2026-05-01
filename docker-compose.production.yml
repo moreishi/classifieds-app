@@ -35,19 +35,18 @@ services:
       LOG_LEVEL: warning
       PHP_MEMORY_LIMIT: "${PHP_MEMORY_LIMIT:-256M}"
       PHP_MAX_EXECUTION_TIME: "${PHP_MAX_EXECUTION_TIME:-300}"
+      # Convert back to centavos on load (Coolify env is in pesos)
+      GCASH_VERIFICATION_CHARGE: "${GCASH_VERIFICATION_CHARGE:-1}"
     volumes:
       - iskina_storage:/app/storage
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/up"]
-      interval: 15s
-      timeout: 5s
+      interval: 30s
+      timeout: 10s
       retries: 3
-    networks:
-      - iskina
-
-networks:
-  iskina:
-    driver: bridge
+      start_period: 40s
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 volumes:
   iskina_storage:

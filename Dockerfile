@@ -57,6 +57,9 @@ RUN pecl install xdebug && docker-php-ext-enable xdebug
 
 RUN apk add --no-cache vim
 
+# Dev supervisor: queue worker disabled (autostart is true in base)
+RUN sed -i 's/autostart=true/autostart=false/' /etc/supervisor/conf.d/supervisord.conf
+
 # Composer install (dev deps included) on first run
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction
@@ -101,8 +104,5 @@ RUN rm -rf .git tests phpunit.xml .editorconfig .gitattributes .prettierrc
 
 # Production Nginx config
 COPY docker/nginx.production.conf /etc/nginx/http.d/default.conf
-
-# Production supervisor config (queue worker autostarts)
-COPY docker/supervisord.production.conf /etc/supervisor/conf.d/supervisord.conf
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
