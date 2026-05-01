@@ -75,6 +75,7 @@ services:
       DB_USERNAME: classifieds
       DB_PASSWORD: classifieds
       QUEUE_CONNECTION: database
+      QUEUE_CONVERSIONS_BY_DEFAULT: "false"
     volumes:
       - .:/app
       - /app/node_modules

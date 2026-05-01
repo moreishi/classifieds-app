@@ -20,6 +20,7 @@ services:
       DB_USERNAME: "${DB_USERNAME}"
       DB_PASSWORD: "${DB_PASSWORD}"
       QUEUE_CONNECTION: database
+      QUEUE_CONVERSIONS_BY_DEFAULT: "false"
       CACHE_STORE: database
       SESSION_DRIVER: database
       SESSION_SECURE_COOKIE: "true"
