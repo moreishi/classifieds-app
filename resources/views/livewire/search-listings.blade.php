@@ -119,6 +119,9 @@
                                         <span>📍 {{ $listing->city->name }}</span>
                                         <span>{{ $listing->created_at->diffForHumans() }}</span>
                                     </div>
+                                    @if($listing->user && $listing->user->gcash_verified_at)
+                                        <p class="mt-1 text-[11px] text-green-600">&#10003; GCash Verified</p>
+                                    @endif
                                 </div>
                             </a>
                         @endforeach

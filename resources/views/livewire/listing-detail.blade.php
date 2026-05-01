@@ -63,7 +63,12 @@
                             {{ substr($seller->name, 0, 1) }}
                         </div>
                         <div>
-                            <p class="font-medium text-gray-900">{{ $seller->name }}</p>
+                            <p class="font-medium text-gray-900 flex items-center gap-1">
+                                {{ $seller->name }}
+                                @if($seller->gcash_verified_at)
+                                    <span title="GCash Verified" class="inline-flex items-center justify-center w-4 h-4 bg-green-500 text-white rounded-full text-[10px] font-bold">&#10003;</span>
+                                @endif
+                            </p>
                             <p class="text-xs text-gray-500">
                                 @switch($seller->reputation_tier)
                                     @case('pro') 🏆 Pro @break
