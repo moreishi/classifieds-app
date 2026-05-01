@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\Listing;
+use App\Services\CreditService;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -40,7 +41,7 @@ class CreateListing extends Component
         $this->cityId = City::where('is_active', true)->first()?->id ?? 0;
     }
 
-    public function submit()
+    public function submit(CreditService $credits)
     {
         $this->validate();
 
@@ -61,6 +62,15 @@ class CreateListing extends Component
         foreach ($this->photos as $photo) {
             $listing->addMedia($photo)->toMediaCollection('photos');
         }
+
+        // Check credits before proceeding
+        if (!$credits->canPostListing($user, $listing)) {
+            $listing->delete();
+            session()->flash('error', 'Insufficient credits. Please top up your account.');
+            return;
+        }
+
+        $credits->chargeForListing($user, $listing);
 
         session()->flash('message', 'Listing created successfully!');
 

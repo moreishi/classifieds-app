@@ -7,6 +7,45 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            {{-- Credit Balance Card --}}
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <p class="text-sm text-gray-500">Credits</p>
+                    <p class="text-2xl font-bold text-blue-600">₱{{ number_format(auth()->user()->credit_balance / 100) }}</p>
+                </div>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <p class="text-sm text-gray-500">Reputation</p>
+                    <p class="text-2xl font-bold text-gray-900 capitalize">{{ auth()->user()->reputation_tier }}</p>
+                </div>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <p class="text-sm text-gray-500">Free Listings</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ auth()->user()->free_listings_used }} / {{ match(auth()->user()->reputation_tier) { 'pro' => 5, 'trusted' => 3, 'verified' => 2, default => 1 } }} used</p>
+                </div>
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <p class="text-sm text-gray-500">Referral Code</p>
+                    <p class="text-lg font-mono font-bold text-green-600">{{ auth()->user()->referral_code ?? '—' }}</p>
+                </div>
+            </div>
+
+            {{-- Referral Link --}}
+            @if(auth()->user()->referral_code)
+                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
+                    <h3 class="font-semibold text-gray-900 mb-2">Refer a Friend</h3>
+                    <p class="text-sm text-gray-600 mb-3">Share your referral link and earn ₱5 when they sign up!</p>
+                    <div class="flex gap-2">
+                        <input type="text" readonly
+                               value="{{ route('register', ['ref' => auth()->user()->referral_code]) }}"
+                               class="flex-1 rounded-lg border-gray-300 text-sm bg-gray-50 px-3 py-2"
+                               onclick="this.select()" />
+                        <button onclick="navigator.clipboard.writeText(this.previousElementSibling.value); this.textContent='Copied!'"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Recent Activity --}}
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{ __("You're logged in!") }}

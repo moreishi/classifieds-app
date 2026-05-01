@@ -39,6 +39,14 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
+        <!-- Referral Code (optional) -->
+        <div class="mt-4">
+            <x-input-label for="ref" :value="__('Referral Code (optional)')" />
+            <x-text-input id="ref" class="block mt-1 w-full" type="text" name="ref" :value="old('ref', request('ref'))" maxlength="8" placeholder="e.g. ABC1234X" />
+            <x-input-error :messages="$errors->get('ref')" class="mt-2" />
+            <p class="text-xs text-gray-500 mt-1">Enter a referral code to earn a bonus for both of you!</p>
+        </div>
+
         <div class="flex items-center justify-end mt-4">
             <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
                 {{ __('Already registered?') }}

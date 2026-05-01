@@ -8,6 +8,12 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <form wire:submit="submit" class="space-y-6">
             {{-- Category --}}
             <div>
@@ -20,6 +26,9 @@
                     @endforeach
                 </select>
                 @error('categoryId') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                <p class="mt-1 text-xs text-gray-500">
+                    Posting fee applies. You have <strong>{{ auth()->user()->free_listings_used }} / {{ match(auth()->user()->reputation_tier) { 'pro' => 5, 'trusted' => 3, 'verified' => 2, default => 1 } }}</strong> free listings this month.
+                </p>
             </div>
 
             {{-- Title --}}
