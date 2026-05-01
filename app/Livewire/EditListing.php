@@ -43,13 +43,13 @@ class EditListing extends Component
 
         if (auth()->id() !== $listing->user_id) {
             session()->flash('error', 'You can only edit your own listings.');
-            $this->redirectRoute('listing.show', $listing->slug, navigate: true);
+            $this->redirectRoute('listing.show', $listing->slug);
             return;
         }
 
         if ($listing->status === 'sold') {
             session()->flash('error', 'This listing has been sold and can no longer be edited.');
-            $this->redirectRoute('listing.show', $listing->slug, navigate: true);
+            $this->redirectRoute('listing.show', $listing->slug);
             return;
         }
 
@@ -95,7 +95,7 @@ class EditListing extends Component
 
         session()->flash('message', 'Listing moved to trash. You can restore it within 30 days.');
 
-        $this->redirectRoute('dashboard', navigate: true);
+        $this->redirectRoute('dashboard');
     }
 
     public function submit(): void
@@ -132,10 +132,10 @@ class EditListing extends Component
         ]);
 
         foreach ($this->newPhotos as $photo) {
-            $this->listing
-                ->addMedia($photo->path())
+            $tmpPath = tempnam(sys_get_temp_dir(), 'listing_');
+            file_put_contents($tmpPath, $photo->get());
+            $this->listing->addMedia($tmpPath)
                 ->usingName($photo->getClientOriginalName())
-                ->withCustomProperties(['mime_type' => $photo->getMimeType()])
                 ->toMediaCollection('photos');
         }
 
