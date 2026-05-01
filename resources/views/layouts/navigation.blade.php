@@ -22,6 +22,9 @@
                         <x-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
                             {{ __('Offers') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
+                            {{ __('Messages') }}
+                        </x-nav-link>
                         <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                             {{ __('Transactions') }}
                         </x-nav-link>
@@ -51,6 +54,25 @@
                         </x-slot>
 
                         <x-slot name="content">
+                            @php
+                                $unreadMessages = \App\Models\Conversation::where(function ($q) {
+                                    $q->where('buyer_id', auth()->id())
+                                      ->orWhere('seller_id', auth()->id());
+                                })->whereHas('messages', function ($q) {
+                                    $q->where('sender_id', '!=', auth()->id())
+                                      ->whereNull('read_at');
+                                })->count();
+                            @endphp
+
+                            <x-dropdown-link :href="route('conversations.index')">
+                                {{ __('Messages') }}
+                                @if($unreadMessages > 0)
+                                    <span class="ml-2 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white bg-blue-600 rounded-full">
+                                        {{ $unreadMessages }}
+                                    </span>
+                                @endif
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('listings.my')">
                                 {{ __('My Listings') }}
                             </x-dropdown-link>
@@ -104,6 +126,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
                 {{ __('Offers') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
+                {{ __('Messages') }}
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                 {{ __('Transactions') }}

@@ -139,6 +139,13 @@
 
                 {{-- Actions --}}
                 @auth
+                    @if(auth()->id() !== $listing->user_id)
+                        <a href="{{ route('conversations.start', $listing) }}"
+                           class="block w-full text-center bg-white border border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
+                            Message Seller
+                        </a>
+                    @endif
+
                     <button
                         wire:click="$dispatch('openOfferModal', { listingId: {{ $listing->id }} })"
                         class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"

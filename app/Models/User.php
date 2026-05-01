@@ -67,4 +67,22 @@ class User extends Authenticatable
     {
         return $this->hasMany(Offer::class, 'seller_id');
     }
+
+    public function conversationsAsBuyer(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id');
+    }
+
+    public function conversationsAsSeller(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'seller_id');
+    }
+
+    public function getAllConversationsAttribute()
+    {
+        return Conversation::where(function ($q) {
+            $q->where('buyer_id', $this->id)
+              ->orWhere('seller_id', $this->id);
+        })->orderBy('last_message_at', 'desc');
+    }
 }

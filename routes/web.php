@@ -11,6 +11,9 @@ use App\Livewire\OffersInbox;
 use App\Livewire\SearchListings;
 use App\Livewire\SearchResults;
 use App\Livewire\Transactions;
+use App\Livewire\ConversationsList;
+use App\Livewire\ConversationView;
+use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Homepage::class)->name('home');
@@ -24,6 +27,24 @@ Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
 Route::get('/up', fn () => response()->json(['status' => 'ok']));
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/conversations', ConversationsList::class)->name('conversations.index');
+    Route::get('/conversation/{conversation}', ConversationView::class)->name('conversations.show');
+
+    Route::get('/listing/{listing}/start-conversation', function (Listing $listing) {
+        $buyer = auth()->user();
+        if ($buyer->id === $listing->user_id) {
+            return redirect()->route('listing.show', $listing->slug);
+        }
+
+        $conversation = App\Models\Conversation::firstOrCreate([
+            'listing_id' => $listing->id,
+            'buyer_id' => $buyer->id,
+            'seller_id' => $listing->user_id,
+        ]);
+
+        return redirect()->route('conversations.show', $conversation);
+    })->name('conversations.start');
+
     Route::get('/listings/create', CreateListing::class)->name('listings.create');
 Route::get('/listing/{slug}/edit', EditListing::class)->name('listings.edit');
     Route::get('/my-listings', \App\Livewire\MyListings::class)->name('listings.my');
