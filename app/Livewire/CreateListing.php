@@ -66,7 +66,11 @@ class CreateListing extends Component
         ]);
 
         foreach ($this->photos as $photo) {
-            $listing->addMedia($photo)->toMediaCollection('photos');
+            $tmpPath = tempnam(sys_get_temp_dir(), 'listing_');
+            file_put_contents($tmpPath, $photo->get());
+            $listing->addMedia($tmpPath)
+                ->usingName($photo->getClientOriginalName())
+                ->toMediaCollection('photos');
         }
 
         $credits->chargeForListing($user, $listing);
