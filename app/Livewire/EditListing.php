@@ -132,7 +132,11 @@ class EditListing extends Component
         ]);
 
         foreach ($this->newPhotos as $photo) {
-            $this->listing->addMedia($photo)->toMediaCollection('photos');
+            $tmpPath = tempnam(sys_get_temp_dir(), 'listing_');
+            file_put_contents($tmpPath, $photo->get());
+            $this->listing->addMedia($tmpPath)
+                ->usingName($photo->getClientOriginalName())
+                ->toMediaCollection('photos');
         }
 
         session()->flash('message', 'Listing updated successfully!');
