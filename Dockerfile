@@ -25,7 +25,16 @@ RUN docker-php-ext-install \
     xml \
     bcmath \
     gd \
-    opcache
+    opcache \
+    zip \
+    intl \
+    fileinfo \
+    sockets \
+    exif \
+    pcntl
+
+# zip/unzip for Composer
+RUN apk add --no-cache unzip
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -87,7 +96,7 @@ RUN apk add --no-cache curl
 
 # Composer install (no dev) — cached before app code
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts --no-ansi
 
 # npm install & build (no dev)
 COPY package.json package-lock.json ./
