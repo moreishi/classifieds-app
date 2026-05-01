@@ -7,6 +7,7 @@ use App\Models\CreditTransaction;
 use App\Models\Listing;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -159,6 +160,93 @@ class SampleDataSeeder extends Seeder
             }
         }
         $this->command->info("Credit transactions: {$txCount} created");
+
+        // ── Sample notifications ──
+        $notifCount = 0;
+        $notifTypes = [
+            [
+                'type' => 'App\\Notifications\\OfferReceived',
+                'data' => fn() => [
+                    'offer_id' => 1,
+                    'listing_id' => rand(1, 105),
+                    'listing_title' => 'Sample Listing',
+                    'amount' => rand(5000, 50000),
+                    'buyer_name' => ['Juan', 'Pedro', 'Maria', 'Jose', 'Ana'][array_rand(['Juan', 'Pedro', 'Maria', 'Jose', 'Ana'])],
+                    'type' => 'offer_received',
+                ],
+            ],
+            [
+                'type' => 'App\\Notifications\\OfferAccepted',
+                'data' => fn() => [
+                    'offer_id' => 1,
+                    'listing_id' => rand(1, 105),
+                    'listing_title' => 'Sample Listing',
+                    'amount' => rand(5000, 50000),
+                    'seller_name' => ['Juan', 'Pedro', 'Maria'][array_rand(['Juan', 'Pedro', 'Maria'])],
+                    'type' => 'offer_accepted',
+                ],
+            ],
+            [
+                'type' => 'App\\Notifications\\TransactionCompleted',
+                'data' => fn() => [
+                    'receipt_id' => rand(1, 20),
+                    'listing_id' => rand(1, 105),
+                    'listing_title' => 'Sample Listing',
+                    'reference_number' => strtoupper(Str::random(10)),
+                    'amount' => rand(5000, 50000),
+                    'type' => 'transaction_completed',
+                ],
+            ],
+            [
+                'type' => 'App\\Notifications\\ReviewReceived',
+                'data' => fn() => [
+                    'review_id' => rand(1, 20),
+                    'listing_id' => rand(1, 105),
+                    'listing_title' => 'Sample Listing',
+                    'rating' => rand(3, 5),
+                    'reviewer_name' => ['Juan', 'Pedro', 'Maria', 'Ana'][array_rand(['Juan', 'Pedro', 'Maria', 'Ana'])],
+                    'type' => 'review_received',
+                ],
+            ],
+            [
+                'type' => 'App\\Notifications\\CreditsLow',
+                'data' => fn() => [
+                    'current_balance' => rand(100, 1500),
+                    'type' => 'credits_low',
+                ],
+            ],
+        ];
+
+        $sampleUsers = User::whereIn('email', [
+            'admin@iskina.ph',
+            'maria@iskina.ph',
+            'juan@iskina.ph',
+        ])->get();
+
+        foreach ($sampleUsers as $user) {
+            // Give each user 3-5 random notifications at staggered times
+            $numNotifs = rand(3, 5);
+            for ($i = 0; $i < $numNotifs; $i++) {
+                $template = $notifTypes[array_rand($notifTypes)];
+                $notifData = $template['data']();
+
+                $notifData['listing_title'] = $seededListings[array_rand($seededListings)]->title ?? 'Sample Listing';
+
+                $notifId = (string) Str::uuid();
+                DB::table('notifications')->insert([
+                    'id' => $notifId,
+                    'type' => $template['type'],
+                    'notifiable_type' => get_class($user),
+                    'notifiable_id' => $user->id,
+                    'data' => json_encode($notifData),
+                    'read_at' => rand(0, 2) === 0 ? now()->subHours(rand(1, 24)) : null,
+                    'created_at' => now()->subHours(rand(1, 72))->subMinutes(rand(0, 59)),
+                    'updated_at' => now()->subHours(rand(1, 72)),
+                ]);
+                $notifCount++;
+            }
+        }
+        $this->command->info("Sample notifications: {$notifCount} created");
 
         $this->command->info('Sample data seeding complete!');
     }
