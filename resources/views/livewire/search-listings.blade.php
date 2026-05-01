@@ -109,9 +109,17 @@
                         @foreach($listings as $listing)
                             <a href="{{ route('listing.show', $listing->slug) }}"
                                class="bg-white rounded-xl border hover:shadow-md transition-shadow overflow-hidden">
-                                <div class="h-40 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
-                                    No photo
-                                </div>
+                                @php $thumb = $listing->getFirstMediaUrl('photos', 'thumb') ?: $listing->getFirstMediaUrl('photos'); @endphp
+                                @if($thumb)
+                                    <div class="h-40 bg-gray-100 overflow-hidden">
+                                        <img src="{{ $thumb }}" alt="{{ $listing->title }}"
+                                             class="w-full h-full object-cover" />
+                                    </div>
+                                @else
+                                    <div class="h-40 bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                                        No photo
+                                    </div>
+                                @endif
                                 <div class="p-3">
                                     <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $listing->title }}</h3>
                                     <p class="text-lg font-bold text-blue-600">₱{{ number_format($listing->price / 100) }}</p>

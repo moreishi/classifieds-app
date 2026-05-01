@@ -4,9 +4,37 @@
             {{-- Main content --}}
             <div class="lg:col-span-2 space-y-6">
                 {{-- Photo gallery --}}
-                <div class="bg-gray-100 rounded-xl h-80 flex items-center justify-center text-gray-400">
-                    No photos yet
-                </div>
+                @php $media = $listing->getMedia('photos'); @endphp
+                @if($media->count() > 0)
+                    <div x-data="{ active: 0, images: [
+                        @foreach($media as $img)
+                            { card: '{{ $img->getUrl('card') ?: $img->getUrl() }}', thumb: '{{ $img->getUrl('thumb') ?: $img->getUrl() }}' },
+                        @endforeach
+                    ]}" class="space-y-2">
+                        {{-- Main Image --}}
+                        <div class="bg-gray-100 rounded-xl overflow-hidden">
+                            <img x-bind:src="images[active].card"
+                                 alt="{{ $listing->title }}"
+                                 class="w-full h-80 sm:h-96 object-contain" />
+                        </div>
+                        {{-- Thumbnail strip --}}
+                        @if($media->count() > 1)
+                            <div class="flex gap-2 overflow-x-auto pb-1">
+                                <template x-for="(img, i) in images" :key="i">
+                                    <button x-on:click="active = i"
+                                            class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 focus:outline-none"
+                                            x-bind:class="active === i ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-400'">
+                                        <img x-bind:src="img.thumb" class="w-full h-full object-cover" />
+                                    </button>
+                                </template>
+                            </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="bg-gray-100 rounded-xl h-80 flex items-center justify-center text-gray-400">
+                        <span class="text-lg">No photos yet</span>
+                    </div>
+                @endif
 
                 {{-- Title & Price --}}
                 <div>
