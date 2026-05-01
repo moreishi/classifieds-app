@@ -112,10 +112,14 @@ RUN rm -rf node_modules
 COPY . .
 
 # Generate optimized cache
-RUN composer dump-autoload --optimize && \
+# Create temporary .env for artisan commands during build
+RUN cp .env.example .env && \
+    php artisan key:generate --force && \
+    composer dump-autoload --optimize && \
     php artisan storage:link && \
     mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
-    chown -R www-data:www-data storage bootstrap/cache database
+    chown -R www-data:www-data storage bootstrap/cache database && \
+    rm .env
 
 # Remove dev artifacts
 RUN rm -rf .git tests phpunit.xml .editorconfig .gitattributes .prettierrc
