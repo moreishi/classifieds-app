@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Offer;
+use App\Notifications\OfferReceived;
 use Livewire\Component;
 
 class OfferModal extends Component
@@ -46,13 +47,16 @@ class OfferModal extends Component
 
         $listing = \App\Models\Listing::with('user')->findOrFail($this->listingId);
 
-        Offer::create([
+        $offer = Offer::create([
             'listing_id' => $listing->id,
             'buyer_id' => auth()->id(),
             'seller_id' => $listing->user_id,
             'amount' => $amountInCentavos,
             'message' => $this->message,
         ]);
+
+        // Notify the seller
+        $listing->user->notify(new OfferReceived($offer));
 
         $this->close();
         $this->dispatch('offer-sent');

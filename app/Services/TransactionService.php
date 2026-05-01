@@ -6,6 +6,9 @@ use App\Models\CreditTransaction;
 use App\Models\Listing;
 use App\Models\Offer;
 use App\Models\TransactionReceipt;
+use App\Notifications\OfferAccepted;
+use App\Notifications\TransactionCompleted;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class TransactionService
@@ -63,6 +66,10 @@ class TransactionService
             ->where('id', '!=', $offer->id)
             ->where('status', 'pending')
             ->update(['status' => 'declined']);
+
+        // Send notifications
+        $buyer->notify(new OfferAccepted($offer));
+        $offer->seller->notify(new TransactionCompleted($receipt));
 
         return $receipt;
     }

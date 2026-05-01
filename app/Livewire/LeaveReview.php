@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Review;
 use App\Models\TransactionReceipt;
+use App\Notifications\ReviewReceived;
 use App\Services\ReviewService;
 use Livewire\Component;
 
@@ -57,6 +58,9 @@ class LeaveReview extends Component
 
         // Recalculate seller reputation
         $reviewService->recalculateReputation($this->receipt->seller);
+
+        // Notify seller
+        $this->receipt->seller->notify(new ReviewReceived($review));
 
         $this->submitted = true;
         $this->dispatch('review-submitted');
