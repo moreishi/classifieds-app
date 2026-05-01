@@ -9,10 +9,13 @@
 
 Zero-config build. No Dockerfile needed.
 
+⚠️ **Important**: Nixpacks auto-generates a Dockerfile that doesn't include all required PHP extensions (gd, zip, intl, bcmath, etc.). Use **Docker Build** pack instead.
+
 ### Step 1: Create Resource
 - In Coolify, go to **Resources → New → Application**
 - Select your GitHub repo and branch (`master`)
-- Set **Build pack** to **Nixpacks** (auto-detected from `composer.json`)
+- Set **Build pack** to **Dockerfile**
+- Set **Build target** to `production`
 
 ### Step 2: Set Environment Variables
 Add these in Coolify's environment tab:
