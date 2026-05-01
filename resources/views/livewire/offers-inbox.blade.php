@@ -82,7 +82,7 @@
                             @endif
                         </div>
 
-                        {{-- Counter form --}
+                        {{-- Counter form --}}
                         <div class="counter-form hidden mt-4 pt-4 border-t">
                             <form wire:submit="counter({{ $offer->id }}, counterAmount, counterMessage)">
                                 <div class="flex gap-3 items-end">
@@ -116,7 +116,7 @@
     </div>
 </div>
 
-{{-- Alpine data for counter form --}
+{{-- Alpine data for counter form --}}
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('counterForm', () => ({

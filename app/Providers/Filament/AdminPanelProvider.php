@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('Iskina Admin')
-            ->databaseNotifications()
+            // ->databaseNotifications() // requires notifications table migration
             ->colors([
                 'primary' => Color::Blue,
             ])

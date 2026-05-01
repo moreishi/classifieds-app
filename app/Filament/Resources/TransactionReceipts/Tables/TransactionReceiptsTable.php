@@ -16,7 +16,7 @@ class TransactionReceiptsTable
                 TextColumn::make('reference_number')
                     ->searchable()
                     ->copyable()
-                    ->monospace(),
+                    ->fontFamily('monospace'),
                 TextColumn::make('listing.title')
                     ->label('Listing')
                     ->limit(30),
