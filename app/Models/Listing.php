@@ -123,12 +123,14 @@ class Listing extends Model implements HasMedia
     {
         return $query->where('status', 'active');
     }
-
     public function scopeInCity(Builder $query, string $citySlug): Builder
     {
+        if (blank($citySlug)) {
+            return $query;
+        }
+
         return $query->whereHas('city', fn($q) => $q->where('slug', $citySlug));
     }
-
     public function scopeInCategory(Builder $query, string $categorySlug): Builder
     {
         return $query->whereHas('category', function ($q) use ($categorySlug) {

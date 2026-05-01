@@ -30,7 +30,7 @@ class SearchListings extends Component
     {
         $listings = Listing::active()
             ->inCategory($this->category->slug)
-            ->inCity($this->citySlug)
+            ->when($this->citySlug, fn($q) => $q->inCity($this->citySlug))
             ->priceBetween($this->minPrice, $this->maxPrice)
             ->withCondition($this->condition)
             ->sortBy($this->sort)

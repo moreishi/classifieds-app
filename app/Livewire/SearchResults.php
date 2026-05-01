@@ -27,7 +27,7 @@ class SearchResults extends Component
         if (strlen($this->q) >= 2) {
             $listings = Listing::active()
                 ->search($this->q)
-                ->inCity($this->citySlug)
+                ->when($this->citySlug, fn($q) => $q->inCity($this->citySlug))
                 ->priceBetween($this->minPrice, $this->maxPrice)
                 ->withCondition($this->condition)
                 ->sortBy($this->sort)
