@@ -113,8 +113,14 @@ COPY . .
 
 # Generate optimized cache
 # Create temporary .env for artisan commands during build
-RUN cp .env.example .env && \
-    php artisan key:generate --force && \
+RUN echo "APP_KEY=$(php -r 'echo "base64:".base64_encode(random_bytes(32));')" > .env && \
+    echo "APP_ENV=production" >> .env && \
+    echo "APP_DEBUG=false" >> .env && \
+    echo "DB_CONNECTION=mysql" >> .env && \
+    echo "DB_HOST=localhost" >> .env && \
+    echo "DB_DATABASE=iskina" >> .env && \
+    echo "DB_USERNAME=root" >> .env && \
+    echo "DB_PASSWORD=" >> .env && \
     composer dump-autoload --optimize && \
     php artisan storage:link && \
     mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
