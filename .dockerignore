@@ -3,7 +3,8 @@
 /.gitignore
 /node_modules
 /vendor
-/docker/
+# Keep docker/ in build context — needed for COPY instructions
+# /docker/storage credentials or secrets go here if any
 /storage/framework/cache/data/
 /storage/framework/sessions/
 /storage/framework/views/
