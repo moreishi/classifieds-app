@@ -30,6 +30,11 @@
             </div>
 
             @auth
+                <!-- Notifications Bell -->
+                <div class="hidden sm:flex sm:items-center">
+                    @livewire('notifications')
+                </div>
+
                 <!-- Settings Dropdown (authenticated) -->
                 <div class="hidden sm:flex sm:items-center sm:ms-6">
                     <x-dropdown align="right" width="48">
@@ -94,6 +99,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                 {{ __('Transactions') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                {{ __('Notifications') }}
             </x-responsive-nav-link>
         </div>
 
