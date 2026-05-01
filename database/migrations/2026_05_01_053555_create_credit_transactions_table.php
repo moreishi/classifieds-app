@@ -13,7 +13,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->integer('amount'); // positive = credit purchase, negative = deduction
             $table->string('type'); // purchase, listing_fee, referral_bonus, admin_adjustment
-            $table->morphs('reference');
+            $table->nullableMorphs('reference');
             $table->string('notes')->nullable();
             $table->timestamps();
 

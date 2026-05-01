@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('icon')->nullable();
-            $table->integer('post_price'); // centavos
+            $table->integer('post_price')->nullable(); // centavos
             $table->integer('free_listings_unverified')->default(2);
             $table->integer('free_listings_verified')->default(10);
             $table->json('fields')->nullable();

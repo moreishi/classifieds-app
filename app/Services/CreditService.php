@@ -96,7 +96,7 @@ class CreditService
         return strtoupper(substr(md5(uniqid()), 0, 8));
     }
 
-    public static function freeListingsLimit(string $reputationTier): int
+    public static function freeListingsLimit(?string $reputationTier): int
     {
         return match ($reputationTier) {
             'pro' => 5,

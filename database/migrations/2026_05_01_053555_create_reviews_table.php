@@ -13,10 +13,10 @@ return new class extends Migration
             $table->foreignId('listing_id')->constrained()->cascadeOnDelete();
             $table->foreignId('reviewer_id')->constrained('users');
             $table->foreignId('seller_id')->constrained('users');
-            $table->foreignId('transaction_receipt_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('transaction_receipt_id')->nullable()->constrained()->cascadeOnDelete();
             $table->tinyInteger('rating'); // 1-5
             $table->text('comment')->nullable();
-            $table->timestamp('expires_at');
+            $table->timestamp('expires_at')->nullable();
             $table->timestamps();
 
             $table->unique(['transaction_receipt_id', 'reviewer_id']);
