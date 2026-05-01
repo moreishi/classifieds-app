@@ -107,6 +107,7 @@
                             <th class="text-right px-4 py-3 font-medium text-gray-700">Amount</th>
                             <th class="text-left px-4 py-3 font-medium text-gray-700">Role</th>
                             <th class="text-left px-4 py-3 font-medium text-gray-700">Date</th>
+                            <th class="text-center px-4 py-3 font-medium text-gray-700">Review</th>
                             <th class="text-right px-4 py-3 font-medium text-gray-700">Receipt</th>
                         </tr>
                     </thead>
@@ -114,6 +115,7 @@
                         @foreach($receipts as $receipt)
                             @php
                                 $isBuyer = $receipt->buyer_email === auth()->user()->email;
+                                $existingReview = $receipt->reviews->where('reviewer_id', auth()->id())->first();
                             @endphp
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-xs">{{ $receipt->reference_number }}</td>
@@ -133,6 +135,22 @@
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 text-gray-500">{{ $receipt->created_at->format('M d, Y') }}</td>
+                                <td class="px-4 py-3 text-center">
+                                    @if($isBuyer)
+                                        @if($existingReview)
+                                            <span class="text-yellow-400 text-sm">
+                                                @for($i = 0; $i < $existingReview->rating; $i++)&#9733;@endfor
+                                            </span>
+                                        @else
+                                            <button x-on:click="$el.closest('tr').nextElementSibling.classList.toggle('hidden')"
+                                                    class="text-blue-600 hover:text-blue-800 text-xs font-medium">
+                                                Leave Review
+                                            </button>
+                                        @endif
+                                    @else
+                                        <span class="text-xs text-gray-400">—</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-right">
                                     <a href="{{ route('receipt.download', $receipt->id) }}"
                                        class="text-blue-600 hover:text-blue-800 text-sm font-medium">
@@ -140,6 +158,15 @@
                                     </a>
                                 </td>
                             </tr>
+                            @if($isBuyer && !$existingReview)
+                                <tr class="hidden bg-yellow-50">
+                                    <td colspan="8" class="px-4 py-4">
+                                        <div class="max-w-lg mx-auto">
+                                            <livewire:leave-review :receiptId="$receipt->id" :key="'review-'.$receipt->id" />
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
