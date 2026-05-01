@@ -130,7 +130,10 @@ class Listing extends Model implements HasMedia
 
     public function scopeInCategory(Builder $query, string $categorySlug): Builder
     {
-        return $query->whereHas('category', fn($q) => $q->where('slug', $categorySlug));
+        return $query->whereHas('category', function ($q) use ($categorySlug) {
+            $q->where('slug', $categorySlug)
+              ->orWhereHas('parent', fn ($p) => $p->where('slug', $categorySlug));
+        });
     }
 
     public function scopePriceBetween(Builder $query, ?int $min, ?int $max): Builder

@@ -37,8 +37,11 @@ class SearchListings extends Component
             ->with(['city', 'user'])
             ->paginate(20);
 
+        $subcategories = $this->category->children()->where('is_active', true)->get();
+
         return view('livewire.search-listings', [
             'listings' => $listings,
+            'subcategories' => $subcategories,
             'cities' => City::where('is_active', true)->get(),
             'searchTerm' => '',
         ])->layout('layouts.app');

@@ -69,8 +69,19 @@
                             </div>
                         @endif
                         <div class="p-4">
-                            <h3 class="font-semibold text-gray-900 truncate">{{ $listing->title }}</h3>
-                            <p class="text-xl font-bold text-blue-600 mt-1">₱{{ number_format($listing->price / 100) }}</p>
+                            <div class="flex items-start justify-between gap-2">
+                                <h3 class="font-semibold text-gray-900 truncate">{{ $listing->title }}</h3>
+                                @if($listing->status === 'sold')
+                                    <span class="shrink-0 bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">Sold</span>
+                                @endif
+                            </div>
+                            @if($listing->status === 'sold')
+                                <p class="text-lg font-bold text-gray-400 mt-1">
+                                    <s>₱{{ number_format($listing->price / 100) }}</s>
+                                </p>
+                            @else
+                                <p class="text-xl font-bold text-blue-600 mt-1">₱{{ number_format($listing->price / 100) }}</p>
+                            @endif
                             <div class="flex items-center justify-between mt-2 text-sm text-gray-500">
                                 <span>📍 {{ $listing->city->name }}</span>
                                 <span>{{ $listing->user->name }}</span>

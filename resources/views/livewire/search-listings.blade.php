@@ -19,6 +19,18 @@
                         class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                     />
                 </div>
+
+                @if($subcategories->isNotEmpty())
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        @foreach($subcategories as $sub)
+                            <a href="{{ route('category.show', $sub->slug) }}"
+                               class="inline-flex items-center px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 rounded-full transition-colors">
+                                <span class="mr-1.5">{{ $sub->icon }}</span>
+                                {{ $sub->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
             @else
                 {{-- Search results --}}
                 <h1 class="text-3xl font-bold text-gray-900 mb-2">
@@ -121,8 +133,19 @@
                                     </div>
                                 @endif
                                 <div class="p-3">
-                                    <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $listing->title }}</h3>
-                                    <p class="text-lg font-bold text-blue-600">₱{{ number_format($listing->price / 100) }}</p>
+                                    <div class="flex items-start justify-between gap-2">
+                                        <h3 class="font-semibold text-gray-900 text-sm truncate">{{ $listing->title }}</h3>
+                                        @if($listing->status === 'sold')
+                                            <span class="shrink-0 bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">Sold</span>
+                                        @endif
+                                    </div>
+                                    @if($listing->status === 'sold')
+                                        <p class="text-lg font-bold text-gray-400">
+                                            <s>₱{{ number_format($listing->price / 100) }}</s>
+                                        </p>
+                                    @else
+                                        <p class="text-lg font-bold text-blue-600">₱{{ number_format($listing->price / 100) }}</p>
+                                    @endif
                                     <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
                                         <span>📍 {{ $listing->city->name }}</span>
                                         <span>{{ $listing->created_at->diffForHumans() }}</span>
