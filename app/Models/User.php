@@ -42,6 +42,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'gcash_verified_at' => 'datetime',
+            'free_listings_reset_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
