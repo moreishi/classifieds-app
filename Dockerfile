@@ -114,7 +114,9 @@ COPY . .
 
 # Generate optimized cache
 # Create temporary .env for artisan commands during build
-RUN echo "APP_KEY=$(php -r 'echo "base64:".base64_encode(random_bytes(32));')" > .env && \
+RUN mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
+    chown -R www-data:www-data storage bootstrap/cache database && \
+    echo "APP_KEY=$(php -r 'echo "base64:".base64_encode(random_bytes(32));')" > .env && \
     echo "APP_ENV=production" >> .env && \
     echo "APP_DEBUG=false" >> .env && \
     echo "DB_CONNECTION=mysql" >> .env && \
@@ -124,8 +126,6 @@ RUN echo "APP_KEY=$(php -r 'echo "base64:".base64_encode(random_bytes(32));')" >
     echo "DB_PASSWORD=" >> .env && \
     composer dump-autoload --optimize && \
     php artisan storage:link && \
-    mkdir -p storage/framework/{sessions,views,cache/data} storage/logs && \
-    chown -R www-data:www-data storage bootstrap/cache database && \
     rm .env
 
 # Remove dev artifacts
