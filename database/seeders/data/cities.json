@@ -1,0 +1,47 @@
+[
+  {
+    "id": 2,
+    "name": "Lapu-Lapu City",
+    "slug": "lapu-lapu-city"
+  },
+  {
+    "id": 3,
+    "name": "Mandaue City",
+    "slug": "mandaue-city"
+  },
+  {
+    "id": 4,
+    "name": "Talisay City",
+    "slug": "talisay-city"
+  },
+  {
+    "id": 5,
+    "name": "Danao City",
+    "slug": "danao-city"
+  },
+  {
+    "id": 6,
+    "name": "Toledo City",
+    "slug": "toledo-city"
+  },
+  {
+    "id": 7,
+    "name": "Minglanilla",
+    "slug": "minglanilla"
+  },
+  {
+    "id": 8,
+    "name": "Consolacion",
+    "slug": "consolacion"
+  },
+  {
+    "id": 9,
+    "name": "Liloan",
+    "slug": "liloan"
+  },
+  {
+    "id": 10,
+    "name": "Moalboal",
+    "slug": "moalboal"
+  }
+]

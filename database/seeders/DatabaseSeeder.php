@@ -19,7 +19,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Seed admin is now in RoleSeeder
-        // We still want a test user
         User::firstOrCreate(
             ['email' => 'user@iskina.ph'],
             [
@@ -33,6 +32,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ListingSeeder::class,
+            SampleDataSeeder::class,
         ]);
     }
 }
