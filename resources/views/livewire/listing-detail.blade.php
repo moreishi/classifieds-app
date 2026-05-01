@@ -85,7 +85,7 @@
                 {{-- Actions --}}
                 @auth
                     <button
-                        wire:click="$dispatch('open-offer-modal', { listingId: {{ $listing->id }} })"
+                        wire:click="$dispatch('openOfferModal', { listingId: {{ $listing->id }} })"
                         class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
                     >
                         Send Offer
@@ -108,4 +108,8 @@
             </aside>
         </div>
     </div>
+
+    @auth
+        <livewire:offer-modal />
+    @endauth
 </div>

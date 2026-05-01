@@ -2,33 +2,34 @@
 
 namespace App\Livewire;
 
-use App\Models\Listing;
 use App\Models\Offer;
 use Livewire\Component;
 
 class OfferModal extends Component
 {
-    public ?int $listingId = null;
+    public int $listingId = 0;
     public int $amount = 0;
     public string $message = '';
+    public int $listingPrice = 0;
     public bool $show = false;
 
-    protected $listeners = ['open-offer-modal' => 'open'];
+    protected $listeners = ['openOfferModal' => 'open'];
 
     public function open(int $listingId): void
     {
+        $listing = \App\Models\Listing::findOrFail($listingId);
         $this->listingId = $listingId;
-        $listing = Listing::findOrFail($listingId);
-        $this->amount = $listing->price;
+        $this->listingPrice = $listing->price;
+        $this->amount = $listing->price / 100; // show as pesos
         $this->show = true;
     }
 
     public function close(): void
     {
-        $this->reset(['listingId', 'amount', 'message', 'show']);
+        $this->reset(['listingId', 'amount', 'message', 'listingPrice', 'show']);
     }
 
-    public function submit()
+    public function submit(): void
     {
         $this->validate([
             'listingId' => 'required|exists:listings,id',
@@ -36,23 +37,26 @@ class OfferModal extends Component
             'message' => 'nullable|max:500',
         ]);
 
-        $listing = Listing::with('user')->findOrFail($this->listingId);
+        $amountInCentavos = $this->amount * 100;
 
-        if ($this->amount > $listing->price) {
+        if ($amountInCentavos > $this->listingPrice) {
             $this->addError('amount', 'Offer cannot exceed the listing price.');
             return;
         }
+
+        $listing = \App\Models\Listing::with('user')->findOrFail($this->listingId);
 
         Offer::create([
             'listing_id' => $listing->id,
             'buyer_id' => auth()->id(),
             'seller_id' => $listing->user_id,
-            'amount' => $this->amount,
+            'amount' => $amountInCentavos,
             'message' => $this->message,
         ]);
 
         $this->close();
         $this->dispatch('offer-sent');
+        $this->dispatch('offer-sent-toast');
     }
 
     public function render()

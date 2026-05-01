@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReceiptController;
 use App\Livewire\CreateListing;
 use App\Livewire\Homepage;
 use App\Livewire\ListingDetail;
-use App\Livewire\OfferModal;
+use App\Livewire\OffersInbox;
 use App\Livewire\SearchListings;
+use App\Livewire\Transactions;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Homepage::class)->name('home');
@@ -16,8 +18,9 @@ Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/listings/create', CreateListing::class)->name('listings.create');
-
-    Route::get('/offers', OfferModal::class)->name('offers.index');
+    Route::get('/offers', OffersInbox::class)->name('offers.index');
+    Route::get('/transactions', Transactions::class)->name('transactions.index');
+    Route::get('/receipt/{receipt}/download', [ReceiptController::class, 'download'])->name('receipt.download');
 });
 
 Route::get('/dashboard', function () {

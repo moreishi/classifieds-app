@@ -16,6 +16,20 @@ class ListingDetail extends Component
             ->firstOrFail();
     }
 
+    public function markAsSold(): void
+    {
+        if (auth()->id() !== $this->listing->user_id) {
+            return;
+        }
+
+        $this->listing->update([
+            'status' => 'sold',
+            'sold_at' => now(),
+        ]);
+
+        $this->dispatch('listing-sold');
+    }
+
     public function render()
     {
         return view('livewire.listing-detail', [
