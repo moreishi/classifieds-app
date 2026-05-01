@@ -15,15 +15,21 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RegionCitySeeder::class,
             CategorySeeder::class,
+            RoleSeeder::class,
         ]);
 
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@iskina.ph',
-            'password' => bcrypt('password'),
-            'city_id' => 1,
-            'reputation_tier' => 'pro',
-        ]);
+        // Seed admin is now in RoleSeeder
+        // We still want a test user
+        User::firstOrCreate(
+            ['email' => 'user@iskina.ph'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'),
+                'city_id' => 1,
+                'reputation_tier' => 'regular',
+                'email_verified_at' => now(),
+            ]
+        );
 
         $this->call([
             ListingSeeder::class,
