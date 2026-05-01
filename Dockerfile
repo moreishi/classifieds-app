@@ -102,8 +102,8 @@ RUN composer install --no-interaction --optimize-autoloader --no-dev --no-script
 
 # npm install & build (no dev)
 COPY package.json package-lock.json ./
-# Increase npm timeout for Docker builds; retry once on failure
-RUN npm config set fetch-timeout 120000 && npm config set fetch-retries 3
+# Upgrade npm for compatibility; increase timeout for Docker builds
+RUN npm install -g npm@latest && npm config set fetch-timeout 180000
 RUN npm ci && npm run build && rm -rf node_modules
 
 # Application code
