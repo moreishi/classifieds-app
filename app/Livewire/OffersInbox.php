@@ -22,7 +22,7 @@ class OffersInbox extends Component
         try {
             $receipt = $tx->acceptOffer($offer);
             $this->dispatch('offer-accepted', receiptId: $receipt->id);
-            session()->flash('message', 'Offer accepted! Transaction receipt created.');
+            session()->flash('message', 'Offer accepted! Please arrange GCash payment with the buyer.');
         } catch (\RuntimeException $e) {
             session()->flash('error', $e->getMessage());
         }

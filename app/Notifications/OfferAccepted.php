@@ -31,7 +31,7 @@ class OfferAccepted extends Notification implements ShouldQueue
             ->line("Amount: ₱" . number_format($this->offer->amount / 100))
             ->line("Seller: {$this->offer->seller->name}")
             ->action('View Transaction', url('/transactions'))
-            ->line('The credits have been deducted from your account. Contact the seller to arrange pick-up.');
+            ->line('Contact the seller on GCash to arrange payment and pick-up. You can message them through the app.');
     }
 
     public function toArray(object $notifiable): array
