@@ -1,5 +1,4 @@
-# ---------- Base PHP ----------
-FROM php:8.3-fpm-alpine
+FROM php:8.4-fpm-alpine
 
 # Install system deps
 RUN apk add --no-cache \
@@ -14,15 +13,15 @@ RUN apk add --no-cache \
  icu-dev \
  oniguruma-dev \
  libxml2-dev \
- zip \
+ linux-headers \
  nodejs \
  npm \
  nginx \
  supervisor
 
 # PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
- && docker-php-ext-install \
+RUN docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) \
  pdo \
  pdo_mysql \
  mbstring \
@@ -31,7 +30,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
  bcmath \
  gd \
  intl \
- zip
+ zip \
+ sockets
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -42,7 +42,7 @@ WORKDIR /var/www
 COPY . .
 
 # Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # Install frontend deps
 RUN npm install && npm run build
