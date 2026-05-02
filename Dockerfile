@@ -1,57 +1,64 @@
-FROM php:8.4-fpm-alpine
+# ---------- Base PHP ----------
+FROM php:8.3-fpm-alpine
 
-# System deps
+# Install system deps
 RUN apk add --no-cache \
-    nginx \
-    supervisor \
-    curl \
-    git \
-    unzip \
-    libzip-dev \
-    libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    oniguruma-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        mbstring \
-        zip \
-        gd \
-        bcmath \
-        opcache \
-        intl \
-        sockets \
-        exif
+ bash \
+ curl \
+ git \
+ unzip \
+ libzip-dev \
+ libpng-dev \
+ libjpeg-turbo-dev \
+ freetype-dev \
+ icu-dev \
+ oniguruma-dev \
+ libxml2-dev \
+ zip \
+ nodejs \
+ npm \
+ nginx \
+ supervisor
+
+# PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install \
+ pdo \
+ pdo_mysql \
+ mbstring \
+ exif \
+ pcntl \
+ bcmath \
+ gd \
+ intl \
+ zip
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /app
+WORKDIR /var/www
 
-# Cache composer deps separately
-COPY composer.json composer.lock ./
-RUN composer install --no-dev --optimize-autoloader --no-interaction
-
-# Copy app
+# Copy files
 COPY . .
 
-# PHP config
-COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
+# Install PHP deps
+RUN composer install --no-dev --optimize-autoloader
 
-# Storage permissions
-RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache \
-    && chown -R www-data:www-data storage bootstrap/cache
+# Install frontend deps
+RUN npm install && npm run build
 
-# .env
-RUN cp .env.example .env && \
-    php artisan key:generate --force
+# Laravel optimizations
+RUN php artisan config:cache || true
+RUN php artisan route:cache || true
+RUN php artisan view:cache || true
 
-# Nginx config
-COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+# Permissions
+RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Supervisor config
+# ---------- NGINX CONFIG ----------
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# ---------- SUPERVISOR ----------
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 EXPOSE 80
