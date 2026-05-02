@@ -1,3 +1,11 @@
+@push('head')
+    <x-seo
+        title="Buy & Sell Locally in Cebu"
+        description="The local marketplace for Cebu. Buy and sell gadgets, cars, property, jobs, services, and more near you."
+        :url="route('home')"
+    />
+@endpush
+
 <div>
     {{-- Search Hero --}}
     <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
@@ -9,7 +17,7 @@
                 <div class="relative">
                     <input
                         type="text"
-                        wire:model="search"
+                        wire:model.live="search"
                         wire:keydown.enter="searchListings"
                         placeholder="Search gadgets, cars, rooms in Cebu..."
                         class="w-full px-5 py-4 pr-12 rounded-xl text-gray-900 text-lg shadow-lg focus:ring-2 focus:ring-blue-300 focus:outline-none"
@@ -31,35 +39,35 @@
     </div>
 
     {{-- Category Grid --}}
-    <div class="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Browse by Category</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+    <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Browse by Category</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3">
             @foreach($categories as $category)
                 <a href="{{ route('category.show', $category->slug) }}"
-                   class="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100">
-                    <span class="text-4xl mb-3">{{ $category->icon }}</span>
-                    <span class="text-sm font-medium text-gray-700">{{ $category->name }}</span>
+                   class="flex flex-col items-center p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                    <span class="text-2xl mb-2">{{ $category->icon }}</span>
+                    <span class="text-xs font-medium text-gray-700">{{ $category->name }}</span>
                 </a>
             @endforeach
         </div>
     </div>
 
     {{-- Featured Listings --}}
-    <div class="max-w-7xl mx-auto px-4 pb-16 sm:px-6 lg:px-8">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Featured from Iskina</h2>
+    <div class="max-w-7xl mx-auto px-4 pb-10 sm:px-6 lg:px-8">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Featured from Iskina</h2>
 
         @if($featuredListings->isEmpty())
             <div class="text-center py-12 bg-gray-50 rounded-xl">
                 <p class="text-gray-500">No featured listings this week.</p>
             </div>
         @else
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-4 gap-3">
                 @foreach($featuredListings as $listing)
                     <a href="{{ route('listing.show', $listing->slug) }}"
                        class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
                         @php $thumb = $listing->getFirstMediaUrl('photos', 'thumb') ?: $listing->getFirstMediaUrl('photos'); @endphp
                         @if($thumb)
-                            <div class="h-48 bg-gray-200 overflow-hidden relative">
+                            <div class="h-28 bg-gray-200 overflow-hidden relative">
                                 <img src="{{ $thumb }}" alt="{{ $listing->title }}"
                                      class="w-full h-full object-cover" />
                                 @auth
@@ -69,32 +77,25 @@
                                 @endauth
                             </div>
                         @else
-                            <div class="h-48 bg-gray-200 flex items-center justify-center text-gray-400 relative">
+                            <div class="h-28 bg-gray-200 flex items-center justify-center text-gray-400 relative">
                                 No photo
-                                @auth
-                                    <div class="absolute top-2 right-2 z-10" wire:key="favorite-{{ $listing->id }}" @click.stop>
-                                        <livewire:toggle-favorite :listing="$listing" />
-                                    </div>
-                                @endauth
                             </div>
                         @endif
-                        <div class="p-4">
-                            <div class="flex items-start justify-between gap-2">
-                                <h3 class="font-semibold text-gray-900 truncate">{{ $listing->title }}</h3>
-                                @if($listing->status === 'sold')
-                                    <span class="shrink-0 bg-red-100 text-red-700 text-xs font-semibold px-2 py-0.5 rounded-full">Sold</span>
-                                @endif
-                            </div>
+                        <div class="p-2.5">
+                            <h3 class="font-semibold text-xs text-gray-900 truncate">{{ $listing->title }}</h3>
                             @if($listing->status === 'sold')
-                                <p class="text-lg font-bold text-gray-400 mt-1">
+                                <p class="text-sm font-bold text-gray-400 mt-0.5">
                                     <s>₱{{ number_format($listing->price / 100) }}</s>
                                 </p>
                             @else
-                                <p class="text-xl font-bold text-blue-600 mt-1">₱{{ number_format($listing->price / 100) }}</p>
+                                <p class="font-bold text-blue-600 mt-0.5">₱{{ number_format($listing->price / 100) }}</p>
                             @endif
-                            <div class="flex items-center justify-between mt-2 text-sm text-gray-500">
+                            <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
                                 <span>📍 {{ $listing->city->name }}</span>
-                                <span>{{ $listing->user->name }}</span>
+                                <span class="flex items-center gap-1">
+                                    <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
+                                    {{ $listing->user->name }}
+                                </span>
                             </div>
                         </div>
                     </a>

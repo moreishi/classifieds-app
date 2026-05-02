@@ -21,9 +21,7 @@
                     <a href="{{ route('conversations.show', $conversation) }}"
                        class="block bg-white rounded-xl border hover:shadow-md transition-shadow p-4">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 font-medium shrink-0">
-                                {{ substr($otherUser->name, 0, 2) }}
-                            </div>
+                            <img src="{{ $otherUser->avatar }}" alt="" class="w-10 h-10 rounded-full shrink-0" />
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between">
                                     <h3 class="font-semibold text-gray-900 truncate">

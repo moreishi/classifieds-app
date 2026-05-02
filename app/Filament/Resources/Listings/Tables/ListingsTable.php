@@ -14,7 +14,10 @@ class ListingsTable
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable(),
+                TextColumn::make('reference_id')
+                    ->label('Ref')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('title')
                     ->searchable()
                     ->limit(40)

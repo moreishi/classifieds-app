@@ -21,11 +21,10 @@ class Homepage extends Component
     {
         return view('livewire.homepage', [
             'categories' => Category::where('is_active', true)->whereNull('parent_id')->get(),
-            'featuredListings' => Listing::where('is_featured', true)
-                ->where('status', 'active')
+            'featuredListings' => Listing::where('status', 'active')
                 ->with(['category', 'city', 'user'])
                 ->latest()
-                ->limit(3)
+                ->limit(4)
                 ->get(),
             'cities' => City::where('is_active', true)->get(),
         ])->layout('layouts.app');

@@ -23,10 +23,12 @@ use Illuminate\Notifications\Notifiable;
     'credit_balance',
     'reputation_points',
     'reputation_tier',
+    'buyer_points',
     'free_listings_used',
     'free_listings_reset_at',
     'referral_code',
     'referred_by',
+    'avatar_url',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -92,5 +94,15 @@ class User extends Authenticatable
         return $this->belongsToMany(Listing::class, 'listing_user')
             ->withTimestamps()
             ->latest('listing_user.created_at');
+    }
+
+    public function getAvatarAttribute(): string
+    {
+        if ($this->avatar_url) {
+            return asset('storage/' . $this->avatar_url);
+        }
+
+        $hash = md5(strtolower(trim($this->email)));
+        return "https://www.gravatar.com/avatar/{$hash}?s=80&d=mp";
     }
 }

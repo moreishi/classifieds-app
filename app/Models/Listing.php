@@ -51,6 +51,7 @@ class Listing extends Model implements HasMedia
         'condition', 'status', 'is_featured',
         'total_views', 'unique_views',
         'expires_at', 'sold_at',
+        'reference_id',
     ];
 
     protected function casts(): array
@@ -131,9 +132,15 @@ class Listing extends Model implements HasMedia
 
         // SQLite fallback — LIKE search
         $like = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $term) . '%';
+        $normalized = preg_replace('/\s+/', '', $term);
+        $normalizedLike = '%' . str_replace(['%', '_'], ['\\%', '\\_'], $normalized) . '%';
 
-        return $query->where('title', 'like', $like)
-            ->orWhere('description', 'like', $like);
+        return $query->where(function (Builder $q) use ($like, $normalizedLike) {
+            $q->where('title', 'like', $like)
+              ->orWhere('description', 'like', $like)
+              ->orWhereRaw("REPLACE(title, ' ', '') LIKE ?", [$normalizedLike])
+              ->orWhereRaw("REPLACE(description, ' ', '') LIKE ?", [$normalizedLike]);
+        });
     }
 
     public function scopeActive(Builder $query): Builder
@@ -176,5 +183,14 @@ class Listing extends Model implements HasMedia
             'oldest' => $query->oldest(),
             default => $query->latest(),
         };
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Listing $listing) {
+            if (empty($listing->reference_id)) {
+                $listing->reference_id = 'ISK-' . strtoupper(substr(bin2hex(random_bytes(4)), 0, 7));
+            }
+        });
     }
 }

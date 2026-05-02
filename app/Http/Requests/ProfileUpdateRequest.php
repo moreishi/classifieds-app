@@ -26,6 +26,15 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'avatar.max' => 'Photo must be under 2MB.',
+            'avatar.mimes' => 'Photo must be JPEG, PNG, or WebP.',
         ];
     }
 }

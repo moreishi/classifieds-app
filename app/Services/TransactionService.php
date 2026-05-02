@@ -8,6 +8,7 @@ use App\Models\Offer;
 use App\Models\TransactionReceipt;
 use App\Notifications\OfferAccepted;
 use App\Notifications\TransactionCompleted;
+use App\Services\ReputationService;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
@@ -66,6 +67,9 @@ class TransactionService
             ->where('id', '!=', $offer->id)
             ->where('status', 'pending')
             ->update(['status' => 'declined']);
+
+        // Award buyer points (with anti-cheat)
+        app(ReputationService::class)->awardBuyerPoints($buyer, $offer->seller);
 
         // Send notifications
         $buyer->notify(new OfferAccepted($offer));

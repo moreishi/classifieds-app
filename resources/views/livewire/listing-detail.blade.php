@@ -1,5 +1,53 @@
+@php
+    $listingUrl = route('listing.show', $listing->slug);
+    $listingImage = $listing->getFirstMediaUrl('photos') ?: asset('img/og-default.png');
+    $listingDescription = strip_tags(Str::limit($listing->description, 160));
+
+    // JSON-LD structured data for Product + LocalBusiness
+    $jsonLd = json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $listing->title,
+        'description' => $listingDescription,
+        'image' => $listingImage,
+        'url' => $listingUrl,
+        'category' => $listing->category?->name,
+        'offers' => [
+            '@type' => 'Offer',
+            'price' => number_format($listing->price / 100, 2),
+            'priceCurrency' => 'PHP',
+            'availability' => $listing->status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
+            'seller' => [
+                '@type' => 'Person',
+                'name' => $listing->user->name,
+            ],
+        ],
+        'contentLocation' => [
+            '@type' => 'City',
+            'name' => $listing->city?->name ?? 'Cebu',
+        ],
+    ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+@endphp
+
+@push('head')
+    <x-seo
+        title="{{ $listing->title }}"
+        description="{{ $listingDescription }}. ₱{{ number_format($listing->price / 100) }} in {{ $listing->city?->name ?? 'Cebu' }}."
+        image="{{ $listingImage }}"
+        :url="$listingUrl"
+        type="product"
+        :jsonLd="$jsonLd"
+    />
+@endpush
+
 <div>
     <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <x-breadcrumbs :items="[
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => $listing->category?->name ?? 'Listings', 'url' => route('category.show', $listing->category?->slug)],
+            ['label' => $listing->title],
+        ]" />
+
         @if(session('error'))
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
                 {{ session('error') }}
@@ -58,6 +106,7 @@
                         @if($listing->condition)
                             <span>🔧 {{ str_replace('_', ' ', ucfirst($listing->condition)) }}</span>
                         @endif
+                        <span class="font-mono text-xs text-gray-400">Ref: {{ $listing->reference_id }}</span>
                     </div>
                 </div>
 
@@ -109,9 +158,7 @@
                 <div class="bg-white rounded-xl border p-5">
                     <h3 class="font-semibold text-gray-900">Seller</h3>
                     <div class="mt-3 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
-                            {{ substr($seller->name, 0, 1) }}
-                        </div>
+                        <img src="{{ $seller->avatar }}" alt="" class="w-10 h-10 rounded-full" />
                         <div>
                             <p class="font-medium text-gray-900 flex items-center gap-1">
                                 {{ $seller->name }}
@@ -120,19 +167,17 @@
                                 @endif
                             </p>
                             <p class="text-xs text-gray-500">
-                                @switch($seller->reputation_tier)
-                                    @case('pro') 🏆 Pro @break
-                                    @case('trusted') ✅ Trusted @break
-                                    @case('regular') 🔵 Regular @break
-                                    @default ○ Newbie
-                                @endswitch
+                                <x-member-badge :user="$seller" size="sm" />
                             </p>
                         </div>
                     </div>
                     <div class="mt-3 text-sm text-gray-500">
                         <p>Member since {{ $seller->created_at->format('M Y') }}</p>
-                        @if($seller->reputation_points > 0)
-                            <p>{{ $seller->reputation_points }} reputation points</p>
+                        @php
+                            $sellerStats = app(\App\Services\ReputationService::class)->userStats($seller);
+                        @endphp
+                        @if($sellerStats['total_points'] > 0)
+                            <p>{{ number_format($sellerStats['seller_points']) }} seller pts · {{ number_format($sellerStats['buyer_points']) }} buyer pts</p>
                         @endif
                     </div>
                 </div>
@@ -154,34 +199,50 @@
 
                 {{-- Actions --}}
                 @auth
-                    @if(auth()->id() !== $listing->user_id)
-                        <a href="{{ route('conversations.start', $listing) }}"
-                           class="block w-full text-center bg-white border border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
-                            Message Seller
-                        </a>
-                    @endif
+                    @if($listing->status === 'sold' && auth()->id() !== $listing->user_id)
+                        {{-- Sold listing — no actions for buyers --}}
+                        <div class="bg-gray-100 text-gray-500 text-center py-3 rounded-xl text-sm font-medium">
+                            This item has been sold
+                        </div>
+                    @else
+                        @if(auth()->id() !== $listing->user_id)
+                            <a href="{{ route('conversations.start', $listing) }}"
+                               class="block w-full text-center bg-white border border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
+                                Message Seller
+                            </a>
+                        @endif
 
-                    <button
-                        wire:click="$dispatch('openOfferModal', { listingId: {{ $listing->id }} })"
-                        class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-                    >
-                        Send Offer
-                    </button>
-
-                    @if(auth()->id() === $listing->user_id)
                         <button
-                            wire:click="markAsSold"
-                            class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+                            wire:click="$dispatch('openOfferModal', { listingId: {{ $listing->id }} })"
+                            class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
                         >
-                            Mark as Sold
+                            Send Offer
                         </button>
+
+                        @if(auth()->id() === $listing->user_id)
+                            <button
+                                wire:click="markAsSold"
+                                class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
+                            >
+                                Mark as Sold
+                            </button>
+                        @endif
                     @endif
                 @else
-                    <a href="{{ route('login') }}"
-                       class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
-                        Log in to send offer
-                    </a>
+                    @if($listing->status === 'sold')
+                        <div class="bg-gray-100 text-gray-500 text-center py-3 rounded-xl text-sm font-medium">
+                            This item has been sold
+                        </div>
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                            Log in to send offer
+                        </a>
+                    @endif
                 @endauth
+
+                {{-- Report Listing --}}
+                <livewire:report-listing :listing="$listing" :key="'report-'.$listing->id" />
             </aside>
         </div>
     </div>

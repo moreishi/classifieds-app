@@ -53,11 +53,11 @@
                                     </a>
                                     <x-offer-badge :status="$offer->status" />
                                 </div>
-                                <p class="text-sm text-gray-500 mt-1">
+                                <p class="text-sm text-gray-500 mt-1 flex items-center gap-1">
                                     @if($tab === 'sent')
-                                        To: {{ $offer->seller->name }}
+                                        To: <img src="{{ $offer->seller->avatar }}" alt="" class="w-4 h-4 rounded-full" /> {{ $offer->seller->name }}
                                     @else
-                                        From: {{ $offer->buyer->name }}
+                                        From: <img src="{{ $offer->buyer->avatar }}" alt="" class="w-4 h-4 rounded-full" /> {{ $offer->buyer->name }}
                                     @endif
                                     · {{ $offer->created_at->diffForHumans() }}
                                 </p>

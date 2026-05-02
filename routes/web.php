@@ -13,6 +13,7 @@ use App\Livewire\SearchResults;
 use App\Livewire\Transactions;
 use App\Livewire\ConversationsList;
 use App\Livewire\ConversationView;
+use App\Http\Controllers\SitemapController;
 use App\Models\Listing;
 use Illuminate\Support\Facades\Route;
 
@@ -22,6 +23,13 @@ Route::get('/category/{slug}', SearchListings::class)->name('category.show');
 Route::get('/search', SearchResults::class)->name('search');
 
 Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
+
+// Sitemaps
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap.index');
+Route::get('/sitemap/static.xml', [SitemapController::class, 'static'])->name('sitemap.static');
+Route::get('/sitemap/categories.xml', [SitemapController::class, 'categories'])->name('sitemap.categories');
+Route::get('/sitemap/listings/{page}.xml', [SitemapController::class, 'listings'])->whereNumber('page')->name('sitemap.listings');
 
 // Health check for Docker / Coolify
 Route::get('/up', fn () => response()->json(['status' => 'ok']));
@@ -34,6 +42,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $buyer = auth()->user();
         if ($buyer->id === $listing->user_id) {
             return redirect()->route('listing.show', $listing->slug);
+        }
+
+        // Prevent messages on sold listings
+        if ($listing->status === 'sold') {
+            return redirect()->route('listing.show', $listing->slug)
+                ->with('error', 'This item has been sold and is no longer available.');
         }
 
         $conversation = App\Models\Conversation::firstOrCreate([

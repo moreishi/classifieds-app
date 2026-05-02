@@ -15,7 +15,13 @@
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <p class="text-sm text-gray-500">Reputation</p>
-                    <p class="text-2xl font-bold text-gray-900 capitalize">{{ auth()->user()->reputation_tier }}</p>
+                    <div class="mt-2">
+                        <x-member-badge :user="auth()->user()" size="lg" :showPoints="true" />
+                        <div class="mt-1 text-xs text-gray-500 space-y-0.5">
+                            <p>🏷️ Seller: {{ number_format(auth()->user()->reputation_points) }} pts</p>
+                            <p>🛒 Buyer: {{ number_format(auth()->user()->buyer_points ?? 0) }} pts</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                     <p class="text-sm text-gray-500">Free Listings</p>

@@ -5,7 +5,7 @@ namespace App\Livewire;
 use App\Models\Review;
 use App\Models\TransactionReceipt;
 use App\Notifications\ReviewReceived;
-use App\Services\ReviewService;
+use App\Services\ReputationService;
 use Livewire\Component;
 
 class LeaveReview extends Component
@@ -31,7 +31,7 @@ class LeaveReview extends Component
         }
     }
 
-    public function submit(ReviewService $reviewService): void
+    public function submit(ReputationService $reputationService): void
     {
         $this->validate([
             'rating' => 'required|integer|min:1|max:5',
@@ -56,11 +56,11 @@ class LeaveReview extends Component
             'expires_at' => now()->addMonths(6),
         ]);
 
-        // Recalculate seller reputation
-        $reviewService->recalculateReputation($this->receipt->seller);
+        // Recalculate seller reputation (with anti-cheat weighting)
+        $reputationService->recalculateSellerReputation($this->receipt->seller);
 
         // Notify seller
-        $this->receipt->seller->notify(new ReviewReceived($review));
+        $this->receipt->seller->notify(new ReviewReceived($this->receipt->reviews()->latest()->first()));
 
         $this->submitted = true;
         $this->dispatch('review-submitted');

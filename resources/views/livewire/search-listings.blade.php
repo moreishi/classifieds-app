@@ -1,8 +1,27 @@
+@push('head')
+    @if(isset($category))
+        <x-seo
+            title="{{ $category->name }} for Sale in Cebu"
+            description="Browse {{ $category->name }} in Cebu. {{ $category->description ?? 'Find great deals near you.' }}"
+            :url="route('category.show', $category->slug)"
+        />
+    @else
+        <x-seo
+            title="Search Results"
+            description="Search listings on Iskina.ph. Find what you need in Cebu."
+        />
+    @endif
+@endpush
+
 <div>
     {{-- Header --}}
     <div class="bg-white border-b">
         <div class="max-w-7xl mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
             @isset($category)
+                <x-breadcrumbs :items="[
+                    ['label' => 'Home', 'url' => route('home')],
+                    ['label' => $category->name],
+                ]" />
                 {{-- Category browsing --}}
                 <div class="flex items-center gap-3 mb-4">
                     <span class="text-4xl">{{ $category->icon }}</span>
@@ -41,14 +60,12 @@
                     @endif
                 </h1>
                 <div class="relative max-w-xl">
-                    <form wire:submit.prevent="render" class="relative">
-                        <input
-                            type="text"
-                            wire:model="q"
-                            placeholder="Search gadgets, cars, rooms in Cebu..."
-                            class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                        />
-                    </form>
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="q"
+                        placeholder="Search gadgets, cars, rooms in Cebu..."
+                        class="w-full px-4 py-3 pr-12 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    />
                 </div>
             @endisset
         </div>
@@ -109,7 +126,7 @@
 
             {{-- Results --}}
             <div class="flex-1 min-w-0">
-                <p class="text-sm text-gray-500 mb-4">{{ $listings->total() }} listing(s) found</p>
+                <p class="text-sm text-gray-500 mb-4">{{ method_exists($listings, 'total') ? $listings->total() : $listings->count() }} listing(s) found</p>
 
                 @if($listings->isEmpty())
                     <div class="text-center py-16 bg-gray-50 rounded-xl">
@@ -160,9 +177,13 @@
                                         <span>📍 {{ $listing->city->name }}</span>
                                         <span>{{ $listing->created_at->diffForHumans() }}</span>
                                     </div>
-                                    @if($listing->user && $listing->user->gcash_verified_at)
-                                        <p class="mt-1 text-[11px] text-green-600">&#10003; GCash Verified</p>
-                                    @endif
+                                    <div class="flex items-center gap-1 mt-1 text-xs text-gray-500">
+                                        <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
+                                        <span>{{ $listing->user->name }}</span>
+                                        @if($listing->user->gcash_verified_at)
+                                            <span class="text-green-600 font-bold">&#10003;</span>
+                                        @endif
+                                    </div>
                                 </div>
                             </a>
                         @endforeach

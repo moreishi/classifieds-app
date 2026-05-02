@@ -1,2 +1,18 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Block internal/auth pages from indexing
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /admin/
+Disallow: /notifications
+Disallow: /my-listings
+Disallow: /favorites
+Disallow: /offers
+Disallow: /trashed
+Disallow: /conversations
+
+# Update this URL after deploying with your real domain
+Sitemap: https://iskina.ph/sitemap.xml

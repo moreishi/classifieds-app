@@ -16,14 +16,17 @@
         <div wire:poll.5s="refreshMessages"
              x-data="{ scrollToBottom() { $nextTick(() => { $el.scrollTop = $el.scrollHeight }) } }"
              x-init="scrollToBottom()"
-             class="bg-white rounded-xl border p-4 space-y-4 mb-4 max-h-[60vh] overflow-y-auto">
+             class="bg-white rounded-xl border p-4 space-y-2 mb-4 max-h-[60vh] overflow-y-auto">
 
             @if($messages->isEmpty())
                 <p class="text-center text-gray-400 py-8">No messages yet. Send the first message!</p>
             @else
                 @foreach($messages as $msg)
-                    <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
-                        <div class="max-w-[75%] {{ $msg->sender_id === auth()->id() ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900' }} rounded-2xl px-4 py-2.5">
+                    <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }} gap-2 items-start">
+                        @if($msg->sender_id !== auth()->id())
+                            <img src="{{ $msg->sender->avatar }}" alt="" class="w-7 h-7 rounded-full mt-1 shrink-0" />
+                        @endif
+                        <div class="max-w-[75%] {{ $msg->sender_id === auth()->id() ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900' }} rounded-2xl px-3 py-1.5">
                             <p class="text-sm whitespace-pre-wrap">{!! nl2br(e($msg->body)) !!}</p>
                             <p class="text-xs {{ $msg->sender_id === auth()->id() ? 'text-blue-200' : 'text-gray-400' }} mt-1 text-right">
                                 {{ $msg->created_at->format('g:i A') }}

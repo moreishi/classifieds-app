@@ -19,6 +19,13 @@ class OfferModal extends Component
     public function open(int $listingId): void
     {
         $listing = \App\Models\Listing::findOrFail($listingId);
+
+        // Prevent offers on sold listings
+        if ($listing->status === 'sold') {
+            $this->dispatch('offer-error', message: 'This item has been sold and is no longer available.');
+            return;
+        }
+
         $this->listingId = $listingId;
         $this->listingPrice = $listing->price;
         $this->amount = $listing->price / 100; // show as pesos

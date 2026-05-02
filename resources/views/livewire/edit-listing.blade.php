@@ -1,5 +1,12 @@
 <div>
     <div class="max-w-2xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
+        <x-breadcrumbs :items="[
+            ['label' => 'Home', 'url' => route('home')],
+            ['label' => $listing->category?->name ?? 'Listings', 'url' => route('category.show', $listing->category?->slug)],
+            ['label' => $listing->title, 'url' => route('listing.show', $listing->slug)],
+            ['label' => 'Edit'],
+        ]" />
+
         <div class="flex items-center gap-4 mb-8">
             <a href="{{ route('listing.show', $listing->slug) }}"
                class="text-gray-400 hover:text-gray-600 transition-colors">
