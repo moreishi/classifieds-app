@@ -19,18 +19,22 @@ RUN apk add --no-cache \
         zip \
         gd \
         bcmath \
-        opcache
+        opcache \
+        intl \
+        sockets \
+        exif
 
 # Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /app
 
+# Cache composer deps separately
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
 # Copy app
 COPY . .
-
-# Install deps
-RUN composer install --no-dev --optimize-autoloader --no-interaction
 
 # PHP config
 COPY docker/php.ini /usr/local/etc/php/conf.d/custom.ini
