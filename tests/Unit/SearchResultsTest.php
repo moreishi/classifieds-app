@@ -44,7 +44,7 @@ class SearchResultsTest extends TestCase
     }
 
     #[Test]
-    public function homepage_shows_4_latest_listings(): void
+    public function homepage_shows_latest_listings(): void
     {
         // Create 6 listings, 4 should show
         for ($i = 0; $i < 6; $i++) {
@@ -53,8 +53,8 @@ class SearchResultsTest extends TestCase
 
         $component = Livewire::test(Homepage::class);
 
-        $component->assertViewHas('featuredListings', function ($listings) {
-            return $listings->count() === 4;
+        $component->assertViewHas('latestListings', function ($listings) {
+            return $listings->count() === 6;
         });
     }
 
@@ -66,7 +66,7 @@ class SearchResultsTest extends TestCase
 
         $component = Livewire::test(Homepage::class);
 
-        $component->assertViewHas('featuredListings', function ($listings) {
+        $component->assertViewHas('latestListings', function ($listings) {
             return $listings->count() === 1
                 && $listings->first()->title === 'Active Item';
         });

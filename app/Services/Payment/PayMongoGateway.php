@@ -184,6 +184,65 @@ class PayMongoGateway implements PaymentGateway
         );
     }
 
+    public function charge(string $phoneNumber, int $amountCentavos, string $description, array $metadata = []): ChargeResult
+    {
+        $this->validateNumber($phoneNumber);
+        $pesos = number_format($amountCentavos / 100, 2);
+
+        if (app()->environment('local', 'testing')) {
+            $fakeRef = 'pi_dev_' . Str::random(20);
+            $fakeUrl = "https://checkout.paymongo.com/dev/{$fakeRef}";
+
+            Log::info("[PayMongo] dev charge: {$phoneNumber}, ₱{$pesos}");
+
+            return new ChargeResult(
+                success: true,
+                referenceId: $fakeRef,
+                redirectUrl: $fakeUrl,
+                message: "Pay ₱{$pesos} via GCash.",
+            );
+        }
+
+        $response = Http::withBasicAuth($this->secretKey, '')
+            ->post("{$this->baseUrl}/payment-intents", [
+                'data' => [
+                    'attributes' => [
+                        'amount' => $amountCentavos,
+                        'currency' => 'PHP',
+                        'payment_method_allowed' => ['gcash'],
+                        'description' => $description,
+                        'statement_descriptor' => 'ISKINA CREDITS',
+                        'metadata' => array_merge($metadata, [
+                            'gcash_number' => $phoneNumber,
+                            'type' => 'buy_credits',
+                        ]),
+                    ],
+                ],
+            ]);
+
+        if ($response->failed()) {
+            $detail = $response->json('errors.0.detail', 'Unknown error');
+            Log::error("[PayMongo] Charge Payment Intent failed: {$detail}");
+            return new ChargeResult(
+                success: false,
+                message: "Payment failed: {$detail}",
+            );
+        }
+
+        $piId = $response->json('data.id');
+        $clientKey = $response->json('data.attributes.client_key');
+        $checkoutUrl = "https://pay.paymongo.com/gcash/{$piId}?client_key={$clientKey}";
+
+        Log::info("[PayMongo] Charge Payment Intent created: {$piId}");
+
+        return new ChargeResult(
+            success: true,
+            referenceId: $piId,
+            redirectUrl: $checkoutUrl,
+            message: "Pay ₱{$pesos} via GCash.",
+        );
+    }
+
     public function label(): string
     {
         return 'GCash (via PayMongo)';

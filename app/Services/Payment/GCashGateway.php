@@ -79,6 +79,11 @@ class GCashGateway implements PaymentGateway
         );
     }
 
+    public function charge(string $phoneNumber, int $amountCentavos, string $description, array $metadata = []): ChargeResult
+    {
+        throw new PaymentException('GCash gateway does not support generic charges. Use PayMongo.');
+    }
+
     public function label(): string
     {
         return 'GCash';

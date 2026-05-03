@@ -24,6 +24,13 @@ interface PaymentGateway
     public function confirmVerification(string $referenceId, int $amountCentavos): VerificationResult;
 
     /**
+     * A generic charge for buying credits.
+     *
+     * @throws PaymentException
+     */
+    public function charge(string $phoneNumber, int $amountCentavos, string $description, array $metadata = []): ChargeResult;
+
+    /**
      * Get a human-readable label for this gateway (e.g. "GCash", "PayMongo", "Maya").
      */
     public function label(): string;

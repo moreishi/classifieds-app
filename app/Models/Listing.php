@@ -192,7 +192,7 @@ class Listing extends Model implements HasMedia
     public function scopeSortBy(Builder $query, string $sort): Builder
     {
         // Promoted listings always float to the top
-        $query->orderByRaw('CASE WHEN featured_until IS NOT NULL AND featured_until > NOW() THEN 0 ELSE 1 END');
+        $query->orderByRaw('CASE WHEN featured_until IS NOT NULL AND featured_until > ? THEN 0 ELSE 1 END', [now()]);
 
         return match ($sort) {
             'price_asc' => $query->orderBy('price', 'asc'),

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\CreditTransaction;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use PHPUnit\Framework\Attributes\Test;
@@ -165,10 +166,146 @@ class PayMongoWebhookTest extends TestCase
 
         $this->postJson('/webhooks/paymongo', $payload);
 
-        // Verified at should not change
         $this->assertEquals(
             $originalVerifiedAt->timestamp,
             $user->fresh()->gcash_verified_at->timestamp
         );
+    }
+
+    // ─── Buy Credits Webhook ─────────────────────────────────
+
+    private function buyCreditsPayload(int $userId, string $pack, int $credits, int $bonus = 0): array
+    {
+        return [
+            'data' => [
+                'id' => 'evt_test_buy',
+                'type' => 'event',
+                'attributes' => [
+                    'type' => 'payment.paid',
+                    'livemode' => false,
+                    'data' => [
+                        'id' => 'pay_test_buy',
+                        'type' => 'payment',
+                        'attributes' => [
+                            'amount' => 5000,
+                            'currency' => 'PHP',
+                            'payment_intent_id' => 'pi_test_buy_123',
+                            'description' => 'Buy 5000 listing credits',
+                            'billing' => [
+                                'phone' => '+639171234567',
+                            ],
+                            'status' => 'paid',
+                            'metadata' => [
+                                'user_id' => (string) $userId,
+                                'type' => 'buy_credits',
+                                'pack' => $pack,
+                                'credits' => (string) $credits,
+                                'bonus' => (string) $bonus,
+                            ],
+                            'created_at' => now()->timestamp,
+                            'paid_at' => now()->timestamp,
+                        ],
+                    ],
+                    'created_at' => now()->timestamp,
+                ],
+            ],
+        ];
+    }
+
+    #[Test]
+    public function it_deposits_credits_from_buy_credits_webhook()
+    {
+        $user = User::factory()->create(['credit_balance' => 0]);
+
+        cache()->put("purchase:{$user->id}", [
+            'gateway' => 'paymongo',
+            'reference_id' => 'pi_test_buy_123',
+            'pack' => 'basic',
+            'credits' => 5000,
+            'bonus' => 0,
+            'amount' => 5000,
+        ], 3600);
+
+        $payload = $this->buyCreditsPayload($user->id, 'basic', 5000);
+
+        $this->postJson('/webhooks/paymongo', $payload);
+
+        $this->assertEquals(5000, $user->fresh()->credit_balance);
+
+        $this->assertDatabaseHas('credit_transactions', [
+            'user_id' => $user->id,
+            'amount' => 5000,
+            'type' => 'top_up',
+        ]);
+    }
+
+    #[Test]
+    public function it_deposits_credits_with_bonus_from_buy_credits_webhook()
+    {
+        $user = User::factory()->create(['credit_balance' => 0]);
+
+        cache()->put("purchase:{$user->id}", [
+            'gateway' => 'paymongo',
+            'pack' => 'pro',
+            'credits' => 50000,
+            'bonus' => 10000,
+            'amount' => 50000,
+        ], 3600);
+
+        $payload = $this->buyCreditsPayload($user->id, 'pro', 50000, 10000);
+
+        $this->postJson('/webhooks/paymongo', $payload);
+
+        // 50000 credits + 10000 bonus = 60000 total
+        $this->assertEquals(60000, $user->fresh()->credit_balance);
+
+        $this->assertDatabaseHas('credit_transactions', [
+            'user_id' => $user->id,
+            'amount' => 60000,
+            'type' => 'top_up',
+        ]);
+    }
+
+    #[Test]
+    public function it_handles_buy_credits_without_pending_purchase()
+    {
+        $user = User::factory()->create(['credit_balance' => 0]);
+
+        $payload = $this->buyCreditsPayload($user->id, 'basic', 5000);
+
+        $this->postJson('/webhooks/paymongo', $payload);
+
+        // Should still be 0
+        $this->assertEquals(0, $user->fresh()->credit_balance);
+    }
+
+    #[Test]
+    public function it_handles_buy_credits_for_nonexistent_user()
+    {
+        $payload = $this->buyCreditsPayload(99999, 'basic', 5000);
+
+        $response = $this->postJson('/webhooks/paymongo', $payload);
+
+        $response->assertStatus(200);
+    }
+
+    #[Test]
+    public function it_clears_pending_purchase_after_deposit()
+    {
+        $user = User::factory()->create(['credit_balance' => 0]);
+
+        cache()->put("purchase:{$user->id}", [
+            'gateway' => 'paymongo',
+            'pack' => 'basic',
+            'credits' => 5000,
+            'bonus' => 0,
+            'amount' => 5000,
+        ], 3600);
+
+        $payload = $this->buyCreditsPayload($user->id, 'basic', 5000);
+
+        $this->postJson('/webhooks/paymongo', $payload);
+
+        $this->assertNull(cache()->get("purchase:{$user->id}"));
     }
 }
