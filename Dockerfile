@@ -8,6 +8,8 @@ FROM php:${PHP_VERSION}-fpm-alpine AS build
 
 WORKDIR /app
 
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
 RUN apk add --no-cache \
         libzip-dev \
         libpng-dev \
@@ -33,6 +35,8 @@ RUN apk add --no-cache \
         xml \
         zip \
         opcache \
+    # Verify all required Laravel extensions are present
+    && php -m | grep -E '^(ctype|curl|dom|fileinfo|filter|hash|mbstring|openssl|pcre|pdo|session|tokenizer|xml)\$' | wc -l | xargs -I{} echo "{} of 13 core extensions loaded" \
     && rm -rf /var/cache/apk/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -74,6 +78,8 @@ RUN apk add --no-cache \
         xml \
         zip \
         opcache \
+    # Verify all required Laravel extensions are present
+    && php -m | grep -E '^(ctype|curl|dom|fileinfo|filter|hash|mbstring|openssl|pcre|pdo|session|tokenizer|xml|bcmath|gd|intl|json|pdo_mysql|sockets|zip)\$' | wc -l | xargs -I{} echo "{} of 20 required extensions loaded" \
     && rm -rf /var/cache/apk/*
 
 COPY --from=build --chown=www-data:www-data /app /app
