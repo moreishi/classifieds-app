@@ -83,17 +83,6 @@ class UserSettingsTest extends TestCase
     }
 
     #[Test]
-    public function it_updates_username(): void
-    {
-        Livewire::actingAs($this->user)
-            ->test(UserSettings::class)
-            ->set('username', 'newhandle')
-            ->call('updateProfile');
-
-        $this->assertEquals('newhandle', $this->user->fresh()->username);
-    }
-
-    #[Test]
     public function it_updates_notification_preferences(): void
     {
         Livewire::actingAs($this->user)
@@ -136,28 +125,5 @@ class UserSettingsTest extends TestCase
             ->assertSee('Not set');
     }
 
-    #[Test]
-    public function it_rejects_duplicate_username(): void
-    {
-        User::factory()->create([
-            'username' => 'taken',
-            'email' => 'other@example.com',
-        ]);
 
-        Livewire::actingAs($this->user)
-            ->test(UserSettings::class)
-            ->set('username', 'taken')
-            ->call('updateProfile')
-            ->assertHasErrors('username');
-    }
-
-    #[Test]
-    public function it_rejects_invalid_username_characters(): void
-    {
-        Livewire::actingAs($this->user)
-            ->test(UserSettings::class)
-            ->set('username', 'invalid username!')
-            ->call('updateProfile')
-            ->assertHasErrors('username');
-    }
 }

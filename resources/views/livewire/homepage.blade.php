@@ -72,7 +72,7 @@
                 <p class="text-gray-500">No featured listings this week.</p>
             </div>
         @else
-            <div class="grid grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 @foreach($promotedListings as $listing)
                     <a href="{{ route('listing.show', $listing->slug) }}"
                        class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">
@@ -124,7 +124,7 @@
     @if($latestListings->isNotEmpty())
         <div class="max-w-7xl mx-auto px-4 pb-10 sm:px-6 lg:px-8">
             <h2 class="text-lg font-bold text-gray-900 mb-4">Latest Listings</h2>
-            <div class="grid grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 @foreach($latestListings as $listing)
                     <a href="{{ route('listing.show', $listing->slug) }}"
                        class="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100">

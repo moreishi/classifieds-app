@@ -1,26 +1,26 @@
 <div>
     <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between mb-8">
-            <h1 class="text-3xl font-bold text-gray-900">Transactions</h1>
-
-            <div class="flex gap-2">
+        {{-- Header --}}
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Transactions</h1>
+            <div class="flex flex-wrap gap-2">
                 <button wire:click="$set('tab', 'all')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
                                {{ $tab === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     All
                 </button>
                 <button wire:click="$set('tab', 'as_buyer')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
                                {{ $tab === 'as_buyer' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     As Buyer
                 </button>
                 <button wire:click="$set('tab', 'as_seller')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
                                {{ $tab === 'as_seller' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     As Seller
                 </button>
                 <button wire:click="$set('showForm', true)"
-                        class="px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
                     + New Receipt
                 </button>
             </div>
@@ -37,7 +37,7 @@
             <div class="bg-white rounded-xl border p-6 max-w-lg mb-8">
                 <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-semibold text-gray-900">Generate Transaction Receipt</h2>
-                    <button wire:click="$set('showForm', false)" class="text-gray-400 hover:text-gray-600">&times;</button>
+                    <button wire:click="$set('showForm', false)" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
                 </div>
 
                 <form wire:submit="generateReceipt" class="space-y-4">
@@ -82,7 +82,7 @@
             </div>
         @endif
 
-        {{-- Receipts list --}}
+        {{-- Receipts --}}
         @if($receipts->isEmpty())
             <div class="text-center py-16 bg-gray-50 rounded-xl">
                 <p class="text-gray-500 text-lg">No transactions yet</p>
@@ -97,7 +97,8 @@
                 </p>
             </div>
         @else
-            <div class="bg-white rounded-xl border overflow-hidden">
+            {{-- Desktop table --}}
+            <div class="hidden md:block bg-white rounded-xl border overflow-hidden">
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50 border-b">
                         <tr>
@@ -171,6 +172,75 @@
                     </tbody>
                 </table>
             </div>
+
+            {{-- Mobile cards --}}
+            <div class="md:hidden space-y-3">
+                @foreach($receipts as $receipt)
+                    @php
+                        $isBuyer = $receipt->buyer_email === auth()->user()->email;
+                        $existingReview = $receipt->reviews->where('reviewer_id', auth()->id())->first();
+                    @endphp
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                        {{-- Card header --}}
+                        <div class="flex items-center justify-between px-4 py-3 bg-gray-50 border-b border-gray-100">
+                            <span class="font-mono text-xs text-gray-500">{{ $receipt->reference_number }}</span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                {{ $isBuyer ? 'bg-purple-100 text-purple-800' : 'bg-green-100 text-green-800' }}">
+                                {{ $isBuyer ? 'Buyer' : 'Seller' }}
+                            </span>
+                        </div>
+
+                        {{-- Card body --}}
+                        <div class="px-4 py-3 space-y-2">
+                            <a href="{{ route('listing.show', $receipt->listing->slug) }}"
+                               class="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                                {{ $receipt->listing->title }}
+                            </a>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Buyer</span>
+                                <span class="text-sm text-gray-900">{{ $receipt->buyer_name ?: $receipt->buyer_email }}</span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Amount</span>
+                                <span class="font-semibold text-gray-900">₱{{ number_format($receipt->amount / 100) }}</span>
+                            </div>
+
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-500">Date</span>
+                                <span class="text-sm text-gray-500">{{ $receipt->created_at->format('M d, Y') }}</span>
+                            </div>
+                        </div>
+
+                        {{-- Card actions --}}
+                        <div class="flex items-center gap-2 px-4 py-3 bg-gray-50 border-t border-gray-100">
+                            @if($isBuyer && !$existingReview)
+                                <button x-on:click="$el.closest('.md\\\\:hidden').querySelector('.review-form').classList.toggle('hidden')"
+                                        class="text-blue-600 hover:text-blue-800 text-xs font-medium px-3 py-1.5 border border-blue-200 rounded-lg">
+                                    Leave Review
+                                </button>
+                            @elseif($isBuyer && $existingReview)
+                                <span class="text-yellow-400 text-sm">
+                                    @for($i = 0; $i < $existingReview->rating; $i++)&#9733;@endfor
+                                </span>
+                            @endif
+                            <a href="{{ route('receipt.download', $receipt->id) }}"
+                               class="ml-auto text-blue-600 hover:text-blue-800 text-xs font-medium px-3 py-1.5 border border-blue-200 rounded-lg">
+                                Download PDF
+                            </a>
+                        </div>
+
+                        {{-- Review form (hidden) --}}
+                        @if($isBuyer && !$existingReview)
+                            <div class="review-form hidden px-4 py-3 bg-yellow-50 border-t border-yellow-100">
+                                <livewire:leave-review :receiptId="$receipt->id" :key="'review-'.$receipt->id" />
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+
             <div class="mt-6">
                 {{ $receipts->links() }}
             </div>

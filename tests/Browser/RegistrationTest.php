@@ -25,8 +25,9 @@ class RegistrationTest extends DuskTestCase
                 ->type('password', 'password')
                 ->type('password_confirmation', 'password')
                 ->click('button[type=submit]')
-                ->waitForLocation('/dashboard')
-                ->assertPathIs('/dashboard');
+                ->waitForLocation('/verify-email')
+                ->assertPathIs('/verify-email')
+                ->assertSee('verify your email');
         });
     }
 
@@ -42,8 +43,9 @@ class RegistrationTest extends DuskTestCase
                 ->type('password', 'password')
                 ->type('password_confirmation', 'password')
                 ->click('button[type=submit]')
-                ->waitForLocation('/dashboard')
-                ->assertPathIs('/dashboard');
+                ->waitForLocation('/verify-email')
+                ->assertPathIs('/verify-email')
+                ->assertSee('verify your email');
         });
     }
 

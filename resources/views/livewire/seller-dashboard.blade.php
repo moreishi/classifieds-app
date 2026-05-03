@@ -87,7 +87,8 @@
                         </a>
                     </div>
                 @else
-                    <div class="overflow-x-auto">
+                    {{-- Desktop table --}}
+                    <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-sm">
                             <thead>
                                 <tr class="text-left text-gray-500 text-xs uppercase tracking-wider border-b border-gray-100">
@@ -139,6 +140,43 @@
                                 @endforeach
                             </tbody>
                         </table>
+                    </div>
+
+                    {{-- Mobile cards --}}
+                    <div class="md:hidden divide-y divide-gray-100">
+                        @foreach($listingStats as $stat)
+                            <div class="px-5 py-4 flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 overflow-hidden">
+                                    @if($stat['thumb'])
+                                        <img src="{{ $stat['thumb'] }}" alt="" class="w-full h-full object-cover" />
+                                    @else
+                                        <div class="flex items-center justify-center h-full text-gray-300">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <p class="font-medium text-gray-900 truncate">{{ $stat['title'] }}</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span class="text-xs text-gray-400">₱{{ number_format($stat['price'] / 100) }}</span>
+                                        <span class="text-gray-300">·</span>
+                                        @if($stat['status'] === 'sold')
+                                            <span class="px-1.5 py-0.5 bg-red-100 text-red-700 text-xs font-medium rounded-full">Sold</span>
+                                        @else
+                                            <span class="px-1.5 py-0.5 bg-green-100 text-green-700 text-xs font-medium rounded-full">Active</span>
+                                        @endif
+                                        <span class="text-gray-300">·</span>
+                                        <span class="text-xs text-gray-500">{{ number_format($stat['views']) }} views</span>
+                                    </div>
+                                </div>
+                                <a href="{{ route('listing.show', $stat['slug']) }}"
+                                   class="shrink-0 text-blue-600 hover:text-blue-800 text-xs font-medium px-3 py-1.5 border border-blue-200 rounded-lg">
+                                    View
+                                </a>
+                            </div>
+                        @endforeach
                     </div>
 
                     <div class="px-5 py-3 border-t border-gray-100 bg-gray-50/50">

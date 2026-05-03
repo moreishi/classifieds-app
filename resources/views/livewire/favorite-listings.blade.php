@@ -27,7 +27,7 @@
         @else
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 @foreach($listings as $listing)
-                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow min-h-[250px]">
                         {{-- Photo --}}
                         <div class="h-40 bg-gray-100 relative">
                             @if($listing->getFirstMediaUrl('photos', 'card'))

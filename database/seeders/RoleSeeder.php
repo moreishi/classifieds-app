@@ -21,8 +21,14 @@ class RoleSeeder extends Seeder
                 'name' => 'Admin',
                 'password' => bcrypt('password'),
                 'reputation_tier' => 'pro',
+                'email_verified_at' => now(),
             ]
         );
+
+        // Ensure admin is always email-verified (handles re-seeding)
+        if (is_null($admin->email_verified_at)) {
+            $admin->update(['email_verified_at' => now()]);
+        }
 
         if (!$admin->hasRole('admin')) {
             $admin->assignRole('admin');

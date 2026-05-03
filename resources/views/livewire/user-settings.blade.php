@@ -1,73 +1,102 @@
 <div class="max-w-2xl mx-auto py-8 px-4 space-y-8">
-    <flux:heading size="xl">Settings</flux:heading>
+    <h2 class="text-2xl font-bold text-gray-900">Settings</h2>
 
     {{-- Profile --}}
-    <flux:card class="space-y-4">
-        <flux:heading>Profile</flux:heading>
-        <flux:text class="text-sm text-gray-500">Your real name is used internally and never shown publicly.</flux:text>
+    <div class="bg-white rounded-lg shadow p-6 space-y-4">
+        <h3 class="text-lg font-semibold text-gray-900">Profile</h3>
+        <p class="text-sm text-gray-500">Your real name is used internally and never shown publicly.</p>
+
+        @if(session()->has('profile_updated'))
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md px-4 py-3 text-sm" role="alert">
+                {{ session('profile_updated') }}
+            </div>
+        @endif
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <flux:field>
-                <flux:label>First Name</flux:label>
-                <flux:input wire:model="firstName" maxlength="100" />
-                <flux:error name="firstName" />
-            </flux:field>
-            <flux:field>
-                <flux:label>Middle Name <span class="text-gray-400">(optional)</span></flux:label>
-                <flux:input wire:model="middleName" maxlength="100" />
-                <flux:error name="middleName" />
-            </flux:field>
-            <flux:field>
-                <flux:label>Last Name</flux:label>
-                <flux:input wire:model="lastName" maxlength="100" />
-                <flux:error name="lastName" />
-            </flux:field>
-        </div>
-
-        <flux:field>
-            <flux:label>Username</flux:label>
-            <flux:input wire:model="username" placeholder="johndoe" maxlength="50" />
-            <flux:error name="username" />
-            <flux:description>Your public handle — other users see this instead of your real name.</flux:description>
-        </flux:field>
-
-        <flux:field>
-            <flux:label>Email</flux:label>
-            <flux:input wire:model="email" type="email" />
-            <flux:error name="email" />
-        </flux:field>
-
-        <div class="flex justify-end">
-            <flux:button wire:click="updateProfile" variant="primary">Save</flux:button>
-        </div>
-    </flux:card>
-
-    {{-- GCash & Credits --}}
-    <flux:card class="space-y-4">
-        <flux:heading>GCash &amp; Credits</flux:heading>
-
-        <div class="flex items-center gap-3">
-            <flux:icon.shield-check variant="solid" class="w-5 h-5 {{ $user->gcash_verified_at ? 'text-green-600' : 'text-gray-400' }}" />
             <div>
-                <div class="text-sm font-medium">
-                    @if($user->gcash_verified_at)
-                        Verified — {{ $user->gcash_number }}
-                    @elseif($user->gcash_number)
-                        Not verified — <a href="{{ route('verify-account') }}" class="underline text-blue-600">Verify now</a>
-                    @else
-                        Not set
-                    @endif
-                </div>
-                <div class="text-xs text-gray-500">
-                    @if($user->gcash_verified_at)
-                        Since {{ $user->gcash_verified_at->format('M j, Y') }}
-                    @endif
-                </div>
+                <label for="firstName" class="block text-sm font-medium text-gray-700">First Name</label>
+                <input id="firstName" type="text" wire:model="firstName" maxlength="100"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                @error('firstName') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="middleName" class="block text-sm font-medium text-gray-700">Middle Name <span class="text-gray-400">(optional)</span></label>
+                <input id="middleName" type="text" wire:model="middleName" maxlength="100"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                @error('middleName') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label for="lastName" class="block text-sm font-medium text-gray-700">Last Name</label>
+                <input id="lastName" type="text" wire:model="lastName" maxlength="100"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                @error('lastName') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
 
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Username</label>
+            <div class="mt-1 flex items-center gap-2">
+                <input id="username" type="text" wire:model="username" placeholder="johndoe" maxlength="50" disabled
+                       class="block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 text-gray-500 cursor-not-allowed">
+                <span class="text-xs text-gray-400 shrink-0">Cannot be changed</span>
+            </div>
+            @error('username') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            <p class="text-xs text-gray-500 mt-1">Your public handle — other users see this instead of your real name.</p>
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Email</label>
+            <div class="mt-1 flex items-center gap-2">
+                <input id="email" type="email" wire:model="email" disabled
+                       class="block w-full rounded-md border-gray-300 shadow-sm bg-gray-100 text-gray-500 cursor-not-allowed">
+                <span class="text-xs text-gray-400 shrink-0">Cannot be changed</span>
+            </div>
+            @error('email') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+        </div>
+
+        <div class="flex justify-end">
+            <button type="button" wire:click="updateProfile" wire:loading.attr="disabled"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                <span wire:loading.remove wire:target="updateProfile">Save Name</span>
+                <span wire:loading wire:target="updateProfile">Saving...</span>
+            </button>
+        </div>
+    </div>
+
+    {{-- GCash & Credits --}}
+    <div class="bg-white rounded-lg shadow p-6 space-y-4">
+        <h3 class="text-lg font-semibold text-gray-900">GCash &amp; Credits</h3>
+
         <div class="flex items-center gap-3">
-            <flux:icon.coins variant="solid" class="w-5 h-5 text-yellow-600" />
+            @if($user->gcash_verified_at)
+                <svg class="w-5 h-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
+                <div>
+                    <div class="text-sm font-medium">Verified — {{ $user->gcash_number }}</div>
+                    <div class="text-xs text-gray-500">Since {{ $user->gcash_verified_at->format('M j, Y') }}</div>
+                </div>
+            @elseif($user->gcash_number)
+                <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
+                <div>
+                    <div class="text-sm font-medium">Not verified — <a href="{{ route('verify-account') }}" class="underline text-blue-600 hover:text-blue-800">Verify now</a></div>
+                </div>
+            @else
+                <svg class="w-5 h-5 text-gray-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                </svg>
+                <div>
+                    <div class="text-sm font-medium">Not set</div>
+                </div>
+            @endif
+        </div>
+
+        <div class="flex items-center gap-3">
+            <svg class="w-5 h-5 text-yellow-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
             <div>
                 <div class="text-sm font-medium">
                     Balance: <strong>₱{{ number_format($user->credit_balance / 100, 2) }}</strong>
@@ -76,72 +105,128 @@
         </div>
 
         <div class="flex gap-2">
-            <flux:button href="{{ route('verify-account') }}" variant="primary" icon="credit-card">Verify GCash</flux:button>
-            <flux:button href="{{ route('buy-credits') }}" icon="plus">Buy Credits</flux:button>
+            <a href="{{ route('verify-account') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                </svg>
+                Verify GCash
+            </a>
+            <a href="{{ route('buy-credits') }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                </svg>
+                Buy Credits
+            </a>
         </div>
 
         @if($user->gcash_number)
-            <hr class="my-2">
-            <flux:field>
-                <flux:label>Change GCash Number</flux:label>
-                <flux:input wire:model="gcashNumber" placeholder="09171234567" maxlength="11" />
-                <flux:error name="gcashNumber" />
-                <flux:description>Changing your number will require re-verification.</flux:description>
-            </flux:field>
+            <hr class="border-gray-200 my-2">
+            @if(session()->has('gcash_updated'))
+                <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md px-4 py-3 text-sm" role="alert">
+                    {{ session('gcash_updated') }}
+                </div>
+            @endif
+            <div>
+                <label for="gcashNumber" class="block text-sm font-medium text-gray-700">Change GCash Number</label>
+                <input id="gcashNumber" type="text" wire:model="gcashNumber" placeholder="09171234567" maxlength="11"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                @error('gcashNumber') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+                <p class="text-xs text-gray-500 mt-1">Changing your number will require re-verification.</p>
+            </div>
             <div class="flex justify-end">
-                <flux:button wire:click="updateGcash" variant="primary">Update Number</flux:button>
+                <button type="button" wire:click="updateGcash" wire:loading.attr="disabled"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                    <span wire:loading.remove wire:target="updateGcash">Update Number</span>
+                    <span wire:loading wire:target="updateGcash">Updating...</span>
+                </button>
             </div>
         @endif
-    </flux:card>
+    </div>
 
     {{-- Notification Preferences --}}
-    <flux:card class="space-y-4">
-        <flux:heading>Notifications</flux:heading>
+    <div class="bg-white rounded-lg shadow p-6 space-y-4">
+        <h3 class="text-lg font-semibold text-gray-900">Notifications</h3>
 
-        <flux:field>
-            <flux:checkbox wire:model="notifyNewInquiry" label="Email me when someone sends an inquiry about my listing" />
-        </flux:field>
+        @if(session()->has('notifications_updated'))
+            <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md px-4 py-3 text-sm" role="alert">
+                {{ session('notifications_updated') }}
+            </div>
+        @endif
 
-        <flux:field>
-            <flux:checkbox wire:model="notifySellerReply" label="Email me when a seller replies to my inquiry" />
-        </flux:field>
+        <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" wire:model="notifyNewInquiry"
+                   class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700">Email me when someone sends an inquiry about my listing</span>
+        </label>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+            <input type="checkbox" wire:model="notifySellerReply"
+                   class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            <span class="text-sm text-gray-700">Email me when a seller replies to my inquiry</span>
+        </label>
 
         <div class="flex justify-end">
-            <flux:button wire:click="updateNotifications" variant="primary">Save Preferences</flux:button>
+            <button type="button" wire:click="updateNotifications" wire:loading.attr="disabled"
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                <span wire:loading.remove wire:target="updateNotifications">Save Preferences</span>
+                <span wire:loading wire:target="updateNotifications">Saving...</span>
+            </button>
         </div>
-    </flux:card>
+    </div>
 
     {{-- Danger Zone --}}
-    <flux:card class="space-y-4 border-red-300">
-        <flux:heading class="text-red-600">Danger Zone</flux:heading>
-        <flux:text class="text-sm">Permanently delete your account and all associated data.</flux:text>
+    <div class="bg-white rounded-lg shadow p-6 space-y-4 border-l-4 border-red-400">
+        <h3 class="text-lg font-semibold text-red-600">Danger Zone</h3>
+        <p class="text-sm text-gray-600">Permanently delete your account and all associated data.</p>
 
-        <flux:modal.trigger name="delete-account">
-            <flux:button variant="danger">Delete Account</flux:button>
-        </flux:modal.trigger>
-    </flux:card>
+        <button type="button" x-data @click="$dispatch('open-modal', 'delete-account')"
+                class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500">
+            Delete Account
+        </button>
+    </div>
 
     {{-- Delete Account Modal --}}
-    <flux:modal name="delete-account" class="md:w-96">
-        <flux:heading>Delete Account?</flux:heading>
-        <flux:text class="mt-2">This action is permanent. Your listings, conversations, and credits will be lost.</flux:text>
+    <div x-data="{ open: false }"
+         x-show="open"
+         x-on:open-modal.window="if ($event.detail === 'delete-account') open = true"
+         x-on:keydown.escape.window="open = false"
+         x-cloak
+         class="fixed inset-0 z-50 overflow-y-auto"
+         style="display: none;">
+        <div class="flex items-center justify-center min-h-screen px-4">
+            <div class="fixed inset-0 bg-black/50" @click="open = false"></div>
+            <div class="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-auto">
+                <h3 class="text-lg font-semibold text-gray-900">Delete Account?</h3>
+                <p class="text-sm text-gray-600 mt-2">This action is permanent. Your listings, conversations, and credits will be lost.</p>
 
-        <div class="mt-4 space-y-2">
-            <flux:field>
-                <flux:label>Type your password to confirm</flux:label>
-                <flux:input type="password" wire:model="deletePassword" placeholder="Password" />
-                <flux:error name="deletePassword" />
-            </flux:field>
-            <flux:field>
-                <flux:label>Type <strong>DELETE</strong> to confirm</flux:label>
-                <flux:input wire:model="deleteConfirm" placeholder="DELETE" />
-                <flux:error name="deleteConfirm" />
-            </flux:error>
-        </div>
+                @error('deletePassword') <p class="text-sm text-red-600 mt-2">{{ $message }}</p> @enderror
+                @error('deleteConfirm') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
 
-        <div class="flex gap-2 mt-6">
-            <flux:modal.close><flux:button variant="ghost">Cancel</flux:button></flux:modal.close>
-            <flux:button variant="danger" wire:click="deleteAccount">Delete My Account</flux:button>
+                <div class="mt-4 space-y-3">
+                    <div>
+                        <label for="deletePassword" class="block text-sm font-medium text-gray-700">Type your password to confirm</label>
+                        <input id="deletePassword" type="password" wire:model="deletePassword" placeholder="Password"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
+                    </div>
+                    <div>
+                        <label for="deleteConfirm" class="block text-sm font-medium text-gray-700">Type <strong>DELETE</strong> to confirm</label>
+                        <input id="deleteConfirm" type="text" wire:model="deleteConfirm" placeholder="DELETE"
+                               class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500">
+                    </div>
+                </div>
+
+                <div class="flex gap-2 mt-6">
+                    <button type="button" @click="open = false"
+                            class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="button" wire:click="deleteAccount" wire:loading.attr="disabled"
+                            class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50">
+                        <span wire:loading.remove wire:target="deleteAccount">Delete My Account</span>
+                        <span wire:loading wire:target="deleteAccount">Deleting...</span>
+                    </button>
+                </div>
+            </div>
         </div>
-    </flux:modal>
+    </div>
 </div>
