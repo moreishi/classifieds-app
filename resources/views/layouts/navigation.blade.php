@@ -87,6 +87,10 @@
                                 {{ __('My Favorites') }}
                             </x-dropdown-link>
 
+                            <x-dropdown-link :href="route('seller.dashboard')">
+                                {{ __('Dashboard') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('listings.my')">
                                 {{ __('My Listings') }}
                             </x-dropdown-link>

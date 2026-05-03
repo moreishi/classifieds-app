@@ -110,6 +110,11 @@ class Listing extends Model implements HasMedia
         return $this->belongsToMany(User::class, 'listing_user');
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
     public function activePromotion(): HasMany
     {
         return $this->hasMany(ListingPromotion::class)
