@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Conversation;
 use App\Models\Message;
+use App\Notifications\SellerReplied;
 use Livewire\Component;
 
 class ConversationView extends Component
@@ -11,24 +12,28 @@ class ConversationView extends Component
     public Conversation $conversation;
     public string $newMessage = '';
     public int $latestMessageId = 0;
+    public bool $isTyping = false;
+    public int $lastSeenMessageId = 0;
 
     public function mount(): void
     {
-        // Authorize: only participants can view
         abort_unless(
             auth()->id() === $this->conversation->buyer_id ||
             auth()->id() === $this->conversation->seller_id,
             403
         );
 
-        // Mark other user's messages as read
-        foreach ($this->conversation->messages()->where('sender_id', '!=', auth()->id())->whereNull('read_at')->get() as $message) {
-            $message->markAsRead();
-        }
+        $this->markMessagesRead();
+        $this->latestMessageId = $this->conversation->messages()->latest()->first()?->id ?? 0;
+        $this->lastSeenMessageId = $this->latestMessageId;
+    }
 
-        // Track latest message ID for appendMessages
-        $latest = $this->conversation->messages()->latest()->first();
-        $this->latestMessageId = $latest?->id ?? 0;
+    public function markMessagesRead(): void
+    {
+        $this->conversation->messages()
+            ->where('sender_id', '!=', auth()->id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
     }
 
     public function sendMessage(): void
@@ -37,7 +42,9 @@ class ConversationView extends Component
             'newMessage' => 'required|string|max:5000',
         ]);
 
-        Message::create([
+        $isFirstMessageFromSeller = $this->conversation->messages()->where('sender_id', $this->conversation->seller_id)->doesntExist();
+
+        $message = Message::create([
             'conversation_id' => $this->conversation->id,
             'sender_id' => auth()->id(),
             'body' => $this->newMessage,
@@ -45,19 +52,30 @@ class ConversationView extends Component
 
         $this->conversation->update(['last_message_at' => now()]);
 
-        $latest = $this->conversation->messages()->latest()->first();
-        $this->latestMessageId = $latest->id;
-
+        $this->latestMessageId = $message->id;
+        $this->lastSeenMessageId = $message->id;
         $this->newMessage = '';
+        $this->isTyping = false;
+
+        // If this is the seller's first reply, notify the buyer via email
+        if ($isFirstMessageFromSeller && auth()->id() === $this->conversation->seller_id) {
+            $this->conversation->buyer->notify(new SellerReplied($this->conversation));
+        }
+    }
+
+    public function setTyping(): void
+    {
+        $this->isTyping = true;
+    }
+
+    public function stopTyping(): void
+    {
+        $this->isTyping = false;
     }
 
     public function refreshMessages(): void
     {
-        // Mark unread messages as read
-        $this->conversation->messages()
-            ->where('sender_id', '!=', auth()->id())
-            ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+        $this->markMessagesRead();
     }
 
     public function getMessagesProperty()
@@ -73,11 +91,20 @@ class ConversationView extends Component
         return $this->conversation->otherUser(auth()->user());
     }
 
+    public function getUnreadCountProperty()
+    {
+        return $this->conversation->messages()
+            ->where('sender_id', '!=', auth()->id())
+            ->whereNull('read_at')
+            ->count();
+    }
+
     public function render()
     {
         return view('livewire.conversation-view', [
             'messages' => $this->messages,
             'otherUser' => $this->otherUser,
+            'unreadCount' => $this->unreadCount,
         ])->layout('layouts.app');
     }
 }

@@ -171,13 +171,36 @@
                             </p>
                         </div>
                     </div>
-                    <div class="mt-3 text-sm text-gray-500">
+                    <div class="mt-3 text-sm text-gray-500 space-y-1">
                         <p>Member since {{ $seller->created_at->format('M Y') }}</p>
                         @php
                             $sellerStats = app(\App\Services\ReputationService::class)->userStats($seller);
                         @endphp
                         @if($sellerStats['total_points'] > 0)
                             <p>{{ number_format($sellerStats['seller_points']) }} seller pts · {{ number_format($sellerStats['buyer_points']) }} buyer pts</p>
+                        @endif
+                        {{-- Last Active --}}
+                        @if($seller->last_active_at)
+                            <p class="flex items-center gap-1.5">
+                                @php
+                                    $minutesSince = $seller->last_active_at->diffInMinutes(now());
+                                @endphp
+                                @if($minutesSince < 5)
+                                    <span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
+                                    <span class="text-green-600 font-medium">Online now</span>
+                                @elseif($minutesSince < 60)
+                                    <span class="w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+                                    Active {{ $minutesSince }}m ago
+                                @elseif($seller->last_active_at->isToday())
+                                    <span class="w-2 h-2 rounded-full bg-gray-400 inline-block"></span>
+                                    Active today
+                                @else
+                                    <span class="w-2 h-2 rounded-full bg-gray-300 inline-block"></span>
+                                    Active {{ $seller->last_active_at->diffForHumans() }}
+                                @endif
+                            </p>
+                        @else
+                            <p class="text-gray-400">No recent activity</p>
                         @endif
                     </div>
                 </div>
@@ -206,10 +229,10 @@
                         </div>
                     @else
                         @if(auth()->id() !== $listing->user_id)
-                            <a href="{{ route('conversations.start', $listing) }}"
-                               class="block w-full text-center bg-white border border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
-                                Message Seller
-                            </a>
+                            <button wire:click="openInquiry"
+                                    class="w-full text-center bg-white border border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
+                                {{ $alreadyContacted ? 'Open Chat' : 'Message Seller' }}
+                            </button>
                         @endif
 
                         <button
@@ -249,5 +272,50 @@
 
     @auth
         <livewire:offer-modal />
+
+        {{-- Inquiry Modal (Angle 2) --}}
+        @if($showInquiryModal)
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+                 wire:click.self="cancelInquiry">
+                <div class="bg-white rounded-2xl shadow-xl max-w-lg w-full mx-4 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-900">Message Seller</h2>
+                        <button wire:click="cancelInquiry" class="text-gray-400 hover:text-gray-600 text-2xl leading-none">&times;</button>
+                    </div>
+
+                    <div class="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-xl">
+                        <img src="{{ $seller->avatar }}" alt="" class="w-10 h-10 rounded-full" />
+                        <div>
+                            <p class="font-medium text-gray-900">{{ $seller->name }}</p>
+                            <p class="text-xs text-gray-500">Re: {{ $listing->title }}</p>
+                        </div>
+                    </div>
+
+                    <form wire:submit="sendInquiry" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Message</label>
+                            <textarea wire:model="inquiryMessage" rows="4"
+                                      class="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Hi! Is this still available? I'm interested in buying..."
+                                      maxlength="2000"></textarea>
+                            @error('inquiryMessage') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                            <p class="text-xs text-gray-400 mt-1 text-right"
+                               x-text="$wire.inquiryMessage.length + '/2000'">0/2000</p>
+                        </div>
+
+                        <button type="submit"
+                                class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
+                                wire:loading.attr="disabled" wire:target="sendInquiry">
+                            <span wire:loading.remove wire:target="sendInquiry">Send Message</span>
+                            <span wire:loading wire:target="sendInquiry">Sending...</span>
+                        </button>
+                    </form>
+
+                    <p class="text-xs text-gray-400 mt-3 text-center">
+                        You'll be redirected to the conversation once sent.
+                    </p>
+                </div>
+            </div>
+        @endif
     @endauth
 </div>

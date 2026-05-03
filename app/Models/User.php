@@ -29,6 +29,7 @@ use Illuminate\Notifications\Notifiable;
     'referral_code',
     'referred_by',
     'avatar_url',
+    'last_active_at',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
@@ -47,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'gcash_verified_at' => 'datetime',
             'free_listings_reset_at' => 'datetime',
+            'last_active_at' => 'datetime',
             'password' => 'hashed',
         ];
     }

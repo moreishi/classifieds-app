@@ -15,6 +15,7 @@ use App\Livewire\ConversationsList;
 use App\Livewire\ConversationView;
 use App\Http\Controllers\SitemapController;
 use App\Models\Listing;
+use App\Notifications\NewInquiry;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Homepage::class)->name('home');
@@ -50,11 +51,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 ->with('error', 'This item has been sold and is no longer available.');
         }
 
-        $conversation = App\Models\Conversation::firstOrCreate([
+        $existing = App\Models\Conversation::where([
             'listing_id' => $listing->id,
             'buyer_id' => $buyer->id,
             'seller_id' => $listing->user_id,
-        ]);
+        ])->first();
+
+        if ($existing) {
+            $conversation = $existing;
+        } else {
+            $conversation = App\Models\Conversation::create([
+                'listing_id' => $listing->id,
+                'buyer_id' => $buyer->id,
+                'seller_id' => $listing->user_id,
+            ]);
+
+            // Send email notification to seller on first inquiry
+            $conversation->seller->notify(new NewInquiry($conversation));
+        }
 
         return redirect()->route('conversations.show', $conversation);
     })->name('conversations.start');
