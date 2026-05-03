@@ -31,6 +31,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('listing_promotions');
+
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('listings', function (Blueprint $table) {
             $table->dropColumn('featured_until');
         });

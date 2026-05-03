@@ -19,6 +19,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('categories', function (Blueprint $table) {
             $table->dropForeign(['parent_id']);
             $table->dropColumn('parent_id');

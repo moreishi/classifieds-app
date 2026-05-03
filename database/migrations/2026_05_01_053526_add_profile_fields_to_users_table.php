@@ -24,6 +24,11 @@ return new class extends Migration
 
     public function down(): void
     {
+        // SQLite doesn't support DROP COLUMN with indexes—use fresh migrations instead
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('users', function (Blueprint $table) {
             $table->dropConstrainedForeignId('referred_by');
             $table->dropColumn([
