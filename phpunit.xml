@@ -32,5 +32,9 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
+        <env name="PAYMONGO_PUBLIC_KEY" value="pk_test_xxxx"/>
+        <env name="PAYMONGO_SECRET_KEY" value="sk_test_xxxx"/>
+        <env name="PAYMONGO_WALLET_ID" value="wal_test_xxxx"/>
+        <env name="PAYMONGO_BASE_URL" value="https://api.paymongo.com/v1"/>
     </php>
 </phpunit>
