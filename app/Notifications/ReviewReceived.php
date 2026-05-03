@@ -25,7 +25,7 @@ class ReviewReceived extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject("New Review on {$this->review->listing->title}")
-            ->greeting("Hi {$notifiable->name}!")
+            ->greeting("Hi {$notifiable->publicName()}!")
             ->line('You received a new review!')
             ->line("**Listing:** {$this->review->listing->title}")
             ->line("**Rating:** {$this->review->rating}/5 " . str_repeat('⭐', $this->review->rating))
@@ -41,7 +41,7 @@ class ReviewReceived extends Notification implements ShouldQueue
             'listing_id' => $this->review->listing_id,
             'listing_title' => $this->review->listing->title,
             'rating' => $this->review->rating,
-            'reviewer_name' => $this->review->reviewer->name,
+            'reviewer_name' => $this->review->reviewer->publicName(),
             'type' => 'review_received',
         ];
     }

@@ -15,6 +15,7 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable([
     'name',
+    'username',
     'email',
     'password',
     'city_id',
@@ -110,5 +111,10 @@ class User extends Authenticatable
 
         $hash = md5(strtolower(trim($this->email)));
         return "https://www.gravatar.com/avatar/{$hash}?s=80&d=mp";
+    }
+
+    public function publicName(): string
+    {
+        return $this->username ?? $this->name;
     }
 }

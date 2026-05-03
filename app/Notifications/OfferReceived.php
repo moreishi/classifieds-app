@@ -25,10 +25,10 @@ class OfferReceived extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject("New Offer on {$this->offer->listing->title}")
-            ->greeting("Hi {$notifiable->name}!")
+            ->greeting("Hi {$notifiable->publicName()}!")
             ->line("You've received a new offer of ₱" . number_format($this->offer->amount / 100) . " on your listing:")
             ->line("**{$this->offer->listing->title}**")
-            ->line("From: {$this->offer->buyer->name}")
+            ->line("From: {$this->offer->buyer->publicName()}")
             ->when($this->offer->message, fn($msg) => $msg->line("Message: \"{$this->offer->message}\""))
             ->action('View Offer', url('/offers'))
             ->line('Log in to accept, decline, or counter the offer.');
@@ -41,7 +41,7 @@ class OfferReceived extends Notification implements ShouldQueue
             'listing_id' => $this->offer->listing_id,
             'listing_title' => $this->offer->listing->title,
             'amount' => $this->offer->amount,
-            'buyer_name' => $this->offer->buyer->name,
+            'buyer_name' => $this->offer->buyer->publicName(),
             'type' => 'offer_received',
         ];
     }

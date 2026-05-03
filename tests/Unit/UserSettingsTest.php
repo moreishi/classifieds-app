@@ -20,6 +20,7 @@ class UserSettingsTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create([
+            'username' => 'testuser',
             'gcash_number' => '09171234567',
             'gcash_verified_at' => now(),
             'credit_balance' => 5000,
@@ -31,7 +32,7 @@ class UserSettingsTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(UserSettings::class)
-            ->assertSet('name', $this->user->name)
+            ->assertSet('username', 'testuser')
             ->assertSet('email', $this->user->email);
     }
 
@@ -61,14 +62,14 @@ class UserSettingsTest extends TestCase
     }
 
     #[Test]
-    public function it_updates_profile(): void
+    public function it_updates_username(): void
     {
         Livewire::actingAs($this->user)
             ->test(UserSettings::class)
-            ->set('name', 'New Name')
+            ->set('username', 'newhandle')
             ->call('updateProfile');
 
-        $this->assertEquals('New Name', $this->user->fresh()->name);
+        $this->assertEquals('newhandle', $this->user->fresh()->username);
     }
 
     #[Test]
@@ -86,6 +87,7 @@ class UserSettingsTest extends TestCase
     public function it_shows_unverified_state_when_not_verified(): void
     {
         $unverified = User::factory()->create([
+            'username' => 'unverified',
             'gcash_number' => '09179999999',
             'gcash_verified_at' => null,
         ]);
@@ -99,6 +101,7 @@ class UserSettingsTest extends TestCase
     public function it_shows_not_set_when_no_gcash(): void
     {
         $noGcash = User::factory()->create([
+            'username' => 'nogcash',
             'gcash_number' => null,
             'gcash_verified_at' => null,
         ]);
@@ -106,5 +109,30 @@ class UserSettingsTest extends TestCase
         Livewire::actingAs($noGcash)
             ->test(UserSettings::class)
             ->assertSee('Not set');
+    }
+
+    #[Test]
+    public function it_rejects_duplicate_username(): void
+    {
+        User::factory()->create([
+            'username' => 'taken',
+            'email' => 'other@example.com',
+        ]);
+
+        Livewire::actingAs($this->user)
+            ->test(UserSettings::class)
+            ->set('username', 'taken')
+            ->call('updateProfile')
+            ->assertHasErrors('username');
+    }
+
+    #[Test]
+    public function it_rejects_invalid_username_characters(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(UserSettings::class)
+            ->set('username', 'invalid username!')
+            ->call('updateProfile')
+            ->assertHasErrors('username');
     }
 }

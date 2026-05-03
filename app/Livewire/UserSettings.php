@@ -16,8 +16,11 @@ class UserSettings extends Component
     public User $user;
 
     // Profile
-    #[Rule('required|string|max:255')]
-    public string $name = '';
+    #[Rule('required|string|max:50|alpha_dash|unique:users,username')]
+    public string $username = '';
+
+    #[Rule('nullable|string|max:255')]
+    public string $displayName = '';
 
     #[Rule('required|email|max:255')]
     public string $email = '';
@@ -36,7 +39,8 @@ class UserSettings extends Component
     public function mount(): void
     {
         $this->user = Auth::user();
-        $this->name = $this->user->name;
+        $this->username = $this->user->username ?? '';
+        $this->displayName = $this->user->name;
         $this->email = $this->user->email;
         $this->gcashNumber = $this->user->gcash_number ?? '';
         $this->notifyNewInquiry = $this->user->notify_new_inquiry ?? true;
@@ -46,12 +50,14 @@ class UserSettings extends Component
     public function updateProfile(): void
     {
         $this->validate([
-            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:50|alpha_dash|unique:users,username,' . $this->user->id,
+            'displayName' => 'nullable|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $this->user->id,
         ]);
 
         $this->user->update([
-            'name' => $this->name,
+            'username' => $this->username,
+            'name' => $this->displayName ?: $this->username,
             'email' => $this->email,
         ]);
 

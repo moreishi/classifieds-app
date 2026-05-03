@@ -7,7 +7,7 @@
                 <p class="text-sm text-gray-500 flex items-center gap-2">
                     <span>Conversation with</span>
                     <img src="{{ $otherUser->avatar }}" alt="" class="w-5 h-5 rounded-full inline-block" />
-                    <span class="font-medium text-gray-700">{{ $otherUser->name }}</span>
+                    <span class="font-medium text-gray-700">{{ $otherUser->username ?? $otherUser->name }}</span>
                     @php $minutesSince = $otherUser->last_active_at?->diffInMinutes(now()); @endphp
                     @if($minutesSince !== null && $minutesSince < 5)
                         <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>

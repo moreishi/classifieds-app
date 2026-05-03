@@ -179,7 +179,7 @@
                                     </div>
                                     <div class="flex items-center gap-1 mt-1 text-xs text-gray-500">
                                         <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
-                                        <span>{{ $listing->user->name }}</span>
+                                        <span>{{ $listing->user->username ?? $listing->user->name }}</span>
                                         @if($listing->user->gcash_verified_at)
                                             <span class="text-green-600 font-bold">&#10003;</span>
                                         @endif

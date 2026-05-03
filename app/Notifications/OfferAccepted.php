@@ -25,11 +25,11 @@ class OfferAccepted extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject("Offer Accepted: {$this->offer->listing->title}")
-            ->greeting("Hi {$notifiable->name}!")
+            ->greeting("Hi {$notifiable->publicName()}!")
             ->line('Your offer has been accepted!')
             ->line("**{$this->offer->listing->title}**")
             ->line("Amount: ₱" . number_format($this->offer->amount / 100))
-            ->line("Seller: {$this->offer->seller->name}")
+            ->line("Seller: {$this->offer->seller->publicName()}")
             ->action('View Transaction', url('/transactions'))
             ->line('Contact the seller on GCash to arrange payment and pick-up. You can message them through the app.');
     }
@@ -41,7 +41,7 @@ class OfferAccepted extends Notification implements ShouldQueue
             'listing_id' => $this->offer->listing_id,
             'listing_title' => $this->offer->listing->title,
             'amount' => $this->offer->amount,
-            'seller_name' => $this->offer->seller->name,
+            'seller_name' => $this->offer->seller->publicName(),
             'type' => 'offer_accepted',
         ];
     }

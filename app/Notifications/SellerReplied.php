@@ -28,7 +28,7 @@ class SellerReplied extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject("{$listing->title}: seller replied to your inquiry")
-            ->greeting("Hi {$notifiable->name}!")
+            ->greeting("Hi {$notifiable->publicName()}!")
             ->line("The seller of **{$listing->title}** just replied to your message.")
             ->when($reply?->body, fn($msg) => $msg->line("Reply: \"{$reply->body}\""))
             ->action('View Reply', url("/conversation/{$this->conversation->id}"))
@@ -41,7 +41,7 @@ class SellerReplied extends Notification implements ShouldQueue
             'conversation_id' => $this->conversation->id,
             'listing_id' => $this->conversation->listing_id,
             'listing_title' => $this->conversation->listing->title,
-            'seller_name' => $this->conversation->seller->name,
+            'seller_name' => $this->conversation->seller->publicName(),
             'type' => 'seller_replied',
         ];
     }

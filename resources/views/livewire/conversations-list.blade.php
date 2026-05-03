@@ -25,7 +25,7 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center justify-between">
                                     <h3 class="font-semibold text-gray-900 truncate">
-                                        {{ $otherUser->name }}
+                                        {{ $otherUser->username ?? $otherUser->name }}
                                     </h3>
                                     <span class="text-xs text-gray-400 shrink-0">
                                         {{ $conversation->last_message_at?->diffForHumans() }}

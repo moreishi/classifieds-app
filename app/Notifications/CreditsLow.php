@@ -26,7 +26,7 @@ class CreditsLow extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject('Your Credits Are Running Low')
-            ->greeting("Hi {$notifiable->name}!")
+            ->greeting("Hi {$notifiable->publicName()}!")
             ->line("Your current credit balance is **₱" . number_format($this->currentBalance / 100) . "**.")
             ->line('You need credits to post listings. Earn more by referring friends or purchasing credits.')
             ->action('Top Up Credits', url('/dashboard'))

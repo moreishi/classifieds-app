@@ -25,7 +25,7 @@ class TransactionCompleted extends Notification implements ShouldQueue
     {
         return (new MailMessage)
             ->subject("Transaction Complete: {$this->receipt->listing->title}")
-            ->greeting("Hi {$notifiable->name}!")
+            ->greeting("Hi {$notifiable->publicName()}!")
             ->line('Your transaction has been completed.')
             ->line("**Listing:** {$this->receipt->listing->title}")
             ->line("**Reference:** {$this->receipt->reference_number}")

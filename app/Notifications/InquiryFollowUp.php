@@ -30,8 +30,8 @@ class InquiryFollowUp extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject("Reminder: Unanswered inquiry about {$listing->title}")
-            ->greeting("Hi {$notifiable->name}!")
-            ->line("**{$buyer->name}** messaged you about your listing **{$listing->title}** {$this->hoursSinceInquiry} hours ago, and it's still unanswered.")
+            ->greeting("Hi {$notifiable->publicName()}!")
+            ->line("**{$buyer->publicName()}** messaged you about your listing **{$listing->title}** {$this->hoursSinceInquiry} hours ago, and it's still unanswered.")
             ->line("Quick replies get better results — buyers often move on if they don't hear back soon.")
             ->when($lastMessage?->body, fn($msg) => $msg->line("Their message: \"{$lastMessage->body}\""))
             ->action('Reply Now', url("/conversation/{$this->conversation->id}"))
@@ -44,7 +44,7 @@ class InquiryFollowUp extends Notification implements ShouldQueue
             'conversation_id' => $this->conversation->id,
             'listing_id' => $this->conversation->listing_id,
             'listing_title' => $this->conversation->listing->title,
-            'buyer_name' => $this->conversation->buyer->name,
+            'buyer_name' => $this->conversation->buyer->publicName(),
             'type' => 'inquiry_follow_up',
         ];
     }

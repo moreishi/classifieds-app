@@ -29,8 +29,8 @@ class NewInquiry extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject("New inquiry about: {$listing->title}")
-            ->greeting("Hi {$notifiable->name}!")
-            ->line("**{$buyer->name}** is interested in your listing:")
+            ->greeting("Hi {$notifiable->publicName()}!")
+            ->line("**{$buyer->publicName()}** is interested in your listing:")
             ->line("**{$listing->title}**")
             ->when($firstMessage?->body, fn($msg) => $msg->line("Message: \"{$firstMessage->body}\""))
             ->line("Price: ₱" . number_format($listing->price / 100))
@@ -47,7 +47,7 @@ class NewInquiry extends Notification implements ShouldQueue
             'conversation_id' => $this->conversation->id,
             'listing_id' => $listing->id,
             'listing_title' => $listing->title,
-            'buyer_name' => $this->conversation->buyer->name,
+            'buyer_name' => $this->conversation->buyer->publicName(),
             'type' => 'new_inquiry',
         ];
     }

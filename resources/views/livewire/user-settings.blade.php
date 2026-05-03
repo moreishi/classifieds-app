@@ -6,9 +6,17 @@
         <flux:heading>Profile</flux:heading>
 
         <flux:field>
-            <flux:label>Name</flux:label>
-            <flux:input wire:model="name" />
-            <flux:error name="name" />
+            <flux:label>Username</flux:label>
+            <flux:input wire:model="username" placeholder="johndoe" maxlength="50" />
+            <flux:error name="username" />
+            <flux:description>Your public handle — other users will see this instead of your real name.</flux:description>
+        </flux:field>
+
+        <flux:field>
+            <flux:label>Display Name <span class="text-gray-400">(optional)</span></flux:label>
+            <flux:input wire:model="displayName" placeholder="John" />
+            <flux:error name="displayName" />
+            <flux:description>Internal use only — never shown publicly.</flux:description>
         </flux:field>
 
         <flux:field>

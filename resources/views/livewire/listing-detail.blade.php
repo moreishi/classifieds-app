@@ -19,7 +19,7 @@
             'availability' => $listing->status === 'active' ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
             'seller' => [
                 '@type' => 'Person',
-                'name' => $listing->user->name,
+                'name' => $listing->user->username ?? $listing->user->name,
             ],
         ],
         'contentLocation' => [
@@ -164,7 +164,7 @@
                         <img src="{{ $seller->avatar }}" alt="" class="w-10 h-10 rounded-full" />
                         <div>
                             <p class="font-medium text-gray-900 flex items-center gap-1">
-                                {{ $seller->name }}
+                                {{ $seller->username ?? $seller->name }}
                                 @if($seller->gcash_verified_at)
                                     <span title="GCash Verified" class="inline-flex items-center justify-center w-4 h-4 bg-green-500 text-white rounded-full text-[10px] font-bold">&#10003;</span>
                                 @endif
@@ -289,7 +289,7 @@
                     <div class="flex items-center gap-3 mb-4 p-3 bg-gray-50 rounded-xl">
                         <img src="{{ $seller->avatar }}" alt="" class="w-10 h-10 rounded-full" />
                         <div>
-                            <p class="font-medium text-gray-900">{{ $seller->name }}</p>
+                            <p class="font-medium text-gray-900">{{ $seller->username ?? $seller->name }}</p>
                             <p class="text-xs text-gray-500">Re: {{ $listing->title }}</p>
                         </div>
                     </div>

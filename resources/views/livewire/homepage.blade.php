@@ -110,7 +110,7 @@
                                 <span>📍 {{ $listing->city->name }}</span>
                                 <span class="flex items-center gap-1">
                                     <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
-                                    {{ $listing->user->name }}
+                                    {{ $listing->user->username ?? $listing->user->name }}
                                 </span>
                             </div>
                         </div>
@@ -154,7 +154,7 @@
                                 <span>📍 {{ $listing->city->name }}</span>
                                 <span class="flex items-center gap-1">
                                     <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
-                                    {{ $listing->user->name }}
+                                    {{ $listing->user->username ?? $listing->user->name }}
                                 </span>
                             </div>
                         </div>
