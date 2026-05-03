@@ -16,12 +16,13 @@ RUN apk add --no-cache \
         oniguruma-dev \
         freetype-dev \
         libjpeg-turbo-dev \
+        libjpeg-turbo \
         linux-headers \
         git \
         unzip \
         curl \
         npm \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         bcmath \
         ctype \
@@ -35,8 +36,6 @@ RUN apk add --no-cache \
         xml \
         zip \
         opcache \
-    # Verify all required Laravel extensions are present
-    && php -m | grep -E '^(ctype|curl|dom|fileinfo|filter|hash|mbstring|openssl|pcre|pdo|session|tokenizer|xml)\$' | wc -l | xargs -I{} echo "{} of 13 core extensions loaded" \
     && rm -rf /var/cache/apk/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -60,11 +59,16 @@ WORKDIR /app
 RUN apk add --no-cache \
         nginx \
         supervisor \
+        libpng \
+        libjpeg-turbo \
+        libjpeg-turbo-dev \
         libpng-dev \
         libzip-dev \
         oniguruma-dev \
+        freetype-dev \
+        linux-headers \
         curl \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         bcmath \
         ctype \
@@ -78,8 +82,6 @@ RUN apk add --no-cache \
         xml \
         zip \
         opcache \
-    # Verify all required Laravel extensions are present
-    && php -m | grep -E '^(ctype|curl|dom|fileinfo|filter|hash|mbstring|openssl|pcre|pdo|session|tokenizer|xml|bcmath|gd|intl|json|pdo_mysql|sockets|zip)\$' | wc -l | xargs -I{} echo "{} of 20 required extensions loaded" \
     && rm -rf /var/cache/apk/*
 
 COPY --from=build --chown=www-data:www-data /app /app
