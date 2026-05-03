@@ -95,8 +95,8 @@
                                 {{ __('Trashed') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('profile.edit')">
-                                {{ __('Profile') }}
+                            <x-dropdown-link :href="route('settings')">
+                                {{ __('Settings') }}
                             </x-dropdown-link>
 
                             <!-- Authentication -->
