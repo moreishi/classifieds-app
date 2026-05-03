@@ -151,6 +151,9 @@
                            class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
                             Edit Listing
                         </a>
+
+                        {{-- Bump / Promote (owner only) --}}
+                        <livewire:bump-listing :listing="$listing" wire:key="bump-{{ $listing->id }}" />
                     @endif
                 @endauth
 

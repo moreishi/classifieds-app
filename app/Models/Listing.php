@@ -108,6 +108,18 @@ class Listing extends Model implements HasMedia
         return $this->belongsToMany(User::class, 'listing_user');
     }
 
+    public function activePromotion(): HasMany
+    {
+        return $this->hasMany(ListingPromotion::class)
+            ->where('is_active', true)
+            ->where('expires_at', '>', now());
+    }
+
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(ListingPromotion::class);
+    }
+
     public function scopeFavoritedBy(Builder $query, int $userId): Builder
     {
         return $query->whereHas('favoritedBy', fn($q) => $q->where('user_id', $userId));
@@ -177,6 +189,9 @@ class Listing extends Model implements HasMedia
 
     public function scopeSortBy(Builder $query, string $sort): Builder
     {
+        // Promoted listings always float to the top
+        $query->orderByRaw('CASE WHEN featured_until IS NOT NULL AND featured_until > NOW() THEN 0 ELSE 1 END');
+
         return match ($sort) {
             'price_asc' => $query->orderBy('price', 'asc'),
             'price_desc' => $query->orderBy('price', 'desc'),

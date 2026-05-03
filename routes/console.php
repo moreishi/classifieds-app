@@ -11,3 +11,6 @@ Artisan::command('inspire', function () {
 
 // Send follow-up reminders for conversations where seller hasn't replied
 Schedule::command(SendUnansweredInquiryReminders::class)->hourly();
+
+// Expire promotions whose duration has ended (run hourly during business hours, daily at midnight minimal)
+Schedule::command('promotions:expire')->everyMinute();
