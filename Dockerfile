@@ -28,6 +28,7 @@ RUN apk add --no-cache \
     && docker-php-ext-install -j$(nproc) \
         bcmath \
         ctype \
+        exif \
         fileinfo \
         gd \
         intl \
@@ -76,6 +77,7 @@ RUN apk add --no-cache \
     && docker-php-ext-install -j$(nproc) \
         bcmath \
         ctype \
+        exif \
         fileinfo \
         gd \
         intl \
