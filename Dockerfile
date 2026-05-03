@@ -17,6 +17,7 @@ RUN apk add --no-cache \
         freetype-dev \
         libjpeg-turbo-dev \
         libjpeg-turbo \
+        icu-dev \
         linux-headers \
         git \
         unzip \
@@ -66,6 +67,7 @@ RUN apk add --no-cache \
         libzip-dev \
         oniguruma-dev \
         freetype-dev \
+        icu-dev \
         linux-headers \
         curl \
     && docker-php-ext-configure gd --enable-gd --with-freetype --with-jpeg \
