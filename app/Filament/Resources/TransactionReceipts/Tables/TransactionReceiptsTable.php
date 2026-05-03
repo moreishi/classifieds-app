@@ -20,7 +20,7 @@ class TransactionReceiptsTable
                 TextColumn::make('listing.title')
                     ->label('Listing')
                     ->limit(30),
-                TextColumn::make('seller.name')
+                TextColumn::make('seller.username')
                     ->label('Seller')
                     ->sortable(),
                 TextColumn::make('buyer_email')

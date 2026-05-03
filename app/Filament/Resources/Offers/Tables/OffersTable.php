@@ -18,11 +18,11 @@ class OffersTable
                     ->label('Listing')
                     ->searchable()
                     ->limit(30),
-                TextColumn::make('buyer.name')
+                TextColumn::make('buyer.username')
                     ->label('Buyer')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('seller.name')
+                TextColumn::make('seller.username')
                     ->label('Seller')
                     ->searchable()
                     ->sortable(),

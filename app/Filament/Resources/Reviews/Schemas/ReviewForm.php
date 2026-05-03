@@ -18,11 +18,11 @@ class ReviewForm
                     ->searchable()
                     ->required(),
                 Select::make('reviewer_id')
-                    ->relationship('reviewer', 'name')
+                    ->relationship('reviewer', 'username')
                     ->searchable()
                     ->required(),
                 Select::make('seller_id')
-                    ->relationship('seller', 'name')
+                    ->relationship('seller', 'username')
                     ->searchable()
                     ->required(),
                 Select::make('transaction_receipt_id')

@@ -30,11 +30,11 @@ class ConversationsTable
                     ->searchable()
                     ->width(120),
 
-                TextColumn::make('buyer.name')
+                TextColumn::make('buyer.username')
                     ->label('Buyer')
                     ->searchable(),
 
-                TextColumn::make('seller.name')
+                TextColumn::make('seller.username')
                     ->label('Seller')
                     ->searchable(),
 

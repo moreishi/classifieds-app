@@ -13,12 +13,19 @@ class UsersTable
         return $table
             ->columns([
                 TextColumn::make('id')->sortable(),
-                TextColumn::make('name')
+                TextColumn::make('username')
+                    ->label('Username')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
+                BadgeColumn::make('gcash_verified')
+                    ->label('GCash')
+                    ->getStateUsing(fn ($record) => $record->isGcashVerified() ? '✅ Verified' : '—')
+                    ->colors([
+                        'success' => '✅ Verified',
+                    ]),
                 TextColumn::make('listings_count')
                     ->label('Listings')
                     ->counts('listings')

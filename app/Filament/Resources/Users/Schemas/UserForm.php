@@ -13,13 +13,19 @@ class UserForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
+                TextInput::make('username')
+                    ->label('Username')
+                    ->unique(ignoreRecord: true)
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(50)
+                    ->helperText('Public handle shown on listings.'),
                 TextInput::make('email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
+                TextInput::make('display_name')
+                    ->label('Display Name')
+                    ->maxLength(255),
                 TextInput::make('password')
                     ->password()
                     ->hiddenOn('edit')

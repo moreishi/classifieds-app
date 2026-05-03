@@ -25,11 +25,11 @@ class ConversationForm
 
                         Placeholder::make('buyer')
                             ->label('Buyer')
-                            ->content(fn ($record) => $record?->buyer?->name ?? '—'),
+                            ->content(fn ($record) => $record?->buyer?->publicName() ?? '—'),
 
                         Placeholder::make('seller')
                             ->label('Seller')
-                            ->content(fn ($record) => $record?->seller?->name ?? '—'),
+                            ->content(fn ($record) => $record?->seller?->publicName() ?? '—'),
 
                         Placeholder::make('last_message_at')
                             ->label('Last Activity')

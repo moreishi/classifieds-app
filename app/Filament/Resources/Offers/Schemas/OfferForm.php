@@ -18,11 +18,11 @@ class OfferForm
                     ->searchable()
                     ->required(),
                 Select::make('buyer_id')
-                    ->relationship('buyer', 'name')
+                    ->relationship('buyer', 'username')
                     ->searchable()
                     ->required(),
                 Select::make('seller_id')
-                    ->relationship('seller', 'name')
+                    ->relationship('seller', 'username')
                     ->searchable()
                     ->required(),
                 TextInput::make('amount')

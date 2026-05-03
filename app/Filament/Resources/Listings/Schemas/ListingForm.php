@@ -16,8 +16,8 @@ class ListingForm
             ->components([
                 Select::make('user_id')
                     ->label('Seller')
-                    ->relationship('user', 'name')
-                    ->searchable()
+                    ->relationship('user', 'username')
+                    ->searchable(['username', 'email'])
                     ->required(),
                 Select::make('category_id')
                     ->relationship('category', 'name')

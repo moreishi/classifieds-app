@@ -22,7 +22,7 @@ class ListingsTable
                     ->searchable()
                     ->limit(40)
                     ->sortable(),
-                TextColumn::make('user.name')
+                TextColumn::make('user.username')
                     ->label('Seller')
                     ->searchable()
                     ->sortable(),

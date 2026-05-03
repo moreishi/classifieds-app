@@ -13,7 +13,7 @@ class CreditTransactionForm
         return $schema
             ->components([
                 Select::make('user_id')
-                    ->relationship('user', 'name')
+                    ->relationship('user', 'username')
                     ->searchable()
                     ->required(),
                 TextInput::make('amount')
@@ -22,8 +22,9 @@ class CreditTransactionForm
                     ->required(),
                 Select::make('type')
                     ->options([
-                        'purchase' => 'Purchase',
                         'listing_fee' => 'Listing Fee',
+                        'listing_bump' => 'Listing Bump',
+                        'top_up' => 'Top Up (Buy Credits)',
                         'referral_bonus' => 'Referral Bonus',
                         'admin_adjustment' => 'Admin Adjustment',
                     ])

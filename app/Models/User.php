@@ -117,4 +117,9 @@ class User extends Authenticatable
     {
         return $this->username ?? $this->name;
     }
+
+    public function isGcashVerified(): bool
+    {
+        return ! is_null($this->gcash_verified_at);
+    }
 }

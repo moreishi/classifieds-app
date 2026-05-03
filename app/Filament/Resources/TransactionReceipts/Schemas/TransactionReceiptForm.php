@@ -17,7 +17,7 @@ class TransactionReceiptForm
                     ->searchable()
                     ->required(),
                 Select::make('seller_id')
-                    ->relationship('seller', 'name')
+                    ->relationship('seller', 'username')
                     ->searchable()
                     ->required(),
                 TextInput::make('buyer_email')
