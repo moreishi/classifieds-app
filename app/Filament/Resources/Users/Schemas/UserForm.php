@@ -13,6 +13,17 @@ class UserForm
     {
         return $schema
             ->components([
+                TextInput::make('first_name')
+                    ->label('First Name')
+                    ->required()
+                    ->maxLength(100),
+                TextInput::make('middle_name')
+                    ->label('Middle Name')
+                    ->maxLength(100),
+                TextInput::make('last_name')
+                    ->label('Last Name')
+                    ->required()
+                    ->maxLength(100),
                 TextInput::make('username')
                     ->label('Username')
                     ->unique(ignoreRecord: true)
@@ -23,9 +34,6 @@ class UserForm
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true),
-                TextInput::make('display_name')
-                    ->label('Display Name')
-                    ->maxLength(255),
                 TextInput::make('password')
                     ->password()
                     ->hiddenOn('edit')

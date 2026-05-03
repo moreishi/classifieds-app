@@ -15,6 +15,9 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable([
     'name',
+    'first_name',
+    'middle_name',
+    'last_name',
     'username',
     'email',
     'password',
@@ -115,7 +118,28 @@ class User extends Authenticatable
 
     public function publicName(): string
     {
-        return $this->username ?? $this->name;
+        return $this->username ?? $this->fullName();
+    }
+
+    public function fullName(): string
+    {
+        $parts = array_filter([
+            $this->first_name,
+            $this->middle_name,
+            $this->last_name,
+        ]);
+
+        return $parts ? implode(' ', $parts) : ($this->name ?? '');
+    }
+
+    public function initials(): string
+    {
+        $parts = array_filter([$this->first_name, $this->last_name]);
+        if (! $parts) {
+            return strtoupper(substr($this->name ?? $this->username ?? '', 0, 2));
+        }
+
+        return collect($parts)->map(fn ($p) => strtoupper(substr($p, 0, 1)))->implode('');
     }
 
     public function archivedConversations(): HasMany

@@ -4,19 +4,31 @@
     {{-- Profile --}}
     <flux:card class="space-y-4">
         <flux:heading>Profile</flux:heading>
+        <flux:text class="text-sm text-gray-500">Your real name is used internally and never shown publicly.</flux:text>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <flux:field>
+                <flux:label>First Name</flux:label>
+                <flux:input wire:model="firstName" maxlength="100" />
+                <flux:error name="firstName" />
+            </flux:field>
+            <flux:field>
+                <flux:label>Middle Name <span class="text-gray-400">(optional)</span></flux:label>
+                <flux:input wire:model="middleName" maxlength="100" />
+                <flux:error name="middleName" />
+            </flux:field>
+            <flux:field>
+                <flux:label>Last Name</flux:label>
+                <flux:input wire:model="lastName" maxlength="100" />
+                <flux:error name="lastName" />
+            </flux:field>
+        </div>
 
         <flux:field>
             <flux:label>Username</flux:label>
             <flux:input wire:model="username" placeholder="johndoe" maxlength="50" />
             <flux:error name="username" />
-            <flux:description>Your public handle — other users will see this instead of your real name.</flux:description>
-        </flux:field>
-
-        <flux:field>
-            <flux:label>Display Name <span class="text-gray-400">(optional)</span></flux:label>
-            <flux:input wire:model="displayName" placeholder="John" />
-            <flux:error name="displayName" />
-            <flux:description>Internal use only — never shown publicly.</flux:description>
+            <flux:description>Your public handle — other users see this instead of your real name.</flux:description>
         </flux:field>
 
         <flux:field>
@@ -124,7 +136,7 @@
                 <flux:label>Type <strong>DELETE</strong> to confirm</flux:label>
                 <flux:input wire:model="deleteConfirm" placeholder="DELETE" />
                 <flux:error name="deleteConfirm" />
-            </flux:field>
+            </flux:error>
         </div>
 
         <div class="flex gap-2 mt-6">

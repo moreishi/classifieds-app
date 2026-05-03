@@ -32,6 +32,9 @@ class RegisteredUserController extends Controller
     public function store(Request $request, CreditService $credits): RedirectResponse
     {
         $request->validate([
+            'first_name' => ['required', 'string', 'max:100'],
+            'middle_name' => ['nullable', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
             'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:' . User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -40,7 +43,10 @@ class RegisteredUserController extends Controller
 
         $user = User::create([
             'username' => $request->username,
-            'name' => $request->username,
+            'first_name' => $request->first_name,
+            'middle_name' => $request->middle_name,
+            'last_name' => $request->last_name,
+            'name' => trim(preg_replace('/\s+/', ' ', $request->first_name . ' ' . ($request->middle_name ?? '') . ' ' . $request->last_name)),
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'referral_code' => CreditService::generateReferralCode(),

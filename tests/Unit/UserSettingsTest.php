@@ -20,6 +20,8 @@ class UserSettingsTest extends TestCase
         parent::setUp();
 
         $this->user = User::factory()->create([
+            'first_name' => 'Test',
+            'last_name' => 'User',
             'username' => 'testuser',
             'gcash_number' => '09171234567',
             'gcash_verified_at' => now(),
@@ -32,6 +34,8 @@ class UserSettingsTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(UserSettings::class)
+            ->assertSet('firstName', 'Test')
+            ->assertSet('lastName', 'User')
             ->assertSet('username', 'testuser')
             ->assertSet('email', $this->user->email);
     }
@@ -62,6 +66,23 @@ class UserSettingsTest extends TestCase
     }
 
     #[Test]
+    public function it_updates_name_fields(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(UserSettings::class)
+            ->set('firstName', 'Juan')
+            ->set('middleName', 'Dela')
+            ->set('lastName', 'Cruz')
+            ->call('updateProfile');
+
+        $fresh = $this->user->fresh();
+        $this->assertEquals('Juan', $fresh->first_name);
+        $this->assertEquals('Dela', $fresh->middle_name);
+        $this->assertEquals('Cruz', $fresh->last_name);
+        $this->assertEquals('Juan Dela Cruz', $fresh->name);
+    }
+
+    #[Test]
     public function it_updates_username(): void
     {
         Livewire::actingAs($this->user)
@@ -87,6 +108,8 @@ class UserSettingsTest extends TestCase
     public function it_shows_unverified_state_when_not_verified(): void
     {
         $unverified = User::factory()->create([
+            'first_name' => 'Unverified',
+            'last_name' => 'User',
             'username' => 'unverified',
             'gcash_number' => '09179999999',
             'gcash_verified_at' => null,
@@ -101,6 +124,8 @@ class UserSettingsTest extends TestCase
     public function it_shows_not_set_when_no_gcash(): void
     {
         $noGcash = User::factory()->create([
+            'first_name' => 'No',
+            'last_name' => 'Gcash',
             'username' => 'nogcash',
             'gcash_number' => null,
             'gcash_verified_at' => null,

@@ -2,10 +2,31 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Username -->
+        <!-- First Name -->
         <div>
+            <x-input-label for="first_name" :value="__('First Name')" />
+            <x-text-input id="first_name" class="block mt-1 w-full" type="text" name="first_name" :value="old('first_name')" required autofocus maxlength="100" />
+            <x-input-error :messages="$errors->get('first_name')" class="mt-2" />
+        </div>
+
+        <!-- Middle Name -->
+        <div class="mt-4">
+            <x-input-label for="middle_name" :value="__('Middle Name (optional)')" />
+            <x-text-input id="middle_name" class="block mt-1 w-full" type="text" name="middle_name" :value="old('middle_name')" maxlength="100" />
+            <x-input-error :messages="$errors->get('middle_name')" class="mt-2" />
+        </div>
+
+        <!-- Last Name -->
+        <div class="mt-4">
+            <x-input-label for="last_name" :value="__('Last Name')" />
+            <x-text-input id="last_name" class="block mt-1 w-full" type="text" name="last_name" :value="old('last_name')" required maxlength="100" />
+            <x-input-error :messages="$errors->get('last_name')" class="mt-2" />
+        </div>
+
+        <!-- Username -->
+        <div class="mt-4">
             <x-input-label for="username" :value="__('Username')" />
-            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autofocus autocomplete="username" placeholder="johndoe" maxlength="50" />
+            <x-text-input id="username" class="block mt-1 w-full" type="text" name="username" :value="old('username')" required autocomplete="username" placeholder="johndoe" maxlength="50" />
             <x-input-error :messages="$errors->get('username')" class="mt-2" />
             <p class="text-xs text-gray-500 mt-1">Your public handle — only letters, numbers, dashes, and underscores.</p>
         </div>
