@@ -1,5 +1,8 @@
 # Production Deployment Checklist
 
+> **Stack:** Laravel 13.7, PHP 8.4, Livewire 4, Filament 5, SQLite (dev) / MySQL (prod)  
+> **PHP constraint:** `^8.4` (locked in composer.json + composer.lock)
+
 ## 1. Prerequisites
 
 - [ ] Domain name pointed to server (A/AAAA records)
@@ -15,6 +18,7 @@
 # Clone and install
 git clone <repo> /var/www/iskina
 cd /var/www/iskina
+git checkout master
 
 # Copy & configure environment
 cp .env.example .env
@@ -41,12 +45,8 @@ npm ci --production && npm run build
 # Run migrations
 php artisan migrate --force
 
-# Seed roles/permissions
+# Seed roles/permissions (creates admin user)
 php artisan db:seed --class=RoleSeeder --force
-
-# Create admin user
-php artisan make:filament-user
-# → Use admin@iskina.ph / strong password
 
 # Optimize
 php artisan optimize
@@ -57,10 +57,18 @@ php artisan event:cache
 php artisan storage:link
 ```
 
+### Admin User
+Created automatically by `RoleSeeder`:
+- **Email:** `admin@iskina.ph`
+- **Password:** `password` (change immediately)
+- Always email-verified (`email_verified_at` set by seeder)
+
+If re-seeding, `RoleSeeder` uses `firstOrCreate` and ensures the admin is always verified.
+
 ## 4. Queue & Scheduling
 
+### Supervisor
 ```bash
-# Supervisor config for queue worker
 cat > /etc/supervisor/conf.d/iskina-queue.conf << 'SUPERVISOR'
 [program:iskina-queue]
 process_name=%(program_name)s_%(process_num)02d
@@ -75,8 +83,10 @@ redirect_stderr=true
 stdout_logfile=/var/www/iskina/storage/logs/queue-worker.log
 stopwaitsecs=3600
 SUPERVISOR
+```
 
-# Cron entry (every minute)
+### Cron (every minute)
+```
 * * * * * cd /var/www/iskina && php artisan schedule:run >> /dev/null 2>&1
 ```
 
@@ -84,22 +94,28 @@ SUPERVISOR
 
 - **URL:** `https://iskina.ph/webhooks/paymongo`
 - **Events:** `payment.paid`
-- **Production keys:** Set `PAYMONGO_PUBLIC_KEY` and `PAYMONGO_SECRET_KEY` in `.env`
-- **Wallet ID:** Set `PAYMONGO_WALLET_ID` for GCash verification charges
+- **Middleware:** No auth, no CSRF (handled by PayMongo signature)
+- **Handles:** `type: verification` (GCash verify) and `type: buy_credits` (credit purchase)
+
+### Environment Variables
+```env
+PAYMONGO_PUBLIC_KEY=pk_live_xxx
+PAYMONGO_SECRET_KEY=sk_live_xxx
+PAYMONGO_WALLET_ID=wal_xxx
+```
 
 ## 6. Post-Deployment Checks
 
-- [ ] Visit `https://iskina.ph/up` → `{"status":"ok"}`
+- [ ] `https://iskina.ph/up` → `{"status":"ok"}`
 - [ ] Register a test user
 - [ ] Verify email flow (check mailtrap/logs)
 - [ ] Create a listing (check photo uploads)
 - [ ] Test GCash verification flow
 - [ ] Test Buy Credits flow
 - [ ] Login to `/admin` as admin user
-- [ ] Run `php artisan listings:expire` to verify scheduler
 - [ ] Check `storage/logs/laravel.log` for errors
 - [ ] Configure CDN / Cloudflare if applicable
-- [ ] Set up uptime monitoring (betteruptime, pingdom, etc.)
+- [ ] Set up uptime monitoring
 
 ## 7. Monitoring & Maintenance
 
@@ -107,25 +123,21 @@ SUPERVISOR
 # Quick health check
 curl -s https://iskina.ph/up
 
-# Check queue worker is running
+# Check queue worker
 sudo supervisorctl status iskina-queue:*
 
 # View recent logs
 tail -f /var/www/iskina/storage/logs/laravel.log
 
-# Check scheduled task ran
-grep "schedule" /var/log/syslog | tail -5
-
 # Clear cache (after config changes)
 php artisan optimize:clear && php artisan optimize
 ```
 
-## 8. Systemd Service Reference (if no Supervisor)
+## 8. Systemd Service Reference
 
-If using systemd instead of Supervisor, the user services from local dev are not for production.
-Use system-level services:
+If using systemd instead of Supervisor:
 
-```bash
+```ini
 # /etc/systemd/system/iskina-queue.service
 [Unit]
 Description=Iskina Queue Worker
@@ -146,7 +158,7 @@ WantedBy=multi-user.target
 ## 9. Security
 
 - [ ] Ensure `/admin` route is not publicly indexed (no-robots meta or HTTP auth)
-- [ ] Rate limiting: `/webhooks/paymongo` should be limited
+- [ ] Rate limiting on `/webhooks/paymongo`
 - [ ] CORS configured if using separate API subdomain
 - [ ] SQLite → MySQL migration tested
 - [ ] Password hashing using bcrypt (default)
