@@ -79,7 +79,7 @@ class BuyCreditsTest extends TestCase
 
         Livewire::actingAs($userWithoutGcash)
             ->test(BuyCredits::class)
-            ->assertSee('verify your GCash account');
+            ->assertSee('verify your account');
     }
 
     #[Test]

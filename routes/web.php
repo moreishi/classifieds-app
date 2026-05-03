@@ -95,6 +95,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/buy-credits', \App\Livewire\BuyCredits::class)->name('buy-credits');
     Route::get('/verify-account', \App\Livewire\VerifyAccount::class)->name('verify-account');
+    Route::get('/settings', \App\Livewire\UserSettings::class)->name('settings');
 });
 
 require __DIR__.'/auth.php';

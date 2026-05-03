@@ -23,7 +23,7 @@
 
         @if(!$hasGcashNumber)
             <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm mb-6">
-                You need to <a href="{{ route('verify-account') }}" class="underline font-medium">verify your GCash account</a> first before buying credits.
+                You need to <a href="{{ route('verify-account') }}" class="underline font-medium">verify your account</a> first before buying credits.
             </div>
         @endif
 
@@ -68,7 +68,7 @@
         {{-- GCash Number (if not saved) --}}
         @if(!$hasGcashNumber)
             <div class="mb-6">
-                <label for="gcashNumber" class="block text-sm font-medium text-gray-700 mb-1">GCash Number</label>
+                <label for="gcashNumber" class="block text-sm font-medium text-gray-700 mb-1">GCash-linked Mobile Number</label>
                 <input type="tel" wire:model="gcashNumber" id="gcashNumber"
                        class="block w-full max-w-xs rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm"
                        placeholder="09171234567" />
@@ -80,7 +80,7 @@
         <button wire:click="buy" wire:loading.attr="disabled"
                 class="w-full max-w-xs bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 {{ !$hasGcashNumber ? 'disabled' : '' }}>
-            <span wire:loading.remove>Pay with GCash</span>
+            <span wire:loading.remove>Pay with GCash via PayMongo</span>
             <span wire:loading>Processing...</span>
         </button>
 
