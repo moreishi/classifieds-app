@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,13 +14,24 @@ class Conversation extends Model
         'buyer_id',
         'seller_id',
         'last_message_at',
+        'buyer_archived_at',
+        'seller_archived_at',
     ];
 
     protected function casts(): array
     {
         return [
             'last_message_at' => 'datetime',
+            'buyer_archived_at' => 'datetime',
+            'seller_archived_at' => 'datetime',
         ];
+    }
+
+    public function scopeNotArchivedBy(Builder $query, User $user): Builder
+    {
+        $column = $user->id === $this->buyer_id ? 'buyer_archived_at' : 'seller_archived_at';
+
+        return $query->whereNull($column);
     }
 
     public function listing(): BelongsTo

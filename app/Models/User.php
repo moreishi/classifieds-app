@@ -118,6 +118,16 @@ class User extends Authenticatable
         return $this->username ?? $this->name;
     }
 
+    public function archivedConversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class, 'buyer_id')
+            ->whereNotNull('buyer_archived_at')
+            ->orWhere(function ($q) {
+                $q->where('seller_id', $this->id)
+                  ->whereNotNull('seller_archived_at');
+            });
+    }
+
     public function isGcashVerified(): bool
     {
         return ! is_null($this->gcash_verified_at);
