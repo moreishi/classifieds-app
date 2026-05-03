@@ -1,33 +1,62 @@
-# Coolify Deployment Guide
+# Coolify Deployment Guide (Dockerfile)
 
-> **Stack:** Laravel 13.7, PHP 8.4, Livewire 4, Filament 5  
-> **PHP constraint:** `^8.4` (locked in composer.json + composer.lock)  
-> **Branch:** `master` (production), `develop` (staging)
+> **Single container** with Nginx + PHP-FPM + Supervisor (queue + scheduler)  
+> **Port:** 8080  
+> **Health check:** `/up`
 
-## Quick Deploy (Nixpacks — Zero Config)
+## Quick Deploy
 
 ### Step 1: Create Resource
 - **Resources → New → Application**
 - Select your repo, branch `master`
-- **Build pack**: **Nixpacks** (auto-detected, no config needed)
+- **Build pack**: **Dockerfile**
+- **Port:** `8080`
+- **Health check path:** `/up`
 
 ### Step 2: Set Environment Variables
 
-| Variable | Value | Required |
-|---|---|---|
-| `APP_KEY` | `base64:...` | ✅ |
-| `APP_URL` | `https://your-domain.com` | ✅ |
-| `APP_ENV` | `production` | ✅ |
-| `APP_DEBUG` | `false` | ✅ |
-| `DB_CONNECTION` | `mysql` | ✅ |
-| `DB_HOST` | Coolify DB hostname | ✅ |
-| `DB_PORT` | `3306` | |
-| `DB_DATABASE` | `iskina` | ✅ |
-| `DB_USERNAME` | Coolify DB user | ✅ |
-| `DB_PASSWORD` | Coolify DB password | ✅ |
-| `QUEUE_CONNECTION` | `database` | ✅ |
-| `SESSION_DRIVER` | `database` | ✅ |
-| `QUEUE_CONVERSIONS_BY_DEFAULT` | `false` | ✅ |
+Under **Environment** tab, add all of these:
+
+```env
+# Laravel
+APP_KEY=base64:...
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://your-domain.com
+
+# Database
+DB_CONNECTION=mysql
+DB_HOST=<coolify-mysql-host>
+DB_PORT=3306
+DB_DATABASE=iskina
+DB_USERNAME=iskina
+DB_PASSWORD=...
+
+# Session
+SESSION_DRIVER=database
+SESSION_DOMAIN=.your-domain.com
+
+# Queue
+QUEUE_CONNECTION=database
+
+# Media
+FILESYSTEM_DISK=public
+QUEUE_CONVERSIONS_BY_DEFAULT=false
+
+# PayMongo
+PAYMONGO_PUBLIC_KEY=pk_live_xxx
+PAYMONGO_SECRET_KEY=sk_live_xxx
+PAYMONGO_WALLET_ID=wal_xxx
+
+# Mail
+MAIL_MAILER=smtp
+MAIL_HOST=...
+MAIL_PORT=587
+MAIL_USERNAME=...
+MAIL_PASSWORD=...
+MAIL_FROM_ADDRESS=noreply@iskina.ph
+MAIL_FROM_NAME="Iskina.ph"
+```
 
 Generate APP_KEY:
 ```bash
@@ -35,75 +64,55 @@ php -r "echo 'base64:'.base64_encode(random_bytes(32));"
 ```
 
 ### Step 3: Attach MySQL Database
-- Create a MySQL database in Coolify
-- Add as dependency → copy credentials into env vars
+- Create a MySQL/MariaDB database in Coolify
+- Add as dependency
+- Copy host/credentials into the env vars above
 
-### Step 4: Post-Deployment Commands
-In **Commands** section:
-```bash
-php artisan migrate --force
-php artisan storage:link --force
-php artisan db:seed --class=RoleSeeder --force
-```
+### Step 4: Storage Persistence
 
-### Step 5: Queue Worker
-Nixpacks runs a single container (nginx + php-fpm only). Queue worker needs a separate service:
-- Create a new Coolify **Service** (Docker Image)
-- Command: `php /app/artisan queue:work --sleep=3 --tries=3 --max-time=3600`
-- No ports needed
+Add a persistent volume for uploaded files:
+- **Mount path:** `/app/storage`
+- This keeps user uploads across deployments
 
-### Step 6: Scheduler
-Add a cron job or a second service:
-- Command: `php /app/artisan schedule:work`
-- No ports needed
+If using S3 instead, skip this and set `FILESYSTEM_DISK=s3` with AWS credentials.
 
-### Step 7: Deploy
-That's it. Nixpacks detects PHP, installs extensions from `composer.json`, runs `composer install` + `npm run build`, starts nginx with Laravel routing.
+### Step 5: Deploy
 
-### Accounts Created
+That's it. The entrypoint handles:
+1. Wait for MySQL
+2. Generate `APP_KEY` if missing
+3. Run migrations
+4. Seed admin user (idempotent)
+5. Start nginx + php-fpm + queue worker + scheduler via Supervisor
+
+### Accounts
 - **Admin:** `admin@iskina.ph` / `password` (change immediately)
-  - Created by `RoleSeeder`, always email-verified
-  - On re-seed: `firstOrCreate` + `email_verified_at` guard
+- Always email-verified (set by `RoleSeeder`)
 
 ## PayMongo Webhook
 
-After deployment, register webhook:
+After deployment, register this webhook with PayMongo:
 - **URL:** `https://your-domain.com/webhooks/paymongo`
 - **Event:** `payment.paid`
-- Note: webhook endpoint has no CSRF and no auth by design
-
-Set env vars:
-```env
-PAYMONGO_PUBLIC_KEY=pk_live_xxx
-PAYMONGO_SECRET_KEY=sk_live_xxx
-PAYMONGO_WALLET_ID=wal_xxx
-```
-
-## SMTP
-
-Configure mail in Coolify env vars:
-```env
-MAIL_MAILER=smtp
-MAIL_HOST=your-smtp-host.com
-MAIL_PORT=587
-MAIL_USERNAME=your@email.com
-MAIL_PASSWORD=your-password
-MAIL_FROM_ADDRESS=noreply@iskina.ph
-MAIL_FROM_NAME="Iskina.ph"
-```
+- The endpoint has no CSRF and no auth by design — rate limit recommended
 
 ## Troubleshooting
 
-**composer install fails?** Add missing `ext-*` to `composer.json` require section.
+**Build fails?** Check Coolify has enough memory. Docker multi-stage builds need ~2GB.
 
-**PHP version mismatch?** Constraint is `^8.4`. Ensure Coolify image has PHP 8.4+.
+**Health check fails?** Check DB credentials in env vars. The nginx health endpoint is `/up`.
 
-**500 error?** `APP_KEY` missing or invalid. Regenerate.
+**500 errors?** `APP_KEY` missing or invalid — regenerate.
 
-**Storage link?** `php artisan storage:link --force` in post-deployment commands.
+**Storage not persisting?** Add a persistent volume mount for `/app/storage`.
 
-**Queue?** Needs separate worker service with Nixpacks.
+**Queue not processing?** Supervisor starts the queue worker automatically. Check Coolify logs.
 
-**Scheduler?** Needs separate service or cron job.
+**Scheduler not running?** Supervisor starts `schedule:work` automatically — no cron needed.
 
-**Media table error?** The `create_media_table` migration has a `Schema::hasTable()` guard — safe to run repeatedly.
+## Updating
+
+On redeploy, the entrypoint runs:
+- `php artisan migrate --force` (safe — idempotent)
+- `php artisan db:seed --class=RoleSeeder --force` (safe — uses `firstOrCreate`)
+- `php artisan optimize` (caches routes, config, events)

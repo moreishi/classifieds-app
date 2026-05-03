@@ -3,8 +3,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      target: production
-    image: iskinaph:latest
+      target: build
+      args:
+        - PHP_VERSION=8.4
+    image: iskinaph:dev
     restart: unless-stopped
     depends_on:
       mysql:
@@ -20,38 +22,17 @@ services:
       - DB_PASSWORD=${DB_PASSWORD:-secret}
       - SESSION_DRIVER=database
       - QUEUE_CONNECTION=database
-      - FILESYSTEM_DISK=public
-      - MAIL_MAILER=log
+      - APP_ENV=local
+      - APP_DEBUG=true
     volumes:
+      - .:/app
       - storage_data:/app/storage
+    command: php artisan serve --host=0.0.0.0 --port=8080
     ports:
-      - "9000:9000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/ping"]
-      interval: 60s
-      timeout: 3s
-      retries: 3
-      start_period: 10s
-
-  nginx:
-    image: nginx:alpine
-    restart: unless-stopped
-    depends_on:
-      - app
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - storage_data:/app/storage:ro
-      - ./public:/app/public:ro
+      - "8200:8080"
 
   queue:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    image: iskinaph:latest
+    image: iskinaph:dev
     restart: unless-stopped
     depends_on:
       mysql:
@@ -65,18 +46,16 @@ services:
       - DB_DATABASE=iskina
       - DB_USERNAME=iskina
       - DB_PASSWORD=${DB_PASSWORD:-secret}
-      - SESSION_DRIVER=database
       - QUEUE_CONNECTION=database
+      - APP_ENV=local
+      - APP_DEBUG=true
     volumes:
+      - .:/app
       - storage_data:/app/storage
     command: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
 
   scheduler:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: production
-    image: iskinaph:latest
+    image: iskinaph:dev
     restart: unless-stopped
     depends_on:
       mysql:
@@ -90,9 +69,11 @@ services:
       - DB_DATABASE=iskina
       - DB_USERNAME=iskina
       - DB_PASSWORD=${DB_PASSWORD:-secret}
-      - SESSION_DRIVER=database
       - QUEUE_CONNECTION=database
+      - APP_ENV=local
+      - APP_DEBUG=true
     volumes:
+      - .:/app
       - storage_data:/app/storage
     command: php artisan schedule:work
 
@@ -107,7 +88,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
-      - "3306:3306"
+      - "3307:3306"
     healthcheck:
       test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
       interval: 10s

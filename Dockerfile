@@ -1,5 +1,5 @@
-# Multi-stage build for IskinaPH
-# Uses PHP 8.4 FPM with Nginx
+# IskinaPH — Single container for Coolify + Cloudflare
+# Nginx + PHP-FPM + Supervisor (queue + scheduler)
 
 ARG PHP_VERSION=8.4
 
@@ -8,7 +8,6 @@ FROM php:${PHP_VERSION}-fpm-alpine AS build
 
 WORKDIR /app
 
-# PHP extensions required by composer.json
 RUN apk add --no-cache \
         libzip-dev \
         libpng-dev \
@@ -36,21 +35,14 @@ RUN apk add --no-cache \
         opcache \
     && rm -rf /var/cache/apk/*
 
-# Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy only dependency files first for layer caching
 COPY composer.json composer.lock package.json package-lock.json ./
-
-# Install dependencies (production only)
 RUN composer install --no-dev --no-interaction --no-progress --optimize-autoloader \
     && npm ci --production \
     && npm run build
 
-# Copy application source
 COPY . .
-
-# Generate optimized cache (requires env, done at runtime entrypoint)
 RUN php artisan storage:link \
     && chmod -R 775 storage bootstrap/cache \
     && chown -R www-data:www-data storage bootstrap/cache
@@ -60,8 +52,14 @@ FROM php:${PHP_VERSION}-fpm-alpine AS production
 
 WORKDIR /app
 
-# Runtime extensions only
-RUN apk add --no-cache libpng-dev libzip-dev oniguruma-dev \
+# Install nginx, supervisor, and runtime deps
+RUN apk add --no-cache \
+        nginx \
+        supervisor \
+        libpng-dev \
+        libzip-dev \
+        oniguruma-dev \
+        curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         bcmath \
@@ -78,18 +76,24 @@ RUN apk add --no-cache libpng-dev libzip-dev oniguruma-dev \
         opcache \
     && rm -rf /var/cache/apk/*
 
-# Copy from build stage
 COPY --from=build --chown=www-data:www-data /app /app
 
-# OPcache config
+# Config files
 COPY docker/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY docker/php.ini /usr/local/etc/php/conf.d/app.ini
+COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+COPY docker/supervisord.conf /etc/supervisord.conf
+COPY docker/entrypoint.sh /entrypoint.sh
 
-# Health check
-HEALTHCHECK --interval=60s --timeout=3s --start-period=10s \
-    CMD curl -f http://localhost:9000/ping || exit 1
+RUN chmod +x /entrypoint.sh \
+    && mkdir -p /run/nginx
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=15s \
+    CMD curl -f http://localhost:8080/up || exit 1
 
 USER www-data
 
-ENTRYPOINT ["docker/entrypoint.sh"]
-CMD ["php-fpm"]
+EXPOSE 8080
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]

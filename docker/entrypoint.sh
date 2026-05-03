@@ -1,31 +1,34 @@
 #!/bin/sh
 set -e
 
-# Wait for DB if using MySQL
+# Wait for MySQL if using it
 if [ "$DB_CONNECTION" = "mysql" ]; then
-    echo "Waiting for MySQL..."
-    while ! nc -z "$DB_HOST" "${DB_PORT:-3306}"; do
+    echo "Waiting for MySQL at ${DB_HOST}:${DB_PORT:-3306}..."
+    while ! nc -z "$DB_HOST" "${DB_PORT:-3306}" 2>/dev/null; do
         sleep 1
     done
     echo "MySQL ready."
 fi
 
-# Generate APP_KEY if not set
-if ! grep -q "APP_KEY=" .env || [ -z "$(grep 'APP_KEY=' .env | cut -d= -f2)" ]; then
-    php artisan key:generate --force
+# Ensure APP_KEY exists
+if [ -z "$APP_KEY" ] || [ "$APP_KEY" = "base64:" ]; then
+    echo "Generating APP_KEY..."
+    cd /app && php artisan key:generate --force
 fi
 
-# Run migrations (idempotent)
+# Migrate and seed (idempotent)
+cd /app
 php artisan migrate --force
+php artisan db:seed --class=RoleSeeder --force 2>/dev/null || echo "Seed already done."
 
-# Cache for production
+# Optimize
 if [ "$APP_ENV" = "production" ]; then
     php artisan optimize
     php artisan view:cache
     php artisan event:cache
 fi
 
-# Storage link (safe to run multiple times)
-php artisan storage:link --force
+# Storage link (idempotent)
+php artisan storage:link --force 2>/dev/null || true
 
 exec "$@"
