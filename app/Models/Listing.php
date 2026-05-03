@@ -50,6 +50,7 @@ class Listing extends Model implements HasMedia
         'title', 'slug', 'description', 'price',
         'condition', 'status', 'is_featured',
         'total_views', 'unique_views',
+        'featured_until',
         'expires_at', 'sold_at',
         'reference_id',
     ];
@@ -58,6 +59,7 @@ class Listing extends Model implements HasMedia
     {
         return [
             'is_featured' => 'boolean',
+            'featured_until' => 'datetime',
             'expires_at' => 'datetime',
             'sold_at' => 'datetime',
         ];

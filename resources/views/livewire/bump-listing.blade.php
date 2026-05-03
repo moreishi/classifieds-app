@@ -1,7 +1,24 @@
 <div>
+    @if($message)
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-3 text-sm">
+            {{ $message }}
+        </div>
+    @endif
+
+    @if($error)
+        <div class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg mb-3 text-sm">
+            {{ $error }}
+        </div>
+    @endif
+
     @if($hasActivePromotion)
         <div class="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-3 rounded-lg text-sm">
-            This listing is currently promoted until {{ $this->listing->featured_until->format('M d, Y') }}.
+            This listing is currently promoted
+            @if($this->listing->featured_until)
+                until {{ $this->listing->featured_until->format('M d, Y') }}.
+            @else
+                .
+            @endif
         </div>
     @else
         <div class="bg-white rounded-xl border p-5">
@@ -15,18 +32,6 @@
             <p class="text-sm text-gray-500 mb-4">
                 Get more buyers. Promoted listings appear at the top of search results.
             </p>
-
-            @if($error)
-                <div class="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg mb-3 text-sm">
-                    {{ $error }}
-                </div>
-            @endif
-
-            @if($message)
-                <div class="bg-green-50 border border-green-200 text-green-700 px-3 py-2 rounded-lg mb-3 text-sm">
-                    {{ $message }}
-                </div>
-            @endif
 
             <div class="flex flex-col gap-4">
                 <div class="space-y-2">

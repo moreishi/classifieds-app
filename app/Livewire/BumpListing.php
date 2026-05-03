@@ -78,9 +78,16 @@ class BumpListing extends Component
                 'is_active' => true,
             ]);
 
-            // Update the listing's featured_until
+            // Extend listing expiry so bump time isn't wasted on near-expired listings
+            $currentExpiry = $this->listing->expires_at;
+            $newExpiry = $currentExpiry && $currentExpiry->isFuture()
+                ? $currentExpiry->addDays($plan['days'])
+                : $expiresAt;
+
+            // Update the listing
             $this->listing->update([
                 'featured_until' => $expiresAt,
+                'expires_at' => $newExpiry,
             ]);
         });
 
