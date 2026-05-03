@@ -35,4 +35,22 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | PayMongo
+    |--------------------------------------------------------------------------
+    |
+    | Used for GCash account verification. The wallet feature must be
+    | activated via the PayMongo Dashboard (Statement of Acceptance).
+    |
+    | @see https://dashboard.paymongo.com
+    |
+    */
+    'paymongo' => [
+        'public_key' => env('PAYMONGO_PUBLIC_KEY'),
+        'secret_key' => env('PAYMONGO_SECRET_KEY'),
+        'wallet_id' => env('PAYMONGO_WALLET_ID'),
+        'base_url' => env('PAYMONGO_BASE_URL', 'https://api.paymongo.com/v1'),
+    ],
+
 ];

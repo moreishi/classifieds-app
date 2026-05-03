@@ -14,8 +14,7 @@ class VerifyAccount extends Component
     public ?string $referenceId = null;
     public string $message = '';
     public string $error = '';
-    public string $confirmAmount = '';
-    public string $step = ''; // '' | 'number' | 'confirm' | 'done'
+    public string $step = ''; // '' | 'number' | 'redirecting' | 'done'
 
     public function mount(): void
     {
@@ -36,7 +35,7 @@ class VerifyAccount extends Component
 
         auth()->user()->update(['gcash_number' => $this->gcashNumber]);
         $this->step = 'confirm';
-        $this->message = 'Number saved. Start verification to confirm ownership.';
+        $this->message = 'Number saved. Now verify with a ₱5 GCash payment.';
     }
 
     public function startVerification(VerificationService $verificationService, PaymentGateway $gateway): void
@@ -48,29 +47,24 @@ class VerifyAccount extends Component
             $result = $verificationService->startVerification(auth()->user(), $gateway);
             $this->referenceId = $result['reference_id'];
             $this->hasPending = true;
-            $this->message = $result['message'];
+
+            $this->dispatch('redirect-to-checkout', url: $result['checkout_url']);
+            $this->step = 'redirecting';
+            $this->message = 'Redirecting to GCash... Complete the payment to verify.';
         } catch (\RuntimeException $e) {
             $this->error = $e->getMessage();
         }
     }
 
-    public function confirmVerification(VerificationService $verificationService, PaymentGateway $gateway): void
+    public function checkVerificationStatus(): void
     {
-        $this->validate([
-            'confirmAmount' => 'required|numeric|min:1',
-        ]);
+        $user = auth()->user();
+        $this->isVerified = !is_null($user->gcash_verified_at);
 
-        $this->error = '';
-
-        try {
-            $entered = (int) (round((float) $this->confirmAmount, 2) * 100);
-            $verificationService->confirmVerification(auth()->user(), $gateway, $entered);
-            $this->isVerified = true;
+        if ($this->isVerified) {
             $this->step = 'done';
-            $this->message = 'Account verified successfully! Your listings now have a verified badge.';
+            $this->message = 'Account verified successfully! Your listings will now show a verified badge.';
             $this->dispatch('verification-complete');
-        } catch (\RuntimeException $e) {
-            $this->error = $e->getMessage();
         }
     }
 

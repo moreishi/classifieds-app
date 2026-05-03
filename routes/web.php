@@ -95,3 +95,11 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+
+/*
+ * PayMongo webhook handler for GCash verification.
+ * Must NOT be behind auth middleware — PayMongo sends requests directly.
+ * Must NOT be behind CSRF — PayMongo signs requests with its API key, not our session.
+ */
+Route::post('/webhooks/paymongo', \App\Http\Controllers\PayMongoWebhookController::class)
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

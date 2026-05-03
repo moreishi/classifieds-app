@@ -8,20 +8,20 @@ use App\Services\Payment\PaymentGateway;
 
 class VerificationService
 {
-    const int VERIFICATION_CHARGE_CENTAVOS = 100; // ₱1
+    const int VERIFICATION_CHARGE_CENTAVOS = 500; // ₱5.00
 
     /**
      * Start the verification process for a user.
-     * Charges a small amount to confirm account ownership.
+     * Creates a PayMongo Payment Intent and returns the checkout URL.
      *
-     * @return array{reference_id: string, message: string}
+     * @return array{reference_id: string, message: string, checkout_url: ?string}
      */
     public function startVerification(User $user, PaymentGateway $gateway): array
     {
         $accountId = $user->gcash_number;
 
         if (!$accountId) {
-            throw new \RuntimeException('No payment account set. Save your number first.');
+            throw new \RuntimeException('No GCash number set. Save your number first.');
         }
 
         if ($user->gcash_verified_at) {
@@ -34,13 +34,14 @@ class VerificationService
             metadata: ['user_id' => $user->id, 'email' => $user->email],
         );
 
-        // Store the pending reference for later confirmation
+        // Store pending verification
         cache()->put(
             "verification:{$user->id}",
             [
                 'gateway' => $gateway->key(),
                 'reference_id' => $result->referenceId,
                 'amount_charged' => $result->amountCharged,
+                'checkout_url' => $result->metadata['checkout_url'] ?? null,
                 'started_at' => now(),
             ],
             now()->addHours(2),
@@ -49,11 +50,12 @@ class VerificationService
         return [
             'reference_id' => $result->referenceId,
             'message' => $result->message,
+            'checkout_url' => $result->metadata['checkout_url'] ?? null,
         ];
     }
 
     /**
-     * Confirm verification by matching the charged amount.
+     * Confirm verification by checking payment status via the gateway.
      */
     public function confirmVerification(User $user, PaymentGateway $gateway, int $enteredAmountCentavos): void
     {
@@ -65,10 +67,6 @@ class VerificationService
 
         if ($pending['gateway'] !== $gateway->key()) {
             throw new \RuntimeException('Verification gateway mismatch. Start again.');
-        }
-
-        if ($enteredAmountCentavos !== $pending['amount_charged']) {
-            throw new \RuntimeException('Incorrect amount. Please enter the exact amount charged.');
         }
 
         $result = $gateway->confirmVerification(
