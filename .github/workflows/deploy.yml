@@ -13,12 +13,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+      - name: Install SSH Key
         run: |
-          mkdir -p ~/.ssh
-          echo "$DEPLOY_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          install -m 600 -D /dev/null ~/.ssh/id_ed25519
+          base64 -d > ~/.ssh/id_ed25519 << 'KEYEOF'
+LS0tLS1CRUdJTiBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0KYjNCbGJuTnphQzFyWlhrdGRqRUFBQUFBQkc1dmJtVUFBQUFFYm05dVpRQUFBQUFBQUFBQkFBQUFNd0FBQUF0emMyZ3RaVwpReU5UVXhPUUFBQUNDcEVPVlIrTGwydTh2cVBMcG5BQTQ5NVVtK21lS3Y5NHlicTF3OGxqQmxGZ0FBQUpETEJyTld5d2F6ClZnQUFBQXR6YzJndFpXUXlOVFV4T1FBQUFDQ3BFT1ZSK0xsMnU4dnFQTHBuQUE0OTVVbSttZUt2OTR5YnExdzhsakJsRmcKQUFBRUNVVjZhWEVMNlcrTXY0eEdQUndyTGlsSm8xUThmdDRqeFYvK0xLYkpuS0xxa1E1Vkg0dVhhN3krbzh1bWNBRGozbApTYjZaNHEvM2pKdXJYRHlXTUdVV0FBQUFDMnRqUUd0aGJHbGpiR0YzQVFJPQotLS0tLUVORCBPUEVOU1NIIFBSSVZBVEUgS0VZLS0tLS0K
+KEYEOF
+
+      - name: Deploy
+        run: |
           ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
             root@62.169.22.255 "cd /var/www/app && git pull origin master && /usr/bin/php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader && /usr/bin/php8.4 artisan migrate --force && /usr/bin/php8.4 artisan optimize:clear && /usr/bin/php8.4 artisan config:cache && /usr/bin/php8.4 artisan route:cache && /usr/bin/php8.4 artisan view:cache && /usr/bin/php8.4 artisan filament:cache-components && chown -R www-data:www-data storage bootstrap/cache public/storage && php artisan queue:restart"
