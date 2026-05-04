@@ -11,10 +11,10 @@ class RegionCitySeeder extends Seeder
     public function run(): void
     {
         // --- REGIONS ---
-        DB::table('regions')->insert([
-            'id' => 1,
-            'name' => 'Central Visayas',
-        ]);
+        DB::table('regions')->updateOrInsert(
+            ['id' => 1],
+            ['id' => 1, 'name' => 'Central Visayas']
+        );
 
         // --- PROVINCES (parent_id = null, type = 'province') ---
         $provinces = [
@@ -23,6 +23,9 @@ class RegionCitySeeder extends Seeder
             ['id' => 3,  'name' => 'Siquijor'],
             ['id' => 4,  'name' => 'Negros Oriental'],
         ];
+
+        // Clear existing cities and reseed
+        DB::table('cities')->truncate();
 
         foreach ($provinces as $p) {
             DB::table('cities')->insert([
