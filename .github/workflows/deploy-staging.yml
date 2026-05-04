@@ -5,20 +5,50 @@ on:
     branches: [develop]
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy
+      - name: Build assets
+        run: |
+          npm ci && npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Install SSH Key
         env:
           SSH_KEY: ${{ secrets.CICD_KEY }}
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
           echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "Key installed: $(wc -c < ~/.ssh/id_rsa) bytes"
+
+      - name: Test SSH connection
+        run: ssh -v -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa root@62.169.22.255 "echo SSH_OK" 2>&1 | head -30
+
+      - name: Deploy to staging
+        run: |
           ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa \
-            root@62.169.22.255 \
-            "set -e && cd /var/www/staging && git pull origin develop && /usr/bin/php8.4 /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader && /usr/bin/php8.4 artisan migrate --force && /usr/bin/php8.4 artisan optimize:clear && /usr/bin/php8.4 artisan config:cache && /usr/bin/php8.4 artisan route:cache && /usr/bin/php8.4 artisan view:cache && /usr/bin/php8.4 artisan filament:cache-components && chown -R www-data:www-data storage bootstrap/cache public/storage && php artisan queue:restart"
+            root@62.169.22.255 'set -e; cd /var/www/staging; git pull origin develop; /usr/bin/php8.4 /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader; /usr/bin/php8.4 artisan migrate --force; /usr/bin/php8.4 artisan optimize:clear; /usr/bin/php8.4 artisan config:cache; /usr/bin/php8.4 artisan route:cache; /usr/bin/php8.4 artisan view:cache; /usr/bin/php8.4 artisan filament:cache-components; chown -R www-data:www-data storage bootstrap/cache public/storage; php artisan queue:restart'
+
+      - name: Deploy to production
+#         if: github.ref == 'refs/heads/master'
+        env:
+          SSH_KEY: ${{ secrets.CICD_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_rsa \
+            root@62.169.22.255 'set -e; cd /var/www/app; git pull origin master; /usr/bin/php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader; /usr/bin/php8.4 artisan migrate --force; /usr/bin/php8.4 artisan optimize:clear; /usr/bin/php8.4 artisan config:cache; /usr/bin/php8.4 artisan route:cache; /usr/bin/php8.4 artisan view:cache; /usr/bin/php8.4 artisan filament:cache-components; chown -R www-data:www-data storage bootstrap/cache public/storage; php artisan queue:restart'
