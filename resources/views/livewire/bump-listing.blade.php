@@ -38,7 +38,7 @@
                     @foreach($plans as $key => $plan)
                         <label class="flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors
                               {{ $selectedPlan === $key ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300' }}">
-                            <input type="radio" wire:model.live="selectedPlan" value="{{ $key }}"
+                            <input type="radio" wire:model="selectedPlan" value="{{ $key }}"
                                    class="text-blue-600 focus:ring-blue-500" />
                             <div class="flex-1">
                                 <span class="font-medium text-gray-900">{{ $plan['label'] }}</span>
