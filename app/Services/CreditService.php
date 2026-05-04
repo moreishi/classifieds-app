@@ -71,7 +71,8 @@ class CreditService
 
     /**
      * Handle referral link for a new user — just records who referred them.
-     * Bonus is credited only after the referred user makes their first purchase.
+     * Bonus is credited only after the referred user makes their first credit purchase.
+     * Credits are in-app only (not convertible to cash), redeemable for listings/bumps.
      */
     public function processReferral(User $newUser, string $referralCode): void
     {
