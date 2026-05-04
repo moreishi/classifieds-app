@@ -89,8 +89,20 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700">Photos (1-5, max 5MB each)</label>
                 <input type="file" wire:model="photos" multiple accept="image/jpeg,image/png,image/webp"
-                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"/>
+                       wire:loading.attr="disabled" wire:target="photos"
+                       class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 file:disabled:opacity-50"/>
                 @error('photos.*') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+
+                <!-- Upload progress bar -->
+                <div wire:loading wire:target="photos" class="mt-2">
+                    <div class="flex items-center gap-2 text-sm text-blue-600">
+                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Uploading photos...
+                    </div>
+                </div>
 
                 @if($photos)
                     <div class="flex gap-2 mt-2">
@@ -102,8 +114,24 @@
             </div>
 
             <button type="submit"
-                    class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
-                Post Listing
+                    wire:loading.attr="disabled"
+                    wire:target="submit,photos"
+                    class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span wire:loading.remove wire:target="submit,photos">Post Listing</span>
+                <span wire:loading wire:target="submit" class="flex items-center justify-center gap-2">
+                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Posting...
+                </span>
+                <span wire:loading wire:target="photos" class="flex items-center justify-center gap-2">
+                    <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Uploading photos...
+                </span>
             </button>
         </form>
     </div>
