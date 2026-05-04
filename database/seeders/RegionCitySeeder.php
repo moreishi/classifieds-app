@@ -24,9 +24,6 @@ class RegionCitySeeder extends Seeder
             ['id' => 4,  'name' => 'Negros Oriental'],
         ];
 
-        // Clear existing cities and reseed
-        DB::table('cities')->truncate();
-
         foreach ($provinces as $p) {
             DB::table('cities')->insert([
                 'id'        => $p['id'],
@@ -186,15 +183,18 @@ class RegionCitySeeder extends Seeder
 
         $id = 5; // start after provinces
         foreach ($locations as $loc) {
-            DB::table('cities')->insert([
-                'id'        => $id,
-                'name'      => $loc['name'],
-                'slug'      => $loc['slug'],
-                'type'      => $loc['type'],
-                'region_id' => 1,
-                'parent_id' => $loc['parent_id'],
-                'is_active' => true,
-            ]);
+            DB::table('cities')->updateOrInsert(
+                ['slug' => $loc['slug']],
+                [
+                    'id'        => $id,
+                    'name'      => $loc['name'],
+                    'slug'      => $loc['slug'],
+                    'type'      => $loc['type'],
+                    'region_id' => 1,
+                    'parent_id' => $loc['parent_id'],
+                    'is_active' => true,
+                ]
+            );
             $id++;
         }
     }
