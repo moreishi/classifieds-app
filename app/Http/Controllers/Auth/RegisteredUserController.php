@@ -49,6 +49,7 @@ class RegisteredUserController extends Controller
             'name' => trim(preg_replace('/\s+/', ' ', $request->first_name . ' ' . ($request->middle_name ?? '') . ' ' . $request->last_name)),
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'credit_balance' => 500, // ₱5 starting credit
             'referral_code' => CreditService::generateReferralCode(),
             'free_listings_reset_at' => now()->addMonth(),
         ]);
