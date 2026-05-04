@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Request;
 
 class CreditService
 {
-    const int LISTING_FEE = 0;          // 100 centavos = ₱1
+    const int LISTING_FEE = 100;          // 100 centavos = ₱1
     const int REFERRAL_BONUS_TIER1 = 200; // 200 centavos = ₱2 (instant on signup)
     const int REFERRAL_BONUS_TIER2 = 500; // 500 centavos = ₱5 (on first purchase)
 
