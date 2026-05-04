@@ -14,10 +14,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Deploy
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          install -m 600 -D /dev/stdin ~/.ssh/id_ed25519 <<<"$SSH_KEY"
           ssh -o StrictHostKeyChecking=no root@62.169.22.255 \
             'set -e && \
             cd /var/www/app && \
