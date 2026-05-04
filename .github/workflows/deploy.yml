@@ -19,20 +19,9 @@ jobs:
         run: |
           install -m 600 -D /dev/null ~/.ssh/id_ed25519
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          echo "Key written, size: $(wc -c < ~/.ssh/id_ed25519)"
 
       - name: Deploy
         run: |
-          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
-            root@62.169.22.255 'set -e
-            cd /var/www/app
-            git pull origin master
-            /usr/bin/php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-            /usr/bin/php8.4 artisan migrate --force
-            /usr/bin/php8.4 artisan optimize:clear
-            /usr/bin/php8.4 artisan config:cache
-            /usr/bin/php8.4 artisan route:cache
-            /usr/bin/php8.4 artisan view:cache
-            /usr/bin/php8.4 artisan filament:cache-components
-            chown -R www-data:www-data storage bootstrap/cache public/storage
-            php artisan queue:restart
-            echo "Deploy complete!"'
+          ssh -v -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
+            root@62.169.22.255 "set -e; cd /var/www/app; git pull origin master; /usr/bin/php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader; /usr/bin/php8.4 artisan migrate --force; /usr/bin/php8.4 artisan optimize:clear; /usr/bin/php8.4 artisan config:cache; /usr/bin/php8.4 artisan route:cache; /usr/bin/php8.4 artisan view:cache; /usr/bin/php8.4 artisan filament:cache-components; chown -R www-data:www-data storage bootstrap/cache public/storage; php artisan queue:restart"
