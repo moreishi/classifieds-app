@@ -154,7 +154,7 @@ class RegionCitySeeder extends Seeder
             ['name' => 'Lazi',              'slug' => 'lazi',                'parent_id' => 3, 'type' => 'municipality'],
             ['name' => 'Maria',             'slug' => 'maria-siquijor',      'parent_id' => 3, 'type' => 'municipality'],
             ['name' => 'San Juan',          'slug' => 'san-juan-siquijor',   'parent_id' => 3, 'type' => 'municipality'],
-            ['name' => 'Siquijor',          'slug' => 'siquijor',            'parent_id' => 3, 'type' => 'municipality'],
+            ['name' => 'Siquijor (Poblacion)', 'slug' => 'siquijor-poblacion',   'parent_id' => 3, 'type' => 'municipality'],
 
             // Negros Oriental (province id: 4)
             ['name' => 'Dumaguete City',    'slug' => 'dumaguete-city',      'parent_id' => 4, 'type' => 'city'],
