@@ -176,6 +176,22 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <x-responsive-nav-link :href="route('favorites.index')">
+                    {{ __('My Favorites') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('seller.dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('listings.my')">
+                    {{ __('My Listings') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('listings.trashed')">
+                    {{ __('Trashed') }}
+                </x-responsive-nav-link>
+
                 <x-responsive-nav-link :href="route('settings')">
                     {{ __('Settings') }}
                 </x-responsive-nav-link>
