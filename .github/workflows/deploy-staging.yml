@@ -1,0 +1,31 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: 62.169.22.255
+          username: root
+          key: ${{ secrets.CICD_KEY }}
+          script: |
+            set -e
+            cd /var/www/staging
+            git pull origin develop
+            /usr/bin/php8.4 /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
+            /usr/bin/php8.4 artisan migrate --force
+            /usr/bin/php8.4 artisan optimize:clear
+            /usr/bin/php8.4 artisan config:cache
+            /usr/bin/php8.4 artisan route:cache
+            /usr/bin/php8.4 artisan view:cache
+            /usr/bin/php8.4 artisan filament:cache-components
+            chown -R www-data:www-data storage bootstrap/cache public/storage
+            php artisan queue:restart
