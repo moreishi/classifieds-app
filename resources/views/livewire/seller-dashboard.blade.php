@@ -188,6 +188,9 @@
                 @endif
             </div>
 
+            {{-- Referral Panel --}}
+            <livewire:referral-panel />
+
             {{-- Right sidebar: Recent Inquiries --}}
             <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                 <div class="px-5 py-4 border-b border-gray-100">

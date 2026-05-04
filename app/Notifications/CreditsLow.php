@@ -30,7 +30,7 @@ class CreditsLow extends Notification implements ShouldQueue
             ->line("Your current credit balance is **₱" . number_format($this->currentBalance / 100) . "**.")
             ->line('You need credits to post listings. Earn more by referring friends or purchasing credits.')
             ->action('Top Up Credits', url('/dashboard'))
-            ->line('Referral bonus: ₱5 per friend who signs up!');
+            ->line('Referral bonus: ₱2 per friend who signs up + ₱5 when they buy credits!');
     }
 
     public function toArray(object $notifiable): array

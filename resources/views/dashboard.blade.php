@@ -38,7 +38,7 @@
             @if(auth()->user()->referral_code)
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6 mb-8">
                     <h3 class="font-semibold text-gray-900 mb-2">Refer a Friend</h3>
-                    <p class="text-sm text-gray-600 mb-3">Share your referral link and earn ₱5 when they sign up!</p>
+                    <p class="text-sm text-gray-600 mb-3">Share your referral link and earn <strong>₱2</strong> per signup + <strong>₱5</strong> when they buy credits!</p>
                     <div class="flex gap-2">
                         <input type="text" readonly
                                value="{{ route('register', ['ref' => auth()->user()->referral_code]) }}"

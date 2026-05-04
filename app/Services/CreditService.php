@@ -4,12 +4,19 @@ namespace App\Services;
 
 use App\Models\CreditTransaction;
 use App\Models\Listing;
+use App\Models\ReferralSignup;
 use App\Models\User;
+use App\Notifications\ReferralBonus;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Request;
 
 class CreditService
 {
-    const int LISTING_FEE = 100;      // 100 centavos = ₱1
-    const int REFERRAL_BONUS = 500;   // 500 centavos = ₱5
+    const int LISTING_FEE = 100;          // 100 centavos = ₱1
+    const int REFERRAL_BONUS_TIER1 = 200; // 200 centavos = ₱2 (instant on signup)
+    const int REFERRAL_BONUS_TIER2 = 500; // 500 centavos = ₱5 (on first purchase)
+
+    const int DAILY_REFERRAL_LIMIT = 10;
 
     /**
      * Check if a user can post a listing (has credits or free listings).
@@ -70,9 +77,11 @@ class CreditService
     }
 
     /**
-     * Handle referral link for a new user — just records who referred them.
-     * Bonus is credited only after the referred user makes their first credit purchase.
-     * Credits are in-app only (not convertible to cash), redeemable for listings/bumps.
+     * Handle referral link for a new user.
+     *
+     * Records who referred them and awards an instant Tier 1 bonus if anti-fraud
+     * checks pass (email verified referrer, daily limit not hit, different IP).
+     * The referral relationship (referred_by) is always recorded regardless of bonus.
      */
     public function processReferral(User $newUser, string $referralCode): void
     {
@@ -82,13 +91,87 @@ class CreditService
             return;
         }
 
+        // Always record the referral relationship
         $newUser->update(['referred_by' => $referrer->id]);
 
-        // No bonus yet — will be credited on first purchase via creditReferrer()
+        // Record the signup attempt
+        $signup = ReferralSignup::create([
+            'referrer_id' => $referrer->id,
+            'referred_id' => $newUser->id,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'bonus_awarded' => false,
+        ]);
+
+        // Anti-fraud checks before awarding Tier 1 bonus
+        if (! $this->canAwardReferralBonus($referrer, $newUser)) {
+            Log::info('[Referral] Anti-fraud skipped Tier 1 bonus', [
+                'referrer_id' => $referrer->id,
+                'referred_id' => $newUser->id,
+            ]);
+            return;
+        }
+
+        // Award Tier 1 bonus (instant signup)
+        $this->deposit($referrer, self::REFERRAL_BONUS_TIER1, 'referral_bonus', $newUser,
+            "Referral signup bonus for referring {$newUser->publicName()}"
+        );
+
+        $signup->update(['bonus_awarded' => true]);
+
+        // Send notification
+        $referrer->notify(new ReferralBonus($newUser, self::REFERRAL_BONUS_TIER1, 1));
+
+        Log::info('[Referral] Tier 1 bonus awarded', [
+            'referrer_id' => $referrer->id,
+            'referred_id' => $newUser->id,
+            'amount' => self::REFERRAL_BONUS_TIER1,
+        ]);
     }
 
     /**
-     * Credit the referrer bonus when the referred user makes their first purchase.
+     * Anti-fraud checks for referral bonus eligibility.
+     */
+    private function canAwardReferralBonus(User $referrer, User $newUser): bool
+    {
+        // 1. Referrer must have verified email
+        if (! $referrer->email_verified_at) {
+            return false;
+        }
+
+        // 2. Check daily referral limit
+        $todayCount = ReferralSignup::where('referrer_id', $referrer->id)
+            ->whereDate('created_at', today())
+            ->count();
+
+        if ($todayCount >= self::DAILY_REFERRAL_LIMIT) {
+            return false;
+        }
+
+        // 3. Check the referred user's IP isn't the same as the referrer's known IPs
+        //    We check using the new user's session/IP vs the referrer's recent sessions
+        $newUserIp = request()->ip();
+
+        if ($newUserIp === '127.0.0.1' || $newUserIp === '::1') {
+            // Allow localhost — dev/testing
+            return true;
+        }
+
+        // Check if the referrer has active sessions with the same IP
+        $referrerHasSameIp = \DB::table('sessions')
+            ->where('user_id', $referrer->id)
+            ->where('ip_address', $newUserIp)
+            ->exists();
+
+        if ($referrerHasSameIp) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Credit the referrer Tier 2 bonus when the referred user makes their first purchase.
      * Returns true if bonus was awarded, false if already paid or no referral.
      */
     public function creditReferrer(User $user): bool
@@ -114,11 +197,65 @@ class CreditService
             return false;
         }
 
-        $this->deposit($referrer, self::REFERRAL_BONUS, 'referral_bonus', $user,
-            "Referral bonus for referring {$user->name}"
+        $this->deposit($referrer, self::REFERRAL_BONUS_TIER2, 'referral_bonus', $user,
+            "Referral purchase bonus for referring {$user->publicName()}"
         );
 
+        // Send notification
+        $referrer->notify(new ReferralBonus($user, self::REFERRAL_BONUS_TIER2, 2));
+
+        Log::info('[Referral] Tier 2 bonus awarded', [
+            'referrer_id' => $referrer->id,
+            'referred_id' => $user->id,
+            'amount' => self::REFERRAL_BONUS_TIER2,
+        ]);
+
         return true;
+    }
+
+    /**
+     * Get referral stats for a user.
+     */
+    public function getReferralStats(User $user): array
+    {
+        $signups = ReferralSignup::where('referrer_id', $user->id)->get();
+
+        $invitesSent = $signups->count();
+        $bonusesAwarded = $signups->where('bonus_awarded', true)->count();
+        $pendingBonuses = $signups->where('bonus_awarded', false)->count();
+
+        // Total earned from all referral bonuses
+        $totalEarned = CreditTransaction::where('user_id', $user->id)
+            ->where('type', 'referral_bonus')
+            ->sum('amount');
+
+        return [
+            'invites_sent' => $invitesSent,
+            'bonuses_awarded' => $bonusesAwarded,
+            'pending_bonuses' => $pendingBonuses,
+            'total_earned' => $totalEarned,
+        ];
+    }
+
+    /**
+     * Get recent referral activity for a user.
+     */
+    public function getRecentReferrals(User $user, int $limit = 10)
+    {
+        return ReferralSignup::with('referred')
+            ->where('referrer_id', $user->id)
+            ->orderByDesc('created_at')
+            ->take($limit)
+            ->get()
+            ->map(function ($signup) {
+                return [
+                    'id' => $signup->id,
+                    'name' => $signup->referred?->publicName() ?? 'Unknown',
+                    'email' => $signup->referred?->email ?? '—',
+                    'bonus_awarded' => $signup->bonus_awarded,
+                    'signed_up_at' => $signup->created_at,
+                ];
+            });
     }
 
     /**
