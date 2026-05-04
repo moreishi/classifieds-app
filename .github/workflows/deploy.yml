@@ -7,18 +7,26 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy
+      - name: Debug and Deploy
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          install -m 600 -D /dev/null ~/.ssh/id_ed25519
-          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
-          cat ~/.ssh/id_ed25519 > /dev/null && echo "Key file written OK"
+          set -x
+          which ssh
+          ssh -V
+          mkdir -p ~/.ssh
+          echo "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ls -la ~/.ssh/
+          head -1 ~/.ssh/id_ed25519
+          wc -c ~/.ssh/id_ed25519
           ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
-            root@62.169.22.255 "echo SSH_OK; cd /var/www/app && git pull origin master && /usr/bin/php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader && /usr/bin/php8.4 artisan migrate --force && /usr/bin/php8.4 artisan optimize:clear && /usr/bin/php8.4 artisan config:cache && /usr/bin/php8.4 artisan route:cache && /usr/bin/php8.4 artisan view:cache && /usr/bin/php8.4 artisan filament:cache-components && chown -R www-data:www-data storage bootstrap/cache public/storage && php artisan queue:restart"
+            root@62.169.22.255 "echo SSH_CONNECTED" && echo "SSH_SUCCESS" || echo "SSH_FAILED"
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
+            root@62.169.22.255 "echo SSH_OK && cd /var/www/app && git pull origin master" && echo "GIT_PULL_OK" || echo "GIT_PULL_FAILED"
