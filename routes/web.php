@@ -22,6 +22,7 @@ Route::get('/', Homepage::class)->name('home');
 
 Route::get('/category/{slug}', SearchListings::class)->name('category.show');
 Route::get('/search', SearchResults::class)->name('search');
+Route::get('/listings', fn () => redirect()->route('home'));
 
 Route::get('/listing/{slug}', ListingDetail::class)->name('listing.show');
 
