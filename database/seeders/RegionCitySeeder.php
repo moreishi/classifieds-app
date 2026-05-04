@@ -25,15 +25,18 @@ class RegionCitySeeder extends Seeder
         ];
 
         foreach ($provinces as $p) {
-            DB::table('cities')->insert([
-                'id'        => $p['id'],
-                'name'      => $p['name'],
-                'slug'      => Str::slug($p['name']),
-                'type'      => 'province',
-                'region_id' => 1,
-                'parent_id' => null,
-                'is_active' => true,
-            ]);
+            DB::table('cities')->updateOrInsert(
+                ['id' => $p['id']],
+                [
+                    'id'        => $p['id'],
+                    'name'      => $p['name'],
+                    'slug'      => Str::slug($p['name']),
+                    'type'      => 'province',
+                    'region_id' => 1,
+                    'parent_id' => null,
+                    'is_active' => true,
+                ]
+            );
         }
 
         // --- CITIES & MUNICIPALITIES ---
