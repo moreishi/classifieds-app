@@ -115,11 +115,15 @@ class PayMongoWebhookController extends Controller
             'notes' => "Purchased {$credits} credits" . ($bonus ? " + {$bonus} bonus" : '') . " via GCash",
         ]);
 
+        // If this is their first purchase and they were referred, credit the referrer
+        $referralAwarded = app(\App\Services\CreditService::class)->creditReferrer($user);
+
         Log::info('[PayMongo] Credits deposited', [
             'user_id' => $userId,
             'credits' => $credits,
             'bonus' => $bonus,
             'total' => $total,
+            'referral_bonus_awarded' => $referralAwarded,
         ]);
 
         return response('credits deposited', 200);

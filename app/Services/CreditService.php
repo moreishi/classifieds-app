@@ -70,7 +70,8 @@ class CreditService
     }
 
     /**
-     * Handle referral bonus for a new user.
+     * Handle referral link for a new user — just records who referred them.
+     * Bonus is credited only after the referred user makes their first purchase.
      */
     public function processReferral(User $newUser, string $referralCode): void
     {
@@ -82,10 +83,41 @@ class CreditService
 
         $newUser->update(['referred_by' => $referrer->id]);
 
-        // Bonus for referrer
-        $this->deposit($referrer, self::REFERRAL_BONUS, 'referral_bonus', $newUser,
-            "Referral bonus for {$newUser->name}"
+        // No bonus yet — will be credited on first purchase via creditReferrer()
+    }
+
+    /**
+     * Credit the referrer bonus when the referred user makes their first purchase.
+     * Returns true if bonus was awarded, false if already paid or no referral.
+     */
+    public function creditReferrer(User $user): bool
+    {
+        if (!$user->referred_by) {
+            return false;
+        }
+
+        $referrer = User::find($user->referred_by);
+
+        if (!$referrer) {
+            return false;
+        }
+
+        // Check if the referred user already triggered a bonus
+        $alreadyPaid = CreditTransaction::where('user_id', $referrer->id)
+            ->where('type', 'referral_bonus')
+            ->where('reference_type', User::class)
+            ->where('reference_id', $user->id)
+            ->exists();
+
+        if ($alreadyPaid) {
+            return false;
+        }
+
+        $this->deposit($referrer, self::REFERRAL_BONUS, 'referral_bonus', $user,
+            "Referral bonus for referring {$user->name}"
         );
+
+        return true;
     }
 
     /**
