@@ -87,8 +87,11 @@
                                 {{ __('My Favorites') }}
                             </x-dropdown-link>
 
-                            <x-dropdown-link :href="route('seller.dashboard')">
+                            <x-dropdown-link :href="route('dashboard')">
                                 {{ __('Dashboard') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('seller.dashboard')">
+                                {{ __('Analytics') }}
                             </x-dropdown-link>
 
                             <x-dropdown-link :href="route('listings.my')">
@@ -193,8 +196,11 @@
                     {{ __('My Favorites') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('seller.dashboard')">
+                <x-responsive-nav-link :href="route('dashboard')">
                     {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('seller.dashboard')">
+                    {{ __('Analytics') }}
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link :href="route('listings.my')">
