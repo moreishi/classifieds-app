@@ -15,8 +15,8 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
+                        {{ __('Create Listing') }}
                     </x-nav-link>
                     @auth
                         <x-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
@@ -143,8 +143,8 @@
             </x-responsive-nav-link>
 
             @auth
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
+                <x-responsive-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
+                    {{ __('Create Listing') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
                     {{ __('Offers') }}
