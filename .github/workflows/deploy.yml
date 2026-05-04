@@ -17,12 +17,11 @@ jobs:
         env:
           DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
         run: |
-          set -x
           install -m 600 -D /dev/null ~/.ssh/id_ed25519
           echo "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
             root@62.169.22.255 \
-            'set -x && \
+            'set -e && \
             cd /var/www/app && \
             git pull origin master && \
             /usr/bin/php8.4 /usr/local/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader && \
@@ -33,5 +32,4 @@ jobs:
             /usr/bin/php8.4 artisan view:cache && \
             /usr/bin/php8.4 artisan filament:cache-components && \
             chown -R www-data:www-data storage bootstrap/cache public/storage && \
-            php artisan queue:restart && \
-            echo DEPLOY_SUCCESS'
+            php artisan queue:restart'
