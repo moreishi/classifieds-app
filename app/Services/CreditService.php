@@ -135,7 +135,7 @@ class CreditService
             'pro' => 5,
             'trusted' => 3,
             'verified' => 2,
-            default => 3, // 'newbie'
+            default => 1, // 'newbie'
         };
     }
 
