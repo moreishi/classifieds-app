@@ -1,7 +1,7 @@
 User-agent: *
 Allow: /
 
-# Block internal/auth pages from indexing
+# === Block internal/auth pages ===
 Disallow: /dashboard
 Disallow: /login
 Disallow: /register
@@ -13,6 +13,23 @@ Disallow: /favorites
 Disallow: /offers
 Disallow: /trashed
 Disallow: /conversations
+Disallow: /conversation/
+Disallow: /buy-credits
+Disallow: /settings
+Disallow: /transactions
+Disallow: /receipt/
+Disallow: /seller/dashboard
+Disallow: /verify-account
+Disallow: /verify-email/
+Disallow: /confirm-password
+Disallow: /forgot-password
+Disallow: /reset-password/
+Disallow: /storage/
+Disallow: /livewire-*
+Disallow: /dusk/
 
-# Update this URL after deploying with your real domain
-Sitemap: https://iskina.ph/sitemap.xml
+# === Sitemap ===
+Sitemap: https://www.iskina.ph/sitemap.xml
+
+# === Crawl-delay (be polite) ===
+Crawl-Delay: 10
