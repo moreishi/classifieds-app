@@ -13,25 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Debug SSH Setup
+      - name: Deploy
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -t rsa 62.169.22.255 >> ~/.ssh/known_hosts 2>&1
-          cat ~/.ssh/known_hosts
-          if ssh -o StrictHostKeyChecking=no root@62.169.22.255 'echo CONNECTION_OK'; then
-            echo "SSH SUCCESS"
-          else
-            echo "SSH FAILED"
-            exit 1
-          fi
-
-      - name: Deploy
-        if: success()
-        run: |
-          ssh -v -o StrictHostKeyChecking=no root@62.169.22.255 \
-            'set -xe && \
+          ssh -o StrictHostKeyChecking=no root@62.169.22.255 \
+            'set -e && \
             cd /var/www/app && \
             git pull origin master && \
             /usr/bin/php8.4 /usr/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader && \
@@ -42,5 +30,4 @@ jobs:
             /usr/bin/php8.4 artisan view:cache && \
             /usr/bin/php8.4 artisan filament:cache-components && \
             chown -R www-data:www-data storage bootstrap/cache public/storage && \
-            php artisan queue:restart && \
-            echo "Deploy complete!"'
+            php artisan queue:restart'
