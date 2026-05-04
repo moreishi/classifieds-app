@@ -135,39 +135,52 @@
         </div>
     </div>
 
-    @auth
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+            <x-responsive-nav-link :href="route('home')" :active="request()->routeIs('home')">
+                {{ __('Home') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
-                {{ __('Offers') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
-                {{ __('Messages') }}
-                @php
-                    $unreadTotalMobile = \App\Models\Conversation::where(function ($q) {
-                        $q->where('buyer_id', auth()->id())
-                          ->orWhere('seller_id', auth()->id());
-                    })->whereHas('messages', function ($q) {
-                        $q->where('sender_id', '!=', auth()->id())
-                          ->whereNull('read_at');
-                    })->count();
-                @endphp
-                @if($unreadTotalMobile > 0)
-                    <span class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-600 rounded-full">{{ $unreadTotalMobile }}</span>
-                @endif
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
-                {{ __('Transactions') }}
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
-                {{ __('Notifications') }}
-            </x-responsive-nav-link>
+
+            @auth
+                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    {{ __('Dashboard') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
+                    {{ __('Offers') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('conversations.index')" :active="request()->routeIs('conversations.*')">
+                    {{ __('Messages') }}
+                    @php
+                        $unreadTotalMobile = \App\Models\Conversation::where(function ($q) {
+                            $q->where('buyer_id', auth()->id())
+                              ->orWhere('seller_id', auth()->id());
+                        })->whereHas('messages', function ($q) {
+                            $q->where('sender_id', '!=', auth()->id())
+                              ->whereNull('read_at');
+                        })->count();
+                    @endphp
+                    @if($unreadTotalMobile > 0)
+                        <span class="ml-2 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-blue-600 rounded-full">{{ $unreadTotalMobile }}</span>
+                    @endif
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
+                    {{ __('Transactions') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('notifications.index')" :active="request()->routeIs('notifications.*')">
+                    {{ __('Notifications') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('login')">
+                    {{ __('Log in') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('register')">
+                    {{ __('Register') }}
+                </x-responsive-nav-link>
+            @endauth
         </div>
 
+        @auth
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
@@ -206,6 +219,6 @@
                 </form>
             </div>
         </div>
+        @endauth
     </div>
-    @endauth
 </nav>
