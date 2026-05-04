@@ -5,14 +5,22 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        {{-- Google Site Verification — for Search Console --}}
+        <meta name="google-site-verification" content="{{ config('services.google.site_verification', '') }}" />
+
         {{-- SEO / Open Graph — individual pages push via x-seo component --}}
         @stack('head')
 
         {{-- Fallback title + noindex for pages without x-seo (dashboard, etc.) --}}
         @if(!$__env->yieldPushContent('head'))
             <title>{{ config('app.name', 'Iskina.ph') }}</title>
+            <meta name="description" content="Buy and sell locally in Cebu. The #1 marketplace for gadgets, cars, property, jobs, services, and more near you.">
             <meta name="robots" content="noindex, nofollow">
         @endif
+
+        {{-- Default Open Graph tags for pages without x-seo --}}
+        <meta property="og:site_name" content="Iskina.ph">
+        <meta property="og:locale" content="en_PH">
 
         <!-- Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-K7V0RZWWZN"></script>
@@ -22,6 +30,37 @@
          gtag('js', new Date());
 
          gtag('config', 'G-K7V0RZWWZN');
+        </script>
+
+        {{-- Local Business JSON-LD (Organization) — Renders on all pages --}}
+        <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "@id": "https://www.iskina.ph/#organization",
+            "name": "Iskina.ph",
+            "url": "https://www.iskina.ph",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.iskina.ph/logo.png",
+                "width": 600,
+                "height": 60
+            },
+            "description": "Iskina.ph is the #1 marketplace in Cebu, Philippines. Buy and sell gadgets, cars, property, jobs, and services locally.",
+            "sameAs": [
+                "https://facebook.com/iskinaph",
+                "https://twitter.com/iskinaph"
+            ],
+            "areaServed": {
+                "@type": "City",
+                "name": "Cebu",
+                "sameAs": "https://en.wikipedia.org/wiki/Cebu"
+            },
+            "foundingLocation": {
+                "@type": "Place",
+                "name": "Cebu City, Philippines"
+            }
+        }
         </script>
 
         <!-- Fonts -->

@@ -6,6 +6,7 @@
     'type' => 'website',
     'noindex' => false,
     'jsonLd' => null,
+    'breadcrumbs' => null,
 ])
 
 {{--

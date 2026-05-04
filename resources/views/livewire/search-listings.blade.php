@@ -2,13 +2,18 @@
     @if(isset($category))
         <x-seo
             title="{{ $category->name }} for Sale in Cebu"
-            description="Browse {{ $category->name }} in Cebu. {{ $category->description ?? 'Find great deals near you.' }}"
+            description="Browse {{ $category->name }} for sale in Cebu, Philippines. {{ $category->description ?? 'Find the best deals and prices on Iskina.ph, the #1 classified ads marketplace in Cebu.' }}"
             :url="route('category.show', $category->slug)"
+        />
+    @elseif(strlen($searchTerm) >= 2)
+        <x-seo
+            title="{{ $searchTerm }} — Classified Ads in Cebu"
+            description="Search results for '{{ $searchTerm }}' on Iskina.ph. Find listings, prices, and sellers in Cebu, Philippines."
         />
     @else
         <x-seo
-            title="Search Results"
-            description="Search listings on Iskina.ph. Find what you need in Cebu."
+            title="Browse All Listings in Cebu"
+            description="Browse all classified ads and listings in Cebu, Philippines. Find gadgets, cars, property, jobs, services, and more on Iskina.ph."
         />
     @endif
 @endpush

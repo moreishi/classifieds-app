@@ -1,7 +1,7 @@
 @push('head')
     <x-seo
-        title="Buy & Sell Locally in Cebu"
-        description="The local marketplace for Cebu. Buy and sell gadgets, cars, property, jobs, services, and more near you."
+        title="Iskina.ph — #1 Buy & Sell Marketplace in Cebu"
+        description="The #1 classified ads marketplace in Cebu, Philippines. Buy and sell gadgets, cars, property, jobs, services, pets, and more near you. Post free ads and find deals in Cebu City, Mandaue, Lapu-Lapu, and across Cebu."
         :url="route('home')"
     />
 @endpush
@@ -10,8 +10,8 @@
     {{-- Search Hero --}}
     <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
-            <h1 class="text-4xl font-bold text-center mb-2">Find it in Cebu</h1>
-            <p class="text-blue-100 text-center mb-8 text-lg">Search gadgets, cars, rooms, and more</p>
+            <h1 class="text-4xl font-bold text-center mb-2">#1 Marketplace in Cebu — Buy & Sell Locally</h1>
+            <p class="text-blue-100 text-center mb-8 text-lg">Search gadgets, cars, property, jobs, and services near you</p>
 
             <div class="max-w-2xl mx-auto">
                 <div class="relative">
@@ -109,7 +109,7 @@
                             <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
                                 <span>📍 {{ $listing->city->name }}</span>
                                 <span class="flex items-center gap-1">
-                                    <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
+                                    <img src="{{ $listing->user->avatar }}" alt="" aria-hidden="true" class="w-4 h-4 rounded-full" />
                                     {{ $listing->user->username ?? $listing->user->name }}
                                 </span>
                             </div>
@@ -153,7 +153,7 @@
                             <div class="flex items-center justify-between mt-1 text-xs text-gray-500">
                                 <span>📍 {{ $listing->city->name }}</span>
                                 <span class="flex items-center gap-1">
-                                    <img src="{{ $listing->user->avatar }}" alt="" class="w-4 h-4 rounded-full" />
+                                    <img src="{{ $listing->user->avatar }}" alt="" aria-hidden="true" class="w-4 h-4 rounded-full" />
                                     {{ $listing->user->username ?? $listing->user->name }}
                                 </span>
                             </div>
