@@ -42,7 +42,7 @@ class SearchListings extends Component
         return view('livewire.search-listings', [
             'listings' => $listings,
             'subcategories' => $subcategories,
-            'cities' => City::where('is_active', true)->get(),
+            'cities' => City::where('is_active', true)->where('type', '!=', 'province')->orderBy('name')->get(),
             'searchTerm' => '',
         ])->layout('layouts.app');
     }

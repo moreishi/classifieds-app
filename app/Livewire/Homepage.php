@@ -35,7 +35,7 @@ class Homepage extends Component
                 ->latest()
                 ->limit(8)
                 ->get(),
-            'cities' => City::where('is_active', true)->get(),
+            'cities' => City::where('is_active', true)->where('type', '!=', 'province')->orderBy('name')->get(),
         ])->layout('layouts.app');
     }
 }

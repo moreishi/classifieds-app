@@ -38,7 +38,7 @@ class CreateListing extends Component
 
     public function mount(): void
     {
-        $this->cityId = City::where('is_active', true)->first()?->id ?? 0;
+        $this->cityId = City::where('is_active', true)->where('type', '!=', 'province')->first()?->id ?? 0;
     }
 
     public function submit(CreditService $credits)
@@ -84,7 +84,7 @@ class CreateListing extends Component
     {
         return view('livewire.create-listing', [
             'categories' => Category::where('is_active', true)->get(),
-            'cities' => City::where('is_active', true)->get(),
+            'cities' => City::where('is_active', true)->where('type', '!=', 'province')->orderBy('name')->get(),
         ])->layout('layouts.app');
     }
 }

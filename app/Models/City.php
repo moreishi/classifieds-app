@@ -13,7 +13,7 @@ class City extends Model
 
 
     protected $fillable = [
-        'name', 'slug', 'region_id', 'parent_id', 'is_active',
+        'name', 'slug', 'type', 'region_id', 'parent_id', 'is_active',
     ];
 
     protected function casts(): array
