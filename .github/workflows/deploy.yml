@@ -13,23 +13,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 62.169.22.255
-          username: root
-          key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
-          script: |
-            cd /var/www/app
-            git pull origin master
-            /usr/bin/php8.4 /usr/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-            /usr/bin/php8.4 artisan migrate --force
-            /usr/bin/php8.4 artisan optimize:clear
-            /usr/bin/php8.4 artisan config:cache
-            /usr/bin/php8.4 artisan route:cache
-            /usr/bin/php8.4 artisan view:cache
-            /usr/bin/php8.4 artisan filament:cache-components
-            chown -R www-data:www-data storage bootstrap/cache public/storage
-            php artisan queue:restart
-            echo "Deploy complete!"
+      - name: Write SSH Key
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          install -m 600 -D /dev/null ~/.ssh/id_ed25519
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+      - name: Deploy
+        env:
+          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }}
+        run: |
+          ssh -o StrictHostKeyChecking=no -o IdentitiesOnly=yes -i ~/.ssh/id_ed25519 \
+            root@62.169.22.255 "set -e; cd /var/www/app; git pull origin master; /usr/bin/php8.4 /usr/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader; /usr/bin/php8.4 artisan migrate --force; /usr/bin/php8.4 artisan optimize:clear; /usr/bin/php8.4 artisan config:cache; /usr/bin/php8.4 artisan route:cache; /usr/bin/php8.4 artisan view:cache; /usr/bin/php8.4 artisan filament:cache-components; chown -R www-data:www-data storage bootstrap/cache public/storage; php artisan queue:restart"
