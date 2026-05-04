@@ -13,35 +13,34 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1
-        with:
-          host: 62.169.22.255
-          username: root
-          key: ${{ secrets.DEPLOY_KEY }}
-          script: |
-            cd /var/www/app
+      - name: Debug SSH Setup
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t rsa 62.169.22.255 >> ~/.ssh/known_hosts 2>&1
+          cat ~/.ssh/known_hosts
+          if ssh -o StrictHostKeyChecking=no root@62.169.22.255 'echo CONNECTION_OK'; then
+            echo "SSH SUCCESS"
+          else
+            echo "SSH FAILED"
+            exit 1
+          fi
 
-            # 1. Pull latest code
-            git pull origin master
-
-            # 2. Install dependencies (production only)
-            /usr/bin/php8.4 /usr/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-
-            # 3. Run migrations
-            /usr/bin/php8.4 artisan migrate --force
-
-            # 4. Optimize Laravel
-            /usr/bin/php8.4 artisan optimize:clear
-            /usr/bin/php8.4 artisan config:cache
-            /usr/bin/php8.4 artisan route:cache
-            /usr/bin/php8.4 artisan view:cache
-            /usr/bin/php8.4 artisan filament:cache-components
-
-            # 5. Set permissions
-            chown -R www-data:www-data storage bootstrap/cache public/storage
-
-            # 6. Restart queue
-            php artisan queue:restart
-
-            echo "Deploy complete!"
+      - name: Deploy
+        if: success()
+        run: |
+          ssh -v -o StrictHostKeyChecking=no root@62.169.22.255 \
+            'set -xe && \
+            cd /var/www/app && \
+            git pull origin master && \
+            /usr/bin/php8.4 /usr/bin/composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader && \
+            /usr/bin/php8.4 artisan migrate --force && \
+            /usr/bin/php8.4 artisan optimize:clear && \
+            /usr/bin/php8.4 artisan config:cache && \
+            /usr/bin/php8.4 artisan route:cache && \
+            /usr/bin/php8.4 artisan view:cache && \
+            /usr/bin/php8.4 artisan filament:cache-components && \
+            chown -R www-data:www-data storage bootstrap/cache public/storage && \
+            php artisan queue:restart && \
+            echo "Deploy complete!"'
