@@ -33,6 +33,7 @@
         </script>
 
         {{-- Local Business JSON-LD (Organization) — Renders on all pages --}}
+        @verbatim
         <script type="application/ld+json">
         {
             "@context": "https://schema.org",
@@ -62,6 +63,7 @@
             }
         }
         </script>
+        @endverbatim
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
