@@ -82,6 +82,12 @@ class OAuthController extends Controller
         // Existing user — never sync avatar or display_name again.
         // Those are only set once during registration.
         if ($user) {
+            // Google-verified email → ensure verified_at is set
+            // (handles legacy accounts that got linked before we set this)
+            if (! $user->email_verified_at) {
+                $user->update(['email_verified_at' => now()]);
+                Log::debug('OAuth: fixed missing email_verified_at for existing user', ['user_id' => $user->id]);
+            }
             Log::debug('OAuth: existing user by oauth_id', ['user_id' => $user->id]);
             return $user;
         }
