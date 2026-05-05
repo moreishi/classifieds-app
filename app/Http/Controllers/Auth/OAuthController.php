@@ -34,7 +34,7 @@ class OAuthController extends Controller
         ]);
 
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $googleUser = Socialite::driver('google')->stateless()->user();
             Log::debug('OAuth: Google user retrieved', [
                 'id' => $googleUser->getId(),
                 'email' => $googleUser->getEmail(),
