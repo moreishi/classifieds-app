@@ -85,7 +85,8 @@ class OAuthController extends Controller
             // Google-verified email → ensure verified_at is set
             // (handles legacy accounts that got linked before we set this)
             if (! $user->email_verified_at) {
-                $user->update(['email_verified_at' => now()]);
+                $user->email_verified_at = now();
+                $user->save();
                 Log::debug('OAuth: fixed missing email_verified_at for existing user', ['user_id' => $user->id]);
             }
             Log::debug('OAuth: existing user by oauth_id', ['user_id' => $user->id]);
