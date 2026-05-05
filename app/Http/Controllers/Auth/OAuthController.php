@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
-use Illuminate\Http\Request;
 
 class OAuthController extends Controller
 {
@@ -17,6 +17,7 @@ class OAuthController extends Controller
      */
     public function redirectToGoogle()
     {
+        Log::debug('OAuth: redirecting to Google');
         return Socialite::driver('google')->redirect();
     }
 
@@ -25,18 +26,48 @@ class OAuthController extends Controller
      */
     public function handleGoogleCallback()
     {
+        Log::debug('OAuth: callback received', [
+            'code' => request()->has('code'),
+            'error' => request()->has('error'),
+            'state' => request()->has('state'),
+            'full_url' => request()->fullUrl(),
+        ]);
+
         try {
             $googleUser = Socialite::driver('google')->user();
+            Log::debug('OAuth: Google user retrieved', [
+                'id' => $googleUser->getId(),
+                'email' => $googleUser->getEmail(),
+                'name' => $googleUser->getName(),
+            ]);
         } catch (\Exception $e) {
+            Log::error('OAuth: Google sign-in exception', [
+                'message' => $e->getMessage(),
+                'class' => get_class($e),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->route('login')
                 ->with('status', 'Google sign-in failed. Please try again.');
         }
 
-        $user = $this->findOrCreateOAuthUser($googleUser, 'google');
+        try {
+            $user = $this->findOrCreateOAuthUser($googleUser, 'google');
 
-        Auth::login($user, true);
+            Auth::login($user, true);
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+            Log::debug('OAuth: login successful', ['user_id' => $user->id, 'email' => $user->email]);
+
+            return redirect()->intended(RouteServiceProvider::HOME);
+        } catch (\Exception $e) {
+            Log::error('OAuth: user creation/login exception', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('login')
+                ->with('status', 'Account creation failed. Please try again or use email sign-up.');
+        }
     }
 
     /**
@@ -50,6 +81,7 @@ class OAuthController extends Controller
             ->first();
 
         if ($user) {
+            Log::debug('OAuth: existing user by oauth_id', ['user_id' => $user->id]);
             return $user;
         }
 
@@ -62,6 +94,7 @@ class OAuthController extends Controller
                 'oauth_provider' => $provider,
                 'avatar_url' => $user->avatar_url ?? $oauthUser->getAvatar(),
             ]);
+            Log::debug('OAuth: existing user linked by email', ['user_id' => $user->id]);
 
             return $user;
         }
@@ -80,7 +113,7 @@ class OAuthController extends Controller
             $counter++;
         }
 
-        return User::create([
+        $user = User::create([
             'oauth_id' => $oauthUser->getId(),
             'oauth_provider' => $provider,
             'name' => $name,
@@ -96,5 +129,9 @@ class OAuthController extends Controller
             'free_listings_used' => 0,
             'credit_balance' => 0,
         ]);
+
+        Log::debug('OAuth: new user created', ['user_id' => $user->id, 'email' => $user->email]);
+
+        return $user;
     }
 }
