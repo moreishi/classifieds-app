@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -58,7 +57,7 @@ class OAuthController extends Controller
 
             Log::debug('OAuth: login successful', ['user_id' => $user->id, 'email' => $user->email]);
 
-            return redirect()->intended(RouteServiceProvider::HOME);
+            return redirect()->intended(route('dashboard', absolute: false));
         } catch (\Exception $e) {
             Log::error('OAuth: user creation/login exception', [
                 'message' => $e->getMessage(),
