@@ -23,6 +23,8 @@ use Illuminate\Notifications\Notifiable;
     'username',
     'email',
     'password',
+    'oauth_id',
+    'oauth_provider',
     'city_id',
     'gcash_number',
     'gcash_verified_at',
