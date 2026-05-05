@@ -41,6 +41,7 @@ use Illuminate\Notifications\Notifiable;
     'last_active_at',
     'notify_new_inquiry',
     'notify_seller_reply',
+    'email_verified_at',
 ])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser

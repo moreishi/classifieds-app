@@ -102,8 +102,14 @@ class OAuthController extends Controller
                 'oauth_provider' => $provider,
                 'avatar_url' => $user->avatar_url ?? $oauthUser->getAvatar(),
                 'display_name' => $user->display_name ?? $oauthUser->getName(),
-                'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
+
+            // Force email verified (Google-verified email, bypass fillable guard)
+            if (! $user->email_verified_at) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
+
             Log::debug('OAuth: existing user linked by email', ['user_id' => $user->id]);
 
             return $user;
@@ -140,6 +146,12 @@ class OAuthController extends Controller
             'free_listings_used' => 0,
             'credit_balance' => 0,
         ]);
+
+        // Guard: ensure email_verified_at is set (fillable guard may have blocked it)
+        if (! $user->email_verified_at) {
+            $user->email_verified_at = now();
+            $user->save();
+        }
 
         Log::debug('OAuth: new user created', ['user_id' => $user->id, 'email' => $user->email]);
 
