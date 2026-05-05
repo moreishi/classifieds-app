@@ -34,6 +34,15 @@
         </div>
 
         <div>
+            <label for="displayName" class="block text-sm font-medium text-gray-700">Display Name</label>
+            <input id="displayName" type="text" wire:model="displayName" maxlength="100"
+                   placeholder="How others see you — e.g. Juan dela Cruz"
+                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+            @error('displayName') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+            <p class="text-xs text-gray-500 mt-1">This is shown across the site. Leave blank to use your username.</p>
+        </div>
+
+        <div>
             <label class="block text-sm font-medium text-gray-700">Username</label>
             <div class="mt-1 flex items-center gap-2">
                 <input id="username" type="text" wire:model="username" placeholder="johndoe" maxlength="50" disabled

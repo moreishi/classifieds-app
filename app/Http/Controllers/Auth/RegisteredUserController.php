@@ -38,15 +38,19 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:' . User::class],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'display_name' => ['nullable', 'string', 'max:100'],
             'ref' => ['nullable', 'string', 'size:8', 'exists:users,referral_code'],
         ]);
 
+        $fullName = trim(preg_replace('/\s+/', ' ', $request->first_name . ' ' . ($request->middle_name ?? '') . ' ' . $request->last_name));
+
         $user = User::create([
             'username' => $request->username,
+            'display_name' => $request->display_name ?: $request->username,
             'first_name' => $request->first_name,
             'middle_name' => $request->middle_name,
             'last_name' => $request->last_name,
-            'name' => trim(preg_replace('/\s+/', ' ', $request->first_name . ' ' . ($request->middle_name ?? '') . ' ' . $request->last_name)),
+            'name' => $fullName,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'credit_balance' => 500, // ₱5 starting credit

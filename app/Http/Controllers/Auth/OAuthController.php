@@ -80,6 +80,10 @@ class OAuthController extends Controller
             ->first();
 
         if ($user) {
+            // Always sync avatar from Google on each login
+            $user->update([
+                'avatar_url' => $oauthUser->getAvatar(),
+            ]);
             Log::debug('OAuth: existing user by oauth_id', ['user_id' => $user->id]);
             return $user;
         }
@@ -91,7 +95,8 @@ class OAuthController extends Controller
             $user->update([
                 'oauth_id' => $oauthUser->getId(),
                 'oauth_provider' => $provider,
-                'avatar_url' => $user->avatar_url ?? $oauthUser->getAvatar(),
+                'avatar_url' => $oauthUser->getAvatar(),
+                'display_name' => $user->display_name ?? $oauthUser->getName(),
                 'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
             Log::debug('OAuth: existing user linked by email', ['user_id' => $user->id]);
@@ -117,6 +122,7 @@ class OAuthController extends Controller
             'oauth_id' => $oauthUser->getId(),
             'oauth_provider' => $provider,
             'name' => $name,
+            'display_name' => $name,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => $oauthUser->getEmail(),

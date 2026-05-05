@@ -68,6 +68,14 @@
                     <p class="text-xs text-gray-500 mt-1">Your public handle — only letters, numbers, dashes, and underscores.</p>
                 </div>
 
+                <!-- Display Name -->
+                <div class="mt-4">
+                    <x-input-label for="display_name" :value="__('Display Name (optional)')" />
+                    <x-text-input id="display_name" class="block mt-1 w-full" type="text" name="display_name" :value="old('display_name')" placeholder="Juan dela Cruz" maxlength="100" />
+                    <x-input-error :messages="$errors->get('display_name')" class="mt-2" />
+                    <p class="text-xs text-gray-500 mt-1">How others see you. Defaults to your username if blank.</p>
+                </div>
+
                 <!-- Email Address -->
                 <div class="mt-4">
                     <x-input-label for="email" :value="__('Email')" />

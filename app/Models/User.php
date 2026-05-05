@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
 
 #[Fillable([
     'name',
+    'display_name',
     'first_name',
     'middle_name',
     'last_name',
@@ -112,17 +113,36 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
     public function getAvatarAttribute(): string
     {
-        if ($this->avatar_url) {
+        // Local uploaded avatar
+        if ($this->avatar_url && ! str_starts_with($this->avatar_url, 'http')) {
             return asset('storage/' . $this->avatar_url);
         }
 
-        $hash = md5(strtolower(trim($this->email)));
+        // OAuth avatar (Google URL)
+        if ($this->avatar_url) {
+            return $this->avatar_url;
+        }
+
+        // Gravatar fallback
+        $hash = md5(strtolower(trim($this->email ?? '')));
         return "https://www.gravatar.com/avatar/{$hash}?s=80&d=mp";
+    }
+
+    /**
+     * Get the avatar as a data URI (initials) — for inline use.
+     */
+    public function getAvatarInitialsAttribute(): string
+    {
+        return $this->initials();
     }
 
     public function publicName(): string
     {
-        return $this->username ?? $this->fullName();
+        return $this->display_name
+            ?? $this->username
+            ?? $this->fullName()
+            ?? explode('@', $this->email ?? '')[0]
+            ?? 'User';
     }
 
     public function fullName(): string
@@ -138,12 +158,19 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
     public function initials(): string
     {
+        // Prefer first_name + last_name
         $parts = array_filter([$this->first_name, $this->last_name]);
-        if (! $parts) {
-            return strtoupper(substr($this->name ?? $this->username ?? '', 0, 2));
+        if ($parts) {
+            return collect($parts)->map(fn ($p) => strtoupper(substr($p, 0, 1)))->implode('');
         }
 
-        return collect($parts)->map(fn ($p) => strtoupper(substr($p, 0, 1)))->implode('');
+        // Fallback to display_name
+        if ($this->display_name) {
+            $words = explode(' ', $this->display_name, 2);
+            return strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : substr($words[0], 1, 1)));
+        }
+
+        return strtoupper(substr($this->name ?? $this->username ?? '?', 0, 2));
     }
 
     public function archivedConversations(): HasMany

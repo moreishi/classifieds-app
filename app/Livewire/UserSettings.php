@@ -18,6 +18,7 @@ class UserSettings extends Component
     public string $firstName = '';
     public string $middleName = '';
     public string $lastName = '';
+    public string $displayName = '';
 
     // Profile — Account
     public string $username = '';
@@ -39,6 +40,7 @@ class UserSettings extends Component
         $this->firstName = $this->user->first_name ?? '';
         $this->middleName = $this->user->middle_name ?? '';
         $this->lastName = $this->user->last_name ?? '';
+        $this->displayName = $this->user->display_name ?? '';
         $this->username = $this->user->username ?? '';
         $this->email = $this->user->email;
         $this->gcashNumber = $this->user->gcash_number ?? '';
@@ -58,6 +60,7 @@ class UserSettings extends Component
             'first_name' => $this->firstName,
             'middle_name' => $this->middleName ?: null,
             'last_name' => $this->lastName,
+            'display_name' => $this->displayName ?: null,
             'name' => trim(preg_replace('/\s+/', ' ', $this->firstName . ' ' . ($this->middleName ?? '') . ' ' . $this->lastName)),
         ]);
 
