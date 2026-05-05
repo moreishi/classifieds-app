@@ -5,13 +5,17 @@ namespace App\Livewire;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Title;
 
 #[Title('Settings')]
 class UserSettings extends Component
 {
+    use WithFileUploads;
+
     public User $user;
 
     // Profile — Name
@@ -33,6 +37,9 @@ class UserSettings extends Component
 
     public string $deletePassword = '';
     public string $deleteConfirm = '';
+
+    public $newAvatar = null;
+    public bool $showAvatarPreview = false;
 
     public function mount(): void
     {
@@ -65,6 +72,53 @@ class UserSettings extends Component
         ]);
 
         session()->flash('profile_updated', 'Profile updated successfully.');
+    }
+
+    public function updatedNewAvatar(): void
+    {
+        $this->validate([
+            'newAvatar' => 'image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+        $this->showAvatarPreview = true;
+    }
+
+    public function updateAvatar(): void
+    {
+        $this->validate([
+            'newAvatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ]);
+
+        // Delete old local avatar if exists
+        if ($this->user->avatar_url && ! str_starts_with($this->user->avatar_url, 'http')) {
+            Storage::disk('public')->delete($this->user->avatar_url);
+        }
+
+        $path = $this->newAvatar->store('avatars', 'public');
+
+        $this->user->update([
+            'avatar_url' => $path,
+        ]);
+
+        $this->newAvatar = null;
+        $this->showAvatarPreview = false;
+
+        session()->flash('avatar_updated', 'Profile photo updated successfully.');
+    }
+
+    public function removeAvatar(): void
+    {
+        if ($this->user->avatar_url && ! str_starts_with($this->user->avatar_url, 'http')) {
+            Storage::disk('public')->delete($this->user->avatar_url);
+        }
+
+        $this->user->update([
+            'avatar_url' => null,
+        ]);
+
+        $this->newAvatar = null;
+        $this->showAvatarPreview = false;
+
+        session()->flash('avatar_updated', 'Profile photo removed.');
     }
 
     public function updateGcash(): void

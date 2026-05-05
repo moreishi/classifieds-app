@@ -6,9 +6,60 @@
         <h3 class="text-lg font-semibold text-gray-900">Profile</h3>
         <p class="text-sm text-gray-500">Your real name is used internally and never shown publicly.</p>
 
-        @if(session()->has('profile_updated'))
+        @if(session()->has('profile_updated') || session()->has('avatar_updated'))
             <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md px-4 py-3 text-sm" role="alert">
-                {{ session('profile_updated') }}
+                {{ session('profile_updated') ?? session('avatar_updated') }}
+            </div>
+        @endif
+
+        {{-- Avatar --}}
+        <div class="flex items-center gap-6">
+            <div class="relative shrink-0">
+                @if($showAvatarPreview && $newAvatar)
+                    <img src="{{ $newAvatar->temporaryUrl() }}" alt="New avatar"
+                         class="w-20 h-20 rounded-full object-cover border-2 border-blue-400">
+                @else
+                    <img src="{{ $user->avatar }}" alt="{{ $user->publicName() }}"
+                         onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+                         class="w-20 h-20 rounded-full object-cover">
+                    <div class="hidden w-20 h-20 rounded-full bg-blue-600 text-white items-center justify-center text-xl font-bold">
+                        {{ $user->initials() }}
+                    </div>
+                @endif
+            </div>
+            <div class="flex flex-col gap-2">
+                <label class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 text-sm font-medium rounded-md hover:bg-gray-50 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" />
+                    </svg>
+                    Upload Photo
+                    <input type="file" wire:model="newAvatar" accept="image/jpeg,image/png,image/webp" class="sr-only">
+                </label>
+                @error('newAvatar') <p class="text-xs text-red-600">{{ $message }}</p> @enderror
+                <p class="text-xs text-gray-500">JPG, PNG or WebP. Max 2MB.</p>
+            </div>
+        </div>
+
+        @if($showAvatarPreview)
+            <div class="flex gap-2">
+                <button type="button" wire:click="updateAvatar" wire:loading.attr="disabled"
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:opacity-50">
+                    <span wire:loading.remove wire:target="updateAvatar">Save Photo</span>
+                    <span wire:loading wire:target="updateAvatar">Saving...</span>
+                </button>
+                <button type="button" wire:click="$set('newAvatar', null); $set('showAvatarPreview', false)"
+                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    Cancel
+                </button>
+            </div>
+        @elseif($user->avatar_url && !str_starts_with($user->avatar_url, 'http'))
+            {{-- Only show remove button for local uploads, not Google avatars --}}
+            <div>
+                <button type="button" wire:click="removeAvatar" wire:confirm="Remove your profile photo?"
+                        class="inline-flex items-center px-3 py-1.5 border border-red-300 text-red-700 text-xs font-medium rounded-md hover:bg-red-50">
+                    Remove Photo
+                </button>
             </div>
         @endif
 
