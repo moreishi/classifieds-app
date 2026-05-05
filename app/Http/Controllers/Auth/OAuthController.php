@@ -79,14 +79,9 @@ class OAuthController extends Controller
             ->where('oauth_provider', $provider)
             ->first();
 
+        // Existing user — never sync avatar or display_name again.
+        // Those are only set once during registration.
         if ($user) {
-            // Sync avatar from Google only on first connection
-            // (don't overwrite if user already uploaded their own photo)
-            if (! $user->avatar_url) {
-                $user->update([
-                    'avatar_url' => $oauthUser->getAvatar(),
-                ]);
-            }
             Log::debug('OAuth: existing user by oauth_id', ['user_id' => $user->id]);
             return $user;
         }
