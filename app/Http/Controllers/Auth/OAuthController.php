@@ -92,6 +92,7 @@ class OAuthController extends Controller
                 'oauth_id' => $oauthUser->getId(),
                 'oauth_provider' => $provider,
                 'avatar_url' => $user->avatar_url ?? $oauthUser->getAvatar(),
+                'email_verified_at' => $user->email_verified_at ?? now(),
             ]);
             Log::debug('OAuth: existing user linked by email', ['user_id' => $user->id]);
 
