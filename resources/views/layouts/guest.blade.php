@@ -28,8 +28,9 @@
     <body class="font-sans text-gray-900 antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
             <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
+                <a href="/" class="flex flex-col items-center gap-1">
+                    <img src="{{ asset('logo.png') }}" alt="Iskina.ph" class="h-12 w-auto">
+                    <span class="text-lg font-bold text-gray-800">Iskina.ph</span>
                 </a>
             </div>
 

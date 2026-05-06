@@ -8,17 +8,9 @@
 
 <div>
     {{-- Search Hero --}}
-    <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white relative overflow-hidden">
-        {{-- Logo as watermark background --}}
-        <div class="absolute inset-0 flex items-center justify-center opacity-[0.06] pointer-events-none select-none">
-            <img src="{{ asset('logo.png') }}" alt="" class="w-full h-full object-contain max-w-[800px]">
-        </div>
-        <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8 relative z-10">
-            {{-- Logo icon --}}
-            <div class="flex justify-center mb-4">
-                <img src="{{ asset('logo.png') }}" alt="Iskina.ph" class="h-12 sm:h-14 w-auto">
-            </div>
-            <h1 class="text-4xl sm:text-5xl font-bold text-center mb-2">#1 Marketplace in Cebu — Buy & Sell Locally</h1>
+    <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
+        <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+            <h1 class="text-4xl font-bold text-center mb-2">#1 Marketplace in Cebu — Buy & Sell Locally</h1>
             <p class="text-blue-100 text-center mb-8 text-lg">Search gadgets, cars, property, jobs, and services near you</p>
 
             <div class="max-w-2xl mx-auto">
