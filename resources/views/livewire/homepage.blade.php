@@ -10,6 +10,10 @@
     {{-- Search Hero --}}
     <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div class="max-w-7xl mx-auto px-4 py-16 sm:px-6 lg:px-8">
+            {{-- Brand Logo --}}
+            <div class="flex justify-center mb-6">
+                <img src="{{ asset('logo.png') }}" alt="Iskina.ph" class="h-16 sm:h-20 w-auto">
+            </div>
             <h1 class="text-4xl font-bold text-center mb-2">#1 Marketplace in Cebu — Buy & Sell Locally</h1>
             <p class="text-blue-100 text-center mb-8 text-lg">Search gadgets, cars, property, jobs, and services near you</p>
 
