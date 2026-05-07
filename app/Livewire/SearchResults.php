@@ -13,12 +13,19 @@ class SearchResults extends Component
 
     public string $q = '';
     public string $citySlug = '';
+    public ?int $provinceId = null;
     public string $sort = 'newest';
     public ?int $minPrice = null;
     public ?int $maxPrice = null;
     public ?string $condition = null;
 
-    protected $queryString = ['q', 'citySlug', 'sort', 'minPrice', 'maxPrice', 'condition'];
+    protected $queryString = ['q', 'citySlug', 'provinceId', 'sort', 'minPrice', 'maxPrice', 'condition'];
+
+    public function updatedProvinceId(): void
+    {
+        $this->citySlug = '';
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -27,6 +34,7 @@ class SearchResults extends Component
         if (strlen($this->q) >= 2) {
             $listings = Listing::active()
                 ->search($this->q)
+                ->when($this->provinceId, fn($q) => $q->inProvinceSlug($this->provinceId))
                 ->when($this->citySlug, fn($q) => $q->inCity($this->citySlug))
                 ->priceBetween($this->minPrice, $this->maxPrice)
                 ->withCondition($this->condition)
@@ -35,9 +43,25 @@ class SearchResults extends Component
                 ->paginate(20);
         }
 
+        $provinces = City::where('is_active', true)
+            ->where('type', 'province')
+            ->orderBy('name')
+            ->get();
+
+        $cities = collect();
+        if ($this->provinceId) {
+            $cities = City::where('is_active', true)
+                ->where('type', '!=', 'province')
+                ->where('parent_id', $this->provinceId)
+                ->orderBy('name')
+                ->get();
+        }
+
         return view('livewire.search-listings', [
             'listings' => $listings,
-            'cities' => City::where('is_active', true)->get(),
+            'provinces' => $provinces,
+            'allCities' => $cities,
+            'subcategories' => collect(),
             'searchTerm' => $this->q,
         ])->layout('layouts.app');
     }

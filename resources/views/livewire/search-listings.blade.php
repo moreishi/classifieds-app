@@ -84,11 +84,22 @@
                     <h3 class="font-semibold text-gray-900">Filters</h3>
 
                     <div>
+                        <label class="text-sm font-medium text-gray-700">Province</label>
+                        <select wire:model.live="provinceId"
+                                class="mt-1 w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">All provinces</option>
+                            @foreach($provinces as $province)
+                                <option value="{{ $province->id }}">{{ $province->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
                         <label class="text-sm font-medium text-gray-700">City</label>
                         <select wire:model.live="citySlug"
                                 class="mt-1 w-full rounded-lg border-gray-300 text-sm focus:ring-blue-500 focus:border-blue-500">
                             <option value="">All cities</option>
-                            @foreach($cities as $city)
+                            @foreach($allCities as $city)
                                 <option value="{{ $city->slug }}">{{ $city->name }}</option>
                             @endforeach
                         </select>

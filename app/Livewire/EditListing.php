@@ -19,6 +19,7 @@ class EditListing extends Component
     public string $description = '';
     public int $price = 0;
     public ?string $condition = null;
+    public ?int $provinceId = null;
     public int $cityId;
     public $newPhotos = [];
     public array $existingPhotos = [];
@@ -31,6 +32,7 @@ class EditListing extends Component
             'description' => 'required|min:20',
             'price' => 'required|integer|min:1',
             'condition' => 'nullable|in:brand_new,like_new,used,for_parts',
+            'provinceId' => 'nullable|exists:cities,id',
             'cityId' => 'required|exists:cities,id',
             'newPhotos' => 'nullable|array|max:5',
             'newPhotos.*' => 'image|max:5120',
@@ -61,6 +63,10 @@ class EditListing extends Component
         $this->condition = $listing->condition;
         $this->cityId = $listing->city_id;
 
+        // Set province from the listing's city parent
+        $listingCity = City::find($listing->city_id);
+        $this->provinceId = $listingCity?->parent_id;
+
         $this->existingPhotos = $listing->getMedia('photos')
             ->map(fn ($m) => [
                 'id' => $m->id,
@@ -68,6 +74,11 @@ class EditListing extends Component
                 'name' => $m->name,
             ])
             ->toArray();
+    }
+
+    public function updatedProvinceId(): void
+    {
+        $this->cityId = 0;
     }
 
     public function removePhoto(int $mediaId): void
@@ -146,9 +157,24 @@ class EditListing extends Component
 
     public function render()
     {
+        $provinces = City::where('is_active', true)
+            ->where('type', 'province')
+            ->orderBy('name')
+            ->get();
+
+        $cities = collect();
+        if ($this->provinceId) {
+            $cities = City::where('is_active', true)
+                ->where('type', '!=', 'province')
+                ->where('parent_id', $this->provinceId)
+                ->orderBy('name')
+                ->get();
+        }
+
         return view('livewire.edit-listing', [
             'categories' => Category::where('is_active', true)->get(),
-            'cities' => City::where('is_active', true)->get(),
+            'provinces' => $provinces,
+            'allCities' => $cities,
         ])->layout('layouts.app');
     }
 }

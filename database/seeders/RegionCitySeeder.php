@@ -10,195 +10,476 @@ class RegionCitySeeder extends Seeder
 {
     public function run(): void
     {
-        // --- REGIONS ---
-        DB::table('regions')->updateOrInsert(
-            ['id' => 1],
-            ['id' => 1, 'name' => 'Central Visayas']
-        );
+        // ========================================================================
+        // REGIONS
+        // ========================================================================
+        $regions = [
+            ['id' => 1, 'name' => 'Central Visayas'],
+            ['id' => 2, 'name' => 'Eastern Visayas'],
+            ['id' => 3, 'name' => 'Western Visayas'],
+            ['id' => 4, 'name' => 'Zamboanga Peninsula'],
+            ['id' => 5, 'name' => 'Northern Mindanao'],
+            ['id' => 6, 'name' => 'Davao Region'],
+            ['id' => 7, 'name' => 'SOCCSKSARGEN'],
+            ['id' => 8, 'name' => 'Caraga'],
+            ['id' => 9, 'name' => 'BARMM'],
+        ];
 
-        // --- PROVINCES (parent_id = null, type = 'province') ---
+        foreach ($regions as $r) {
+            DB::table('regions')->updateOrInsert(['id' => $r['id']], $r);
+        }
+
+        // ========================================================================
+        // PROVINCES (type = 'province', parent_id = null)
+        // ========================================================================
         $provinces = [
-            ['id' => 1,  'name' => 'Cebu'],
-            ['id' => 2,  'name' => 'Bohol'],
-            ['id' => 3,  'name' => 'Siquijor'],
-            ['id' => 4,  'name' => 'Negros Oriental'],
+            // Central Visayas (region_id: 1)
+            ['id' => 1,  'name' => 'Cebu',              'region_id' => 1],
+            ['id' => 2,  'name' => 'Bohol',             'region_id' => 1],
+            ['id' => 3,  'name' => 'Siquijor',          'region_id' => 1],
+            ['id' => 4,  'name' => 'Negros Oriental',   'region_id' => 1],
+
+            // Eastern Visayas (region_id: 2)
+            ['id' => 5,  'name' => 'Leyte',             'region_id' => 2],
+            ['id' => 6,  'name' => 'Southern Leyte',    'region_id' => 2],
+            ['id' => 7,  'name' => 'Samar',             'region_id' => 2],
+            ['id' => 8,  'name' => 'Eastern Samar',     'region_id' => 2],
+            ['id' => 9,  'name' => 'Northern Samar',    'region_id' => 2],
+            ['id' => 10, 'name' => 'Biliran',           'region_id' => 2],
+
+            // Western Visayas (region_id: 3)
+            ['id' => 11, 'name' => 'Iloilo',            'region_id' => 3],
+            ['id' => 12, 'name' => 'Negros Occidental', 'region_id' => 3],
+            ['id' => 13, 'name' => 'Capiz',             'region_id' => 3],
+            ['id' => 14, 'name' => 'Aklan',             'region_id' => 3],
+            ['id' => 15, 'name' => 'Antique',           'region_id' => 3],
+            ['id' => 16, 'name' => 'Guimaras',          'region_id' => 3],
+
+            // Zamboanga Peninsula (region_id: 4)
+            ['id' => 17, 'name' => 'Zamboanga del Sur',       'region_id' => 4],
+            ['id' => 18, 'name' => 'Zamboanga del Norte',     'region_id' => 4],
+            ['id' => 19, 'name' => 'Zamboanga Sibugay',       'region_id' => 4],
+            ['id' => 20, 'name' => 'Isabela City (Basilan)',  'region_id' => 4],
+
+            // Northern Mindanao (region_id: 5)
+            ['id' => 21, 'name' => 'Bukidnon',          'region_id' => 5],
+            ['id' => 22, 'name' => 'Misamis Oriental',  'region_id' => 5],
+            ['id' => 23, 'name' => 'Misamis Occidental','region_id' => 5],
+            ['id' => 24, 'name' => 'Lanao del Norte',   'region_id' => 5],
+            ['id' => 25, 'name' => 'Camiguin',          'region_id' => 5],
+
+            // Davao Region (region_id: 6)
+            ['id' => 26, 'name' => 'Davao del Sur',     'region_id' => 6],
+            ['id' => 27, 'name' => 'Davao del Norte',   'region_id' => 6],
+            ['id' => 28, 'name' => 'Davao Oriental',    'region_id' => 6],
+            ['id' => 29, 'name' => 'Davao de Oro',      'region_id' => 6],
+            ['id' => 30, 'name' => 'Davao Occidental',  'region_id' => 6],
+
+            // SOCCSKSARGEN (region_id: 7)
+            ['id' => 31, 'name' => 'South Cotabato',    'region_id' => 7],
+            ['id' => 32, 'name' => 'North Cotabato',    'region_id' => 7],
+            ['id' => 33, 'name' => 'Sarangani',         'region_id' => 7],
+            ['id' => 34, 'name' => 'Sultan Kudarat',    'region_id' => 7],
+
+            // Caraga (region_id: 8)
+            ['id' => 35, 'name' => 'Agusan del Norte',  'region_id' => 8],
+            ['id' => 36, 'name' => 'Agusan del Sur',    'region_id' => 8],
+            ['id' => 37, 'name' => 'Surigao del Norte', 'region_id' => 8],
+            ['id' => 38, 'name' => 'Surigao del Sur',   'region_id' => 8],
+            ['id' => 39, 'name' => 'Dinagat Islands',   'region_id' => 8],
+
+            // BARMM (region_id: 9)
+            ['id' => 40, 'name' => 'Maguindanao',       'region_id' => 9],
+            ['id' => 41, 'name' => 'Lanao del Sur',     'region_id' => 9],
+            ['id' => 42, 'name' => 'Basilan',           'region_id' => 9],
+            ['id' => 43, 'name' => 'Sulu',              'region_id' => 9],
+            ['id' => 44, 'name' => 'Tawi-Tawi',         'region_id' => 9],
         ];
 
         foreach ($provinces as $p) {
             DB::table('cities')->updateOrInsert(
-                ['id' => $p['id']],
+                ['slug' => Str::slug($p['name'])],
                 [
-                    'id'        => $p['id'],
                     'name'      => $p['name'],
                     'slug'      => Str::slug($p['name']),
                     'type'      => 'province',
-                    'region_id' => 1,
+                    'region_id' => $p['region_id'],
                     'parent_id' => null,
                     'is_active' => true,
                 ]
             );
         }
 
-        // --- CITIES & MUNICIPALITIES ---
-        // parent_id references the province id above, type = 'city' or 'municipality'
+        // ========================================================================
+        // CITIES & MUNICIPALITIES
+        // We lookup province ID by slug for the parent_id to remain portable.
+        // ========================================================================
+        $provinceMap = [];
+        foreach ($provinces as $p) {
+            $provinceMap[Str::slug($p['name'])] = $p['id'];
+        }
+        // Helper to resolve parent_id
+        $pid = fn(string $slug) => $provinceMap[$slug] ?? null;
 
+        // Each entry: [name, slug, parentSlug, type]
+        // parentSlug is the province slug, resolved to real ID at runtime
         $locations = [
-            // Cebu (province id: 1)
-            ['name' => 'Cebu City',          'slug' => 'cebu-city',            'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Lapu-Lapu City',     'slug' => 'lapu-lapu-city',      'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Mandaue City',       'slug' => 'mandaue-city',        'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Bogo City',          'slug' => 'bogo-city',           'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Carcar City',        'slug' => 'carcar-city',         'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Danao City',         'slug' => 'danao-city',          'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Naga City',          'slug' => 'naga-city-cebu',      'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Talisay City',       'slug' => 'talisay-city-cebu',   'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Toledo City',        'slug' => 'toledo-city',         'parent_id' => 1, 'type' => 'city'],
-            ['name' => 'Alcantara',          'slug' => 'alcantara',           'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Alcoy',              'slug' => 'alcoy',               'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Alegria',            'slug' => 'alegria',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Aloguinsan',         'slug' => 'aloguinsan',          'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Argao',              'slug' => 'argao',               'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Asturias',           'slug' => 'asturias',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Badian',             'slug' => 'badian',              'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Balamban',           'slug' => 'balamban',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Bantayan',           'slug' => 'bantayan',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Barili',             'slug' => 'barili',              'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Boljoon',            'slug' => 'boljoon',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Borbon',             'slug' => 'borbon',              'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Carmen',             'slug' => 'carmen-cebu',         'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Catmon',             'slug' => 'catmon',              'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Compostela',         'slug' => 'compostela-cebu',     'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Consolacion',        'slug' => 'consolacion',         'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Cordova',            'slug' => 'cordova',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Daanbantayan',       'slug' => 'daanbantayan',        'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Dalaguete',          'slug' => 'dalaguete',           'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Dumanjug',           'slug' => 'dumanjug',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Ginatilan',          'slug' => 'ginatilan',           'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Liloan',             'slug' => 'liloan',              'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Madridejos',         'slug' => 'madridejos',          'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Malabuyoc',          'slug' => 'malabuyoc',           'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Medellin',           'slug' => 'medellin',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Minglanilla',        'slug' => 'minglanilla',         'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Moalboal',           'slug' => 'moalboal',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Oslob',              'slug' => 'oslob',               'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Pilar',              'slug' => 'pilar-cebu',          'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Pinamungajan',       'slug' => 'pinamungajan',        'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Poro',               'slug' => 'poro',                'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Ronda',              'slug' => 'ronda',               'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Samboan',            'slug' => 'samboan',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'San Fernando',       'slug' => 'san-fernando-cebu',   'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'San Francisco',      'slug' => 'san-francisco-cebu',  'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'San Remigio',        'slug' => 'san-remigio',         'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Santa Fe',           'slug' => 'santa-fe-cebu',       'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Santander',          'slug' => 'santander',           'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Sibonga',            'slug' => 'sibonga',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Sogod',              'slug' => 'sogod',               'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Tabogon',            'slug' => 'tabogon',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Tabuelan',           'slug' => 'tabuelan',            'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Tuburan',            'slug' => 'tuburan',             'parent_id' => 1, 'type' => 'municipality'],
-            ['name' => 'Tudela',             'slug' => 'tudela',              'parent_id' => 1, 'type' => 'municipality'],
+            // ===================================================================
+            // CEBU (slug: cebu, id: 1)
+            // ===================================================================
+            ['Cebu City',          'cebu-city',            'cebu', 'city'],
+            ['Lapu-Lapu City',     'lapu-lapu-city',       'cebu', 'city'],
+            ['Mandaue City',       'mandaue-city',         'cebu', 'city'],
+            ['Bogo City',          'bogo-city',            'cebu', 'city'],
+            ['Carcar City',        'carcar-city',          'cebu', 'city'],
+            ['Danao City',         'danao-city',           'cebu', 'city'],
+            ['Naga City',          'naga-city-cebu',       'cebu', 'city'],
+            ['Talisay City',       'talisay-city-cebu',   'cebu', 'city'],
+            ['Toledo City',        'toledo-city',          'cebu', 'city'],
+            ['Alcantara',          'alcantara',            'cebu', 'municipality'],
+            ['Alcoy',              'alcoy',                'cebu', 'municipality'],
+            ['Alegria',            'alegria',              'cebu', 'municipality'],
+            ['Aloguinsan',         'aloguinsan',           'cebu', 'municipality'],
+            ['Argao',              'argao',                'cebu', 'municipality'],
+            ['Asturias',           'asturias',             'cebu', 'municipality'],
+            ['Badian',             'badian',               'cebu', 'municipality'],
+            ['Balamban',           'balamban',             'cebu', 'municipality'],
+            ['Bantayan',           'bantayan',             'cebu', 'municipality'],
+            ['Barili',             'barili',               'cebu', 'municipality'],
+            ['Boljoon',            'boljoon',              'cebu', 'municipality'],
+            ['Borbon',             'borbon',               'cebu', 'municipality'],
+            ['Carmen',             'carmen-cebu',          'cebu', 'municipality'],
+            ['Catmon',             'catmon',               'cebu', 'municipality'],
+            ['Compostela',         'compostela-cebu',     'cebu', 'municipality'],
+            ['Consolacion',        'consolacion',          'cebu', 'municipality'],
+            ['Cordova',            'cordova',              'cebu', 'municipality'],
+            ['Daanbantayan',       'daanbantayan',         'cebu', 'municipality'],
+            ['Dalaguete',          'dalaguete',            'cebu', 'municipality'],
+            ['Dumanjug',           'dumanjug',             'cebu', 'municipality'],
+            ['Ginatilan',          'ginatilan',            'cebu', 'municipality'],
+            ['Liloan',             'liloan',               'cebu', 'municipality'],
+            ['Madridejos',         'madridejos',           'cebu', 'municipality'],
+            ['Malabuyoc',          'malabuyoc',            'cebu', 'municipality'],
+            ['Medellin',           'medellin',             'cebu', 'municipality'],
+            ['Minglanilla',        'minglanilla',          'cebu', 'municipality'],
+            ['Moalboal',           'moalboal',             'cebu', 'municipality'],
+            ['Oslob',              'oslob',                'cebu', 'municipality'],
+            ['Pilar',              'pilar-cebu',           'cebu', 'municipality'],
+            ['Pinamungajan',       'pinamungajan',         'cebu', 'municipality'],
+            ['Poro',               'poro',                 'cebu', 'municipality'],
+            ['Ronda',              'ronda',                'cebu', 'municipality'],
+            ['Samboan',            'samboan',              'cebu', 'municipality'],
+            ['San Fernando',       'san-fernando-cebu',   'cebu', 'municipality'],
+            ['San Francisco',      'san-francisco-cebu',  'cebu', 'municipality'],
+            ['San Remigio',        'san-remigio',          'cebu', 'municipality'],
+            ['Santa Fe',           'santa-fe-cebu',        'cebu', 'municipality'],
+            ['Santander',          'santander',            'cebu', 'municipality'],
+            ['Sibonga',            'sibonga',              'cebu', 'municipality'],
+            ['Sogod',              'sogod-cebu',           'cebu', 'municipality'],
+            ['Tabogon',            'tabogon',              'cebu', 'municipality'],
+            ['Tabuelan',           'tabuelan',             'cebu', 'municipality'],
+            ['Tuburan',            'tuburan',              'cebu', 'municipality'],
+            ['Tudela',             'tudela-cebu',          'cebu', 'municipality'],
 
-            // Bohol (province id: 2)
-            ['name' => 'Tagbilaran City',   'slug' => 'tagbilaran-city',     'parent_id' => 2, 'type' => 'city'],
-            ['name' => 'Alburquerque',      'slug' => 'alburquerque',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Alicia',            'slug' => 'alicia-bohol',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Anda',              'slug' => 'anda',                'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Antequera',         'slug' => 'antequera',           'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Baclayon',          'slug' => 'baclayon',            'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Balilihan',         'slug' => 'balilihan',           'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Batuan',            'slug' => 'batuan-bohol',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Bien Unido',        'slug' => 'bien-unido',          'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Bilar',             'slug' => 'bilar',               'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Buenavista',        'slug' => 'buenavista-bohol',    'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Calape',            'slug' => 'calape',              'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Candijay',          'slug' => 'candijay',            'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Carmen',            'slug' => 'carmen-bohol',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Catigbian',         'slug' => 'catigbian',           'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Clarin',            'slug' => 'clarin-bohol',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Corella',           'slug' => 'corella',             'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Cortes',            'slug' => 'cortes-bohol',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Dagohoy',           'slug' => 'dagohoy',             'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Danao',             'slug' => 'danao-bohol',         'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Dauis',             'slug' => 'dauis',               'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Dimiao',            'slug' => 'dimiao',              'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Duero',             'slug' => 'duero',               'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Garcia Hernandez',  'slug' => 'garcia-hernandez',    'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Getafe',            'slug' => 'getafe',              'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Guindulman',        'slug' => 'guindulman',          'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Inabanga',          'slug' => 'inabanga',            'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Jagna',             'slug' => 'jagna',               'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Lila',              'slug' => 'lila',                'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Loay',              'slug' => 'loay',                'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Loboc',             'slug' => 'loboc',               'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Loon',              'slug' => 'loon',                'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Mabini',            'slug' => 'mabini-bohol',        'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Maribojoc',         'slug' => 'maribojoc',           'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Panglao',           'slug' => 'panglao',             'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Pilar',             'slug' => 'pilar-bohol',         'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Pres. C.P. Garcia', 'slug' => 'pres-cp-garcia',      'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Sagbayan',          'slug' => 'sagbayan',            'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'San Isidro',        'slug' => 'san-isidro-bohol',    'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'San Miguel',        'slug' => 'san-miguel-bohol',    'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Sevilla',           'slug' => 'sevilla-bohol',       'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Sierra Bullones',   'slug' => 'sierra-bullones',     'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Sikatuna',          'slug' => 'sikatuna',            'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Talibon',           'slug' => 'talibon',             'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Trinidad',          'slug' => 'trinidad',            'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Tubigon',           'slug' => 'tubigon',             'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Ubay',              'slug' => 'ubay',                'parent_id' => 2, 'type' => 'municipality'],
-            ['name' => 'Valencia',          'slug' => 'valencia-bohol',      'parent_id' => 2, 'type' => 'municipality'],
+            // ===================================================================
+            // BOHOL (slug: bohol, id: 2)
+            // ===================================================================
+            ['Tagbilaran City',    'tagbilaran-city',      'bohol', 'city'],
+            ['Alburquerque',       'alburquerque',         'bohol', 'municipality'],
+            ['Alicia',             'alicia-bohol',         'bohol', 'municipality'],
+            ['Anda',               'anda',                 'bohol', 'municipality'],
+            ['Antequera',          'antequera',            'bohol', 'municipality'],
+            ['Baclayon',           'baclayon',             'bohol', 'municipality'],
+            ['Balilihan',          'balilihan',            'bohol', 'municipality'],
+            ['Batuan',             'batuan-bohol',         'bohol', 'municipality'],
+            ['Bien Unido',         'bien-unido',           'bohol', 'municipality'],
+            ['Bilar',              'bilar',                'bohol', 'municipality'],
+            ['Buenavista',         'buenavista-bohol',     'bohol', 'municipality'],
+            ['Calape',             'calape',               'bohol', 'municipality'],
+            ['Candijay',           'candijay',             'bohol', 'municipality'],
+            ['Carmen',             'carmen-bohol',         'bohol', 'municipality'],
+            ['Catigbian',          'catigbian',            'bohol', 'municipality'],
+            ['Clarin',             'clarin-bohol',         'bohol', 'municipality'],
+            ['Corella',            'corella',              'bohol', 'municipality'],
+            ['Cortes',             'cortes-bohol',         'bohol', 'municipality'],
+            ['Dagohoy',            'dagohoy',              'bohol', 'municipality'],
+            ['Danao',              'danao-bohol',          'bohol', 'municipality'],
+            ['Dauis',              'dauis',                'bohol', 'municipality'],
+            ['Dimiao',             'dimiao',               'bohol', 'municipality'],
+            ['Duero',              'duero',                'bohol', 'municipality'],
+            ['Garcia Hernandez',   'garcia-hernandez',     'bohol', 'municipality'],
+            ['Getafe',             'getafe',               'bohol', 'municipality'],
+            ['Guindulman',         'guindulman',           'bohol', 'municipality'],
+            ['Inabanga',           'inabanga',             'bohol', 'municipality'],
+            ['Jagna',              'jagna',                'bohol', 'municipality'],
+            ['Lila',               'lila',                 'bohol', 'municipality'],
+            ['Loay',               'loay',                 'bohol', 'municipality'],
+            ['Loboc',              'loboc',                'bohol', 'municipality'],
+            ['Loon',               'loon',                 'bohol', 'municipality'],
+            ['Mabini',             'mabini-bohol',         'bohol', 'municipality'],
+            ['Maribojoc',          'maribojoc',            'bohol', 'municipality'],
+            ['Panglao',            'panglao',              'bohol', 'municipality'],
+            ['Pilar',              'pilar-bohol',          'bohol', 'municipality'],
+            ['Pres. C.P. Garcia',  'pres-cp-garcia',       'bohol', 'municipality'],
+            ['Sagbayan',           'sagbayan',             'bohol', 'municipality'],
+            ['San Isidro',         'san-isidro-bohol',     'bohol', 'municipality'],
+            ['San Miguel',         'san-miguel-bohol',     'bohol', 'municipality'],
+            ['Sevilla',            'sevilla-bohol',        'bohol', 'municipality'],
+            ['Sierra Bullones',    'sierra-bullones',      'bohol', 'municipality'],
+            ['Sikatuna',           'sikatuna',             'bohol', 'municipality'],
+            ['Talibon',            'talibon',              'bohol', 'municipality'],
+            ['Trinidad',           'trinidad',             'bohol', 'municipality'],
+            ['Tubigon',            'tubigon',              'bohol', 'municipality'],
+            ['Ubay',               'ubay',                 'bohol', 'municipality'],
+            ['Valencia',           'valencia-bohol',       'bohol', 'municipality'],
 
-            // Siquijor (province id: 3)
-            ['name' => 'Enrique Villanueva', 'slug' => 'enrique-villanueva', 'parent_id' => 3, 'type' => 'municipality'],
-            ['name' => 'Larena',            'slug' => 'larena',              'parent_id' => 3, 'type' => 'municipality'],
-            ['name' => 'Lazi',              'slug' => 'lazi',                'parent_id' => 3, 'type' => 'municipality'],
-            ['name' => 'Maria',             'slug' => 'maria-siquijor',      'parent_id' => 3, 'type' => 'municipality'],
-            ['name' => 'San Juan',          'slug' => 'san-juan-siquijor',   'parent_id' => 3, 'type' => 'municipality'],
-            ['name' => 'Siquijor (Poblacion)', 'slug' => 'siquijor-poblacion',   'parent_id' => 3, 'type' => 'municipality'],
+            // ===================================================================
+            // SIQUIJOR (slug: siquijor, id: 3)
+            // ===================================================================
+            ['Enrique Villanueva', 'enrique-villanueva',   'siquijor', 'municipality'],
+            ['Larena',             'larena',               'siquijor', 'municipality'],
+            ['Lazi',               'lazi',                 'siquijor', 'municipality'],
+            ['Maria',              'maria-siquijor',       'siquijor', 'municipality'],
+            ['San Juan',           'san-juan-siquijor',    'siquijor', 'municipality'],
+            ['Siquijor (Poblacion)', 'siquijor-poblacion','siquijor', 'municipality'],
 
-            // Negros Oriental (province id: 4)
-            ['name' => 'Dumaguete City',    'slug' => 'dumaguete-city',      'parent_id' => 4, 'type' => 'city'],
-            ['name' => 'Bais City',         'slug' => 'bais-city',           'parent_id' => 4, 'type' => 'city'],
-            ['name' => 'Bayawan City',      'slug' => 'bayawan-city',        'parent_id' => 4, 'type' => 'city'],
-            ['name' => 'Canlaon City',      'slug' => 'canlaon-city',        'parent_id' => 4, 'type' => 'city'],
-            ['name' => 'Guihulngan City',   'slug' => 'guihulngan-city',     'parent_id' => 4, 'type' => 'city'],
-            ['name' => 'Tanjay City',       'slug' => 'tanjay-city',         'parent_id' => 4, 'type' => 'city'],
-            ['name' => 'Amlan',             'slug' => 'amlan',               'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Ayungon',           'slug' => 'ayungon',             'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Bacong',            'slug' => 'bacong',              'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Basay',             'slug' => 'basay',               'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Bindoy',            'slug' => 'bindoy',              'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Dauin',             'slug' => 'dauin',               'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Jimalalud',         'slug' => 'jimalalud',           'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'La Libertad',       'slug' => 'la-libertad-ne',      'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Mabinay',           'slug' => 'mabinay',             'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Manjuyod',          'slug' => 'manjuyod',            'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Pamplona',          'slug' => 'pamplona-ne',         'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'San Jose',          'slug' => 'san-jose-ne',         'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Santa Catalina',    'slug' => 'santa-catalina',      'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Siaton',            'slug' => 'siaton',              'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Sibulan',           'slug' => 'sibulan',             'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Tayasan',           'slug' => 'tayasan',             'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Valencia',          'slug' => 'valencia-ne',         'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Vallehermoso',      'slug' => 'vallehermoso',        'parent_id' => 4, 'type' => 'municipality'],
-            ['name' => 'Zamboanguita',      'slug' => 'zamboanguita',        'parent_id' => 4, 'type' => 'municipality'],
+            // ===================================================================
+            // NEGROS ORIENTAL (slug: negros-oriental, id: 4)
+            // ===================================================================
+            ['Dumaguete City',     'dumaguete-city',       'negros-oriental', 'city'],
+            ['Bais City',          'bais-city',            'negros-oriental', 'city'],
+            ['Bayawan City',       'bayawan-city',         'negros-oriental', 'city'],
+            ['Canlaon City',       'canlaon-city',         'negros-oriental', 'city'],
+            ['Guihulngan City',    'guihulngan-city',      'negros-oriental', 'city'],
+            ['Tanjay City',        'tanjay-city',          'negros-oriental', 'city'],
+            ['Amlan',              'amlan',                'negros-oriental', 'municipality'],
+            ['Ayungon',            'ayungon',              'negros-oriental', 'municipality'],
+            ['Bacong',             'bacong',               'negros-oriental', 'municipality'],
+            ['Basay',              'basay',                'negros-oriental', 'municipality'],
+            ['Bindoy',             'bindoy',               'negros-oriental', 'municipality'],
+            ['Dauin',              'dauin',                'negros-oriental', 'municipality'],
+            ['Jimalalud',          'jimalalud',            'negros-oriental', 'municipality'],
+            ['La Libertad',        'la-libertad-ne',       'negros-oriental', 'municipality'],
+            ['Mabinay',            'mabinay',              'negros-oriental', 'municipality'],
+            ['Manjuyod',           'manjuyod',             'negros-oriental', 'municipality'],
+            ['Pamplona',           'pamplona-ne',          'negros-oriental', 'municipality'],
+            ['San Jose',           'san-jose-ne',          'negros-oriental', 'municipality'],
+            ['Santa Catalina',     'santa-catalina',       'negros-oriental', 'municipality'],
+            ['Siaton',             'siaton',               'negros-oriental', 'municipality'],
+            ['Sibulan',            'sibulan',              'negros-oriental', 'municipality'],
+            ['Tayasan',            'tayasan',              'negros-oriental', 'municipality'],
+            ['Valencia',           'valencia-ne',          'negros-oriental', 'municipality'],
+            ['Vallehermoso',       'vallehermoso',         'negros-oriental', 'municipality'],
+            ['Zamboanguita',       'zamboanguita',         'negros-oriental', 'municipality'],
+
+            // ===================================================================
+            // EASTERN VISAYAS PROVINCES (cities only, municipalities can be added later)
+            // ===================================================================
+
+            // LEYTE (slug: leyte)
+            ['Tacloban City',      'tacloban-city',        'leyte', 'city'],
+            ['Ormoc City',         'ormoc-city',           'leyte', 'city'],
+            ['Baybay City',        'baybay-city',          'leyte', 'city'],
+
+            // SOUTHERN LEYTE (slug: southern-leyte)
+            ['Maasin City',        'maasin-city',          'southern-leyte', 'city'],
+
+            // SAMAR (slug: samar)
+            ['Catbalogan City',    'catbalogan-city',      'samar', 'city'],
+            ['Calbayog City',      'calbayog-city',        'samar', 'city'],
+
+            // EASTERN SAMAR (slug: eastern-samar)
+            ['Borongan City',      'borongan-city',        'eastern-samar', 'city'],
+
+            // NORTHERN SAMAR (slug: northern-samar)
+            ['Catarman',           'catarman',             'northern-samar', 'municipality'],
+
+            // BILIRAN (slug: biliran)
+            ['Naval',              'naval',                'biliran', 'municipality'],
+
+            // ===================================================================
+            // WESTERN VISAYAS PROVINCES
+            // ===================================================================
+
+            // ILOILO (slug: iloilo)
+            ['Iloilo City',         'iloilo-city',          'iloilo', 'city'],
+            ['Passi City',          'passi-city',           'iloilo', 'city'],
+
+            // NEGROS OCCIDENTAL (slug: negros-occidental)
+            ['Bacolod City',        'bacolod-city',         'negros-occidental', 'city'],
+            ['Bago City',           'bago-city',            'negros-occidental', 'city'],
+            ['Cadiz City',          'cadiz-city',           'negros-occidental', 'city'],
+            ['Himamaylan City',     'himamaylan-city',      'negros-occidental', 'city'],
+            ['Kabankalan City',     'kabankalan-city',      'negros-occidental', 'city'],
+            ['La Carlota City',     'la-carlota-city',      'negros-occidental', 'city'],
+            ['Sagay City',          'sagay-city',           'negros-occidental', 'city'],
+            ['San Carlos City',     'san-carlos-city-negros','negros-occidental', 'city'],
+            ['Silay City',          'silay-city',           'negros-occidental', 'city'],
+            ['Sipalay City',        'sipalay-city',         'negros-occidental', 'city'],
+            ['Talisay City',        'talisay-city-negros',  'negros-occidental', 'city'],
+            ['Victorias City',      'victorias-city',       'negros-occidental', 'city'],
+
+            // CAPIZ (slug: capiz)
+            ['Roxas City',          'roxas-city',           'capiz', 'city'],
+
+            // AKLAN (slug: aklan)
+            ['Kalibo',              'kalibo',               'aklan', 'municipality'],
+            ['Boracay (Malay)',     'malay-aklan',          'aklan', 'municipality'],
+
+            // ANTIQUE (slug: antique)
+            ['San Jose de Buenavista', 'san-jose-buenavista','antique', 'municipality'],
+
+            // GUIMARAS (slug: guimaras)
+            ['Jordan',              'jordan-guimaras',      'guimaras', 'municipality'],
+
+            // ===================================================================
+            // ZAMBOANGA PENINSULA
+            // ===================================================================
+
+            // ZAMBOANGA DEL SUR (slug: zamboanga-del-sur)
+            ['Zamboanga City',      'zamboanga-city',       'zamboanga-del-sur', 'city'],
+            ['Pagadian City',       'pagadian-city',        'zamboanga-del-sur', 'city'],
+
+            // ZAMBOANGA DEL NORTE (slug: zamboanga-del-norte)
+            ['Dipolog City',        'dipolog-city',         'zamboanga-del-norte', 'city'],
+            ['Dapitan City',        'dapitan-city',         'zamboanga-del-norte', 'city'],
+
+            // ZAMBOANGA SIBUGAY (slug: zamboanga-sibugay)
+            ['Ipil',                'ipil',                 'zamboanga-sibugay', 'municipality'],
+
+            // ===================================================================
+            // NORTHERN MINDANAO
+            // ===================================================================
+
+            // BUKIDNON (slug: bukidnon)
+            ['Malaybalay City',     'malaybalay-city',      'bukidnon', 'city'],
+            ['Valencia City',       'valencia-city-bukidnon','bukidnon', 'city'],
+
+            // MISAMIS ORIENTAL (slug: misamis-oriental)
+            ['Cagayan de Oro City', 'cagayan-de-oro-city',  'misamis-oriental', 'city'],
+            ['Gingoog City',        'gingoog-city',         'misamis-oriental', 'city'],
+
+            // MISAMIS OCCIDENTAL (slug: misamis-occidental)
+            ['Oroquieta City',      'oroquieta-city',       'misamis-occidental', 'city'],
+            ['Ozamiz City',         'ozamiz-city',          'misamis-occidental', 'city'],
+            ['Tangub City',         'tangub-city',          'misamis-occidental', 'city'],
+
+            // LANAO DEL NORTE (slug: lanao-del-norte)
+            ['Iligan City',         'iligan-city',          'lanao-del-norte', 'city'],
+
+            // CAMIGUIN (slug: camiguin)
+            ['Mambajao',            'mambajao',             'camiguin', 'municipality'],
+
+            // ===================================================================
+            // DAVAO REGION
+            // ===================================================================
+
+            // DAVAO DEL SUR (slug: davao-del-sur)
+            ['Davao City',          'davao-city',           'davao-del-sur', 'city'],
+            ['Digos City',          'digos-city',           'davao-del-sur', 'city'],
+
+            // DAVAO DEL NORTE (slug: davao-del-norte)
+            ['Tagum City',          'tagum-city',           'davao-del-norte', 'city'],
+            ['Panabo City',         'panabo-city',          'davao-del-norte', 'city'],
+            ['Samal City',          'samal-city',           'davao-del-norte', 'city'],
+
+            // DAVAO ORIENTAL (slug: davao-oriental)
+            ['Mati City',           'mati-city',            'davao-oriental', 'city'],
+
+            // DAVAO DE ORO (slug: davao-de-oro)
+            ['Nabunturan',          'nabunturan',           'davao-de-oro', 'municipality'],
+
+            // DAVAO OCCIDENTAL (slug: davao-occidental)
+            ['Malita',              'malita',               'davao-occidental', 'municipality'],
+
+            // ===================================================================
+            // SOCCSKSARGEN
+            // ===================================================================
+
+            // SOUTH COTABATO (slug: south-cotabato)
+            ['General Santos City', 'general-santos-city',  'south-cotabato', 'city'],
+            ['Koronadal City',      'koronadal-city',       'south-cotabato', 'city'],
+
+            // NORTH COTABATO (slug: north-cotabato)
+            ['Kidapawan City',      'kidapawan-city',       'north-cotabato', 'city'],
+            ['Cotabato City',       'cotabato-city',        'north-cotabato', 'city'],
+
+            // SARANGANI (slug: sarangani)
+            ['Alabel',              'alabel',               'sarangani', 'municipality'],
+
+            // SULTAN KUDARAT (slug: sultan-kudarat)
+            ['Tacurong City',       'tacurong-city',        'sultan-kudarat', 'city'],
+
+            // ===================================================================
+            // CARAGA
+            // ===================================================================
+
+            // AGUSAN DEL NORTE (slug: agusan-del-norte)
+            ['Butuan City',         'butuan-city',          'agusan-del-norte', 'city'],
+            ['Cabadbaran City',     'cabadbaran-city',      'agusan-del-norte', 'city'],
+
+            // AGUSAN DEL SUR (slug: agusan-del-sur)
+            ['Prosperidad',         'prosperidad',          'agusan-del-sur', 'municipality'],
+
+            // SURIGAO DEL NORTE (slug: surigao-del-norte)
+            ['Surigao City',        'surigao-city',         'surigao-del-norte', 'city'],
+
+            // SURIGAO DEL SUR (slug: surigao-del-sur)
+            ['Tandag City',         'tandag-city',          'surigao-del-sur', 'city'],
+            ['Bislig City',         'bislig-city',          'surigao-del-sur', 'city'],
+
+            // DINAGAT ISLANDS (slug: dinagat-islands)
+            ['San Jose',            'san-jose-dinagat',     'dinagat-islands', 'municipality'],
+
+            // ===================================================================
+            // BARMM
+            // ===================================================================
+
+            // MAGUINDANAO (slug: maguindanao)
+            ['Shariff Aguak',       'shariff-aguak',        'maguindanao', 'municipality'],
+
+            // LANAO DEL SUR (slug: lanao-del-sur)
+            ['Marawi City',         'marawi-city',          'lanao-del-sur', 'city'],
+
+            // BASILAN (slug: basilan)
+            ['Lamitan City',        'lamitan-city',         'basilan', 'city'],
+
+            // SULU (slug: sulu)
+            ['Jolo',                'jolo',                 'sulu', 'municipality'],
+
+            // TAWI-TAWI (slug: tawi-tawi)
+            ['Bongao',              'bongao',               'tawi-tawi', 'municipality'],
         ];
 
-        $id = 5; // start after provinces
+        // Insert cities/municipalities — no hardcoded IDs, match on slug
         foreach ($locations as $loc) {
+            [$name, $slug, $parentSlug, $type] = $loc;
+            $parentId = $pid($parentSlug);
+
+            if ($parentId === null) {
+                echo "WARNING: Province not found for slug '{$parentSlug}' (city: {$name})\n";
+                continue;
+            }
+
+            $regionId = null;
+            foreach ($provinces as $p) {
+                if (Str::slug($p['name']) === $parentSlug) {
+                    $regionId = $p['region_id'];
+                    break;
+                }
+            }
+
             DB::table('cities')->updateOrInsert(
-                ['slug' => $loc['slug']],
+                ['slug' => $slug],
                 [
-                    'id'        => $id,
-                    'name'      => $loc['name'],
-                    'slug'      => $loc['slug'],
-                    'type'      => $loc['type'],
-                    'region_id' => 1,
-                    'parent_id' => $loc['parent_id'],
+                    'name'      => $name,
+                    'slug'      => $slug,
+                    'type'      => $type,
+                    'region_id' => $regionId,
+                    'parent_id' => $parentId,
                     'is_active' => true,
                 ]
             );
-            $id++;
         }
     }
 }

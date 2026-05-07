@@ -174,6 +174,20 @@ class Listing extends Model implements HasMedia
 
         return $query->whereHas('city', fn($q) => $q->where('slug', $citySlug));
     }
+
+    public function scopeInProvince(Builder $query, string $provinceSlug): Builder
+    {
+        if (blank($provinceSlug)) {
+            return $query;
+        }
+
+        return $query->whereHas('city', fn($q) => $q->whereHas('parent', fn($qq) => $qq->where('slug', $provinceSlug)));
+    }
+
+    public function scopeInProvinceSlug(Builder $query, int $provinceId): Builder
+    {
+        return $query->whereHas('city', fn($q) => $q->where('parent_id', $provinceId));
+    }
     public function scopeInCategory(Builder $query, string $categorySlug): Builder
     {
         return $query->whereHas('category', function ($q) use ($categorySlug) {

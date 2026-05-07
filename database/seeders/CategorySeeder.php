@@ -22,7 +22,9 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $cat) {
-            DB::table('categories')->updateOrInsert(['id' => $cat['id']], $cat);
+            // Always explicitly set parent_id to null for top-level categories
+            $cat['parent_id'] = null;
+            DB::table('categories')->updateOrInsert(['slug' => $cat['slug'], 'parent_id' => null], $cat);
         }
 
         // Subcategories — use updateOrInsert to be idempotent

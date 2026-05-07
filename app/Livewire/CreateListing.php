@@ -19,6 +19,7 @@ class CreateListing extends Component
     public string $description = '';
     public int $price = 0;
     public ?string $condition = null;
+    public ?int $provinceId = null;
     public int $cityId;
     public $photos = [];
 
@@ -30,6 +31,7 @@ class CreateListing extends Component
             'description' => 'required|min:20',
             'price' => 'required|integer|min:1',
             'condition' => 'nullable|in:brand_new,like_new,used,for_parts',
+            'provinceId' => 'nullable|exists:cities,id',
             'cityId' => 'required|exists:cities,id',
             'photos' => 'required|array|min:1|max:5',
             'photos.*' => 'image|max:5120', // 5MB
@@ -38,7 +40,13 @@ class CreateListing extends Component
 
     public function mount(): void
     {
-        $this->cityId = City::where('is_active', true)->where('type', '!=', 'province')->first()?->id ?? 0;
+        $this->provinceId = City::where('is_active', true)->where('type', 'province')->orderBy('name')->first()?->id;
+        $this->cityId = 0;
+    }
+
+    public function updatedProvinceId(): void
+    {
+        $this->cityId = 0; // reset city when province changes
     }
 
     public function submit(CreditService $credits)
@@ -47,7 +55,7 @@ class CreateListing extends Component
 
         $user = auth()->user();
 
-        // Check credits first — before creating anything
+        // Check credits first
         if (!$credits->canPostListing($user, null)) {
             session()->flash('error', 'Insufficient credits. Please top up your account.');
             return;
@@ -82,9 +90,24 @@ class CreateListing extends Component
 
     public function render()
     {
+        $provinces = City::where('is_active', true)
+            ->where('type', 'province')
+            ->orderBy('name')
+            ->get();
+
+        $cities = collect();
+        if ($this->provinceId) {
+            $cities = City::where('is_active', true)
+                ->where('type', '!=', 'province')
+                ->where('parent_id', $this->provinceId)
+                ->orderBy('name')
+                ->get();
+        }
+
         return view('livewire.create-listing', [
             'categories' => Category::where('is_active', true)->get(),
-            'cities' => City::where('is_active', true)->where('type', '!=', 'province')->orderBy('name')->get(),
+            'provinces' => $provinces,
+            'allCities' => $cities,
         ])->layout('layouts.app');
     }
 }

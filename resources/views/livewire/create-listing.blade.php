@@ -73,12 +73,25 @@
                 </select>
             </div>
 
+            {{-- Province --}}
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Province</label>
+                <select wire:model.live="provinceId"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Select province</option>
+                    @foreach($provinces as $province)
+                        <option value="{{ $province->id }}">{{ $province->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             {{-- City --}}
             <div>
-                <label class="block text-sm font-medium text-gray-700">City</label>
+                <label class="block text-sm font-medium text-gray-700">City / Municipality</label>
                 <select wire:model="cityId"
                         class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
-                    @foreach($cities as $city)
+                    <option value="">Select city</option>
+                    @foreach($allCities as $city)
                         <option value="{{ $city->id }}">{{ $city->name }}</option>
                     @endforeach
                 </select>
