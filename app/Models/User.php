@@ -108,7 +108,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function favoriteListings(): BelongsToMany
     {
         return $this->belongsToMany(Listing::class, 'listing_user')
-            ->withTimestamps()
             ->latest('listing_user.created_at');
     }
 
