@@ -14,15 +14,15 @@ class RegionCitySeeder extends Seeder
         // REGIONS
         // ========================================================================
         $regions = [
-            ['id' => 1, 'name' => 'Central Visayas'],
-            ['id' => 2, 'name' => 'Eastern Visayas'],
-            ['id' => 3, 'name' => 'Western Visayas'],
-            ['id' => 4, 'name' => 'Zamboanga Peninsula'],
-            ['id' => 5, 'name' => 'Northern Mindanao'],
-            ['id' => 6, 'name' => 'Davao Region'],
-            ['id' => 7, 'name' => 'SOCCSKSARGEN'],
-            ['id' => 8, 'name' => 'Caraga'],
-            ['id' => 9, 'name' => 'BARMM'],
+            ['id' => 1, 'name' => 'Central Visayas',       'slug' => 'central-visayas'],
+            ['id' => 2, 'name' => 'Eastern Visayas',        'slug' => 'eastern-visayas'],
+            ['id' => 3, 'name' => 'Western Visayas',        'slug' => 'western-visayas'],
+            ['id' => 4, 'name' => 'Zamboanga Peninsula',    'slug' => 'zamboanga-peninsula'],
+            ['id' => 5, 'name' => 'Northern Mindanao',      'slug' => 'northern-mindanao'],
+            ['id' => 6, 'name' => 'Davao Region',           'slug' => 'davao'],
+            ['id' => 7, 'name' => 'SOCCSKSARGEN',           'slug' => 'soccsksargen'],
+            ['id' => 8, 'name' => 'Caraga',                 'slug' => 'caraga'],
+            ['id' => 9, 'name' => 'BARMM',                  'slug' => 'barmm'],
         ];
 
         foreach ($regions as $r) {
