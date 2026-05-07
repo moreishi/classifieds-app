@@ -65,12 +65,31 @@
         </script>
         @endverbatim
 
+        {{-- PWA: Manifest + Service Worker --}}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Iskina" />
+        <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/icons/icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="144x144" href="/images/icons/icon-144x144.png" />
+
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{-- Register Service Worker --}}
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', function () {
+                    navigator.serviceWorker.register('/sw.js');
+                });
+            }
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
