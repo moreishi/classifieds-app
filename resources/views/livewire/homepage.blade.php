@@ -1,7 +1,7 @@
 @push('head')
     <x-seo
-        title="Iskina.ph — #1 Buy & Sell Marketplace in Cebu"
-        description="The #1 classified ads marketplace in Cebu, Philippines. Buy and sell gadgets, cars, property, jobs, services, pets, and more near you. Post free ads and find deals in Cebu City, Mandaue, Lapu-Lapu, and across Cebu."
+        title="Iskina.ph — #1 Buy & Sell Marketplace in {{ $regionName }}"
+        description="The #1 classified ads marketplace in {{ $regionName }}, Philippines. Buy and sell gadgets, cars, property, jobs, services, pets, and more near you. Post free ads and find deals in {{ $locationLabel }} and across the Philippines."
         :url="route('home')"
     />
 @endpush
@@ -10,7 +10,7 @@
     {{-- Search Hero --}}
     <div class="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
         <div class="max-w-7xl mx-auto px-4 py-20 sm:px-6 lg:px-8">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-center mb-3 tracking-tight">#1 Marketplace in Cebu</h1>
+            <h1 class="text-4xl sm:text-5xl font-extrabold text-center mb-3 tracking-tight">#1 Marketplace in {{ $regionName }}</h1>
             <p class="text-blue-200 text-center mb-8 text-lg">Buy & sell gadgets, cars, property, and services near you</p>
 
             <div class="max-w-xl mx-auto">
@@ -19,7 +19,7 @@
                         type="text"
                         wire:model.live="search"
                         wire:keydown.enter="searchListings"
-                        placeholder="Search gadgets, cars, rooms in Cebu..."
+                        placeholder="Search gadgets, cars, rooms in {{ $locationLabel }}..."
                         class="w-full px-5 py-4 pr-13 rounded-xl text-gray-900 text-base shadow-xl focus:ring-4 focus:ring-blue-300/50 focus:outline-none transition-shadow"
                     />
                     <button wire:click="searchListings" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 transition-colors">
@@ -32,7 +32,7 @@
 
             <div class="flex justify-center mt-6 gap-2 text-sm text-blue-200/80">
                 <span>📍</span>
-                <span>Cebu City, Cebu, Philippines</span>
+                <span>{{ $locationLabel }}, Philippines</span>
             </div>
         </div>
     </div>

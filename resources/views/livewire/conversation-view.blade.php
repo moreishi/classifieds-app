@@ -81,7 +81,7 @@
                    wire:model="newMessage"
                    placeholder="Type your message..."
                    class="flex-1 rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500 text-sm"
-                   x-on:keydown.enter.prevent="$wire.sendMessage()" />
+                   x-on:keydown.enter.prevent="$wire.sendMessage(); $nextTick(() => { $el.value = '' })" />
             <button type="submit"
                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm transition-colors shrink-0 disabled:opacity-50"
                     wire:loading.attr="disabled"
