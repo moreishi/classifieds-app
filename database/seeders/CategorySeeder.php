@@ -9,8 +9,8 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
-        // Top-level categories
-        DB::table('categories')->insert([
+        // Top-level categories — insert or update if already exists
+        $categories = [
             ['id' => 1, 'name' => 'Gadgets', 'slug' => 'gadgets', 'icon' => '📱', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 10],
             ['id' => 2, 'name' => 'Vehicles', 'slug' => 'vehicles', 'icon' => '🚗', 'post_price' => 100, 'free_listings_unverified' => 1, 'free_listings_verified' => 3],
             ['id' => 3, 'name' => 'Property', 'slug' => 'property', 'icon' => '🏠', 'post_price' => 100, 'free_listings_unverified' => 1, 'free_listings_verified' => 2],
@@ -19,10 +19,14 @@ class CategorySeeder extends Seeder
             ['id' => 6, 'name' => 'Services', 'slug' => 'services', 'icon' => '🔧', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
             ['id' => 7, 'name' => 'Pets', 'slug' => 'pets', 'icon' => '🐾', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
             ['id' => 8, 'name' => 'Agriculture', 'slug' => 'agriculture', 'icon' => '🌾', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
-        ]);
+        ];
 
-        // Subcategories
-        DB::table('categories')->insert([
+        foreach ($categories as $cat) {
+            DB::table('categories')->updateOrInsert(['id' => $cat['id']], $cat);
+        }
+
+        // Subcategories — use updateOrInsert to be idempotent
+        $subcategories = [
             ['parent_id' => 1, 'name' => 'Phones & Tablets', 'slug' => 'phones-tablets', 'icon' => '📱', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 10],
             ['parent_id' => 1, 'name' => 'Laptops & Computers', 'slug' => 'laptops-computers', 'icon' => '💻', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 10],
             ['parent_id' => 1, 'name' => 'Gaming & Consoles', 'slug' => 'gaming-consoles', 'icon' => '🎮', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 10],
@@ -58,6 +62,13 @@ class CategorySeeder extends Seeder
             ['parent_id' => 8, 'name' => 'Organic & Sustainable', 'slug' => 'organic-sustainable', 'icon' => '🌿', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
             ['parent_id' => 8, 'name' => 'Fishery & Aquaculture', 'slug' => 'fishery-aquaculture', 'icon' => '🐟', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
             ['parent_id' => 8, 'name' => 'Other Agriculture', 'slug' => 'other-agriculture', 'icon' => '🧑‍🌾', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
-        ]);
+        ];
+
+        foreach ($subcategories as $sub) {
+            DB::table('categories')->updateOrInsert(
+                ['parent_id' => $sub['parent_id'], 'slug' => $sub['slug']],
+                $sub
+            );
+        }
     }
 }
