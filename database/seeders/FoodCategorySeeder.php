@@ -20,6 +20,7 @@ class FoodCategorySeeder extends Seeder
                 [
                     'name' => $parent['name'],
                     'slug' => $parentSlug,
+                    'icon' => $parent['icon'] ?? null,
                     'parent_id' => null,
                     'is_active' => true,
                 ]
@@ -35,6 +36,7 @@ class FoodCategorySeeder extends Seeder
                     [
                         'name' => $child['name'],
                         'slug' => $child['slug'],
+                        'icon' => $child['icon'] ?? null,
                         'parent_id' => $parentId,
                         'is_active' => true,
                     ]
