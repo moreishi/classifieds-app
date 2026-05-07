@@ -9,7 +9,11 @@ use Illuminate\Support\Facades\Http;
 /**
  * Detects user's region/city for location-based homepage filtering.
  *
- * Priority: Session > IP Geolocation > Default fallback
+ * Priority: Session (user preference) > Default fallback (Cebu / Central Visayas)
+ *
+ * IP Geolocation (fromIp()) is available but DISABLED by default.
+ * Re-enable by uncommenting the call in detectCity() if and when
+ * we have listings across all regions and user consent is handled.
  */
 class LocationDetector
 {
@@ -25,9 +29,11 @@ class LocationDetector
             if ($city) return $city;
         }
 
-        // 2. IP geolocation
-        $city = self::fromIp();
-        if ($city) return $city;
+        // ⛔ IP geolocation is disabled due to privacy concerns,
+        // inaccurate results (VPN/CG-NAT), and empty listing pages.
+        // To re-enable, uncomment the three lines below:
+        // $city = self::fromIp();
+        // if ($city) return $city;
 
         return null;
     }
