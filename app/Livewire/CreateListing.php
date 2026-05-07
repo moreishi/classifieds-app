@@ -105,7 +105,7 @@ class CreateListing extends Component
         }
 
         return view('livewire.create-listing', [
-            'categories' => Category::where('is_active', true)->get(),
+            'categories' => Category::getAllActive(),
             'provinces' => $provinces,
             'allCities' => $cities,
         ])->layout('layouts.app');
