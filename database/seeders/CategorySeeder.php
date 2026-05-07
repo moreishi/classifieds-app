@@ -18,6 +18,7 @@ class CategorySeeder extends Seeder
             ['id' => 5, 'name' => 'Jobs', 'slug' => 'jobs', 'icon' => '💼', 'post_price' => 0, 'free_listings_unverified' => 10, 'free_listings_verified' => 999],
             ['id' => 6, 'name' => 'Services', 'slug' => 'services', 'icon' => '🔧', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
             ['id' => 7, 'name' => 'Pets', 'slug' => 'pets', 'icon' => '🐾', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
+            ['id' => 8, 'name' => 'Agriculture', 'slug' => 'agriculture', 'icon' => '🌾', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
         ]);
 
         // Subcategories
@@ -47,6 +48,16 @@ class CategorySeeder extends Seeder
             ['parent_id' => 7, 'name' => 'Dogs', 'slug' => 'dogs', 'icon' => '🐕', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
             ['parent_id' => 7, 'name' => 'Cats', 'slug' => 'cats', 'icon' => '🐱', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
             ['parent_id' => 7, 'name' => 'Other Pets & Supplies', 'slug' => 'other-pets-supplies', 'icon' => '🐾', 'post_price' => 100, 'free_listings_unverified' => 2, 'free_listings_verified' => 5],
+
+            // Agriculture subcategories
+            ['parent_id' => 8, 'name' => 'Seeds & Seedlings', 'slug' => 'seeds-seedlings', 'icon' => '🌱', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Livestock & Poultry', 'slug' => 'livestock-poultry', 'icon' => '🐔', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Farming Tools & Equipment', 'slug' => 'farming-tools-equipment', 'icon' => '🔧', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Fertilizers & Pesticides', 'slug' => 'fertilizers-pesticides', 'icon' => '🧪', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Fresh Produce', 'slug' => 'fresh-produce', 'icon' => '🥬', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Organic & Sustainable', 'slug' => 'organic-sustainable', 'icon' => '🌿', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Fishery & Aquaculture', 'slug' => 'fishery-aquaculture', 'icon' => '🐟', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
+            ['parent_id' => 8, 'name' => 'Other Agriculture', 'slug' => 'other-agriculture', 'icon' => '🧑‍🌾', 'post_price' => 0, 'free_listings_unverified' => 5, 'free_listings_verified' => 20],
         ]);
     }
 }
