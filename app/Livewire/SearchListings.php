@@ -24,7 +24,7 @@ class SearchListings extends Component
 
     public function mount(string $slug): void
     {
-        $this->category = Category::findBySlugCached($slug) ?? abort(404);
+        $this->category = Category::where('slug', $slug)->where('is_active', true)->firstOrFail();
     }
 
     public function updatedProvinceId(): void

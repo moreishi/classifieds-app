@@ -20,7 +20,7 @@ class Homepage extends Component
     public function render()
     {
         return view('livewire.homepage', [
-            'categories' => Category::getActiveParents(),
+            'categories' => Category::where('is_active', true)->whereNull('parent_id')->get(),
             'promotedListings' => Listing::where('status', 'active')
                 ->where('featured_until', '>', now())
                 ->with(['category', 'city', 'user'])
