@@ -5,22 +5,22 @@
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Transactions</h1>
             <div class="flex flex-wrap gap-2">
                 <button wire:click="$set('tab', 'all')"
-                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                               {{ $tab === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                               {{ $tab === 'all' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     All
                 </button>
                 <button wire:click="$set('tab', 'as_buyer')"
-                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                               {{ $tab === 'as_buyer' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                               {{ $tab === 'as_buyer' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     As Buyer
                 </button>
                 <button wire:click="$set('tab', 'as_seller')"
-                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                               {{ $tab === 'as_seller' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                               {{ $tab === 'as_seller' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     As Seller
                 </button>
                 <button wire:click="$set('showForm', true)"
-                        class="px-3 sm:px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 text-gray-700 hover:bg-gray-200">
+                        class="px-4 py-2 rounded-xl text-sm font-semibold bg-gray-100 text-gray-700 hover:bg-gray-200">
                     + New Receipt
                 </button>
             </div>
@@ -44,7 +44,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Listing</label>
                         <select wire:model="listingId"
-                                class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-shadow">
                             <option value="">Select listing</option>
                             @foreach($listings as $listing)
                                 <option value="{{ $listing->id }}">{{ $listing->title }} (₱{{ number_format($listing->price / 100) }})</option>
@@ -56,7 +56,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Buyer Email</label>
                         <input type="email" wire:model="buyerEmail"
-                               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                               class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-shadow"
                                placeholder="buyer@example.com" />
                         @error('buyerEmail') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
@@ -64,13 +64,13 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Buyer Name (optional)</label>
                         <input type="text" wire:model="buyerName"
-                               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                               class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-shadow" />
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Amount (₱)</label>
                         <input type="number" wire:model="amount" min="1"
-                               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+                               class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-4 focus:ring-blue-100 focus:border-blue-400 transition-shadow" />
                         @error('amount') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                     </div>
 

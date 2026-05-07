@@ -70,20 +70,20 @@
                         @foreach($media as $img)
                             { card: '{{ $img->getUrl('card') ?: $img->getUrl() }}', thumb: '{{ $img->getUrl('thumb') ?: $img->getUrl() }}' },
                         @endforeach
-                    ]}" class="space-y-2">
+                    ]}" class="space-y-3">
                         {{-- Main Image --}}
-                        <div class="bg-gray-100 rounded-xl overflow-hidden">
+                        <div class="bg-gray-100 rounded-2xl overflow-hidden shadow-sm">
                             <img x-bind:src="images[active].card"
                                  alt="{{ $listing->title }}"
-                                 class="w-full h-80 sm:h-96 object-contain" />
+                                 class="w-full aspect-[4/3] sm:aspect-[16/10] object-cover transition-opacity duration-300" />
                         </div>
                         {{-- Thumbnail strip --}}
                         @if($media->count() > 1)
                             <div class="flex gap-2 overflow-x-auto pb-1">
                                 <template x-for="(img, i) in images" :key="i">
                                     <button x-on:click="active = i"
-                                            class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 focus:outline-none"
-                                            x-bind:class="active === i ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-400'">
+                                            class="shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 focus:outline-none transition-all duration-200"
+                                            x-bind:class="active === i ? 'border-blue-500 ring-2 ring-blue-200 shadow-md' : 'border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100'">
                                         <img x-bind:src="img.thumb" class="w-full h-full object-cover" />
                                     </button>
                                 </template>
@@ -91,8 +91,13 @@
                         @endif
                     </div>
                 @else
-                    <div class="bg-gray-100 rounded-xl h-80 flex items-center justify-center text-gray-400">
-                        <span class="text-lg">No photos yet</span>
+                    <div class="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl aspect-[4/3] flex items-center justify-center text-gray-400">
+                        <div class="text-center">
+                            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-sm font-medium">No photos yet</span>
+                        </div>
                     </div>
                 @endif
 
@@ -100,20 +105,20 @@
                 <div>
                     <h1 class="text-3xl font-bold text-gray-900">{{ $listing->title }}</h1>
                     <p class="text-3xl font-bold text-blue-600 mt-2">₱{{ number_format($listing->price / 100) }}</p>
-                    <div class="flex items-center gap-4 mt-2 text-sm text-gray-500">
-                        <span>📍 {{ $listing->city->name }}</span>
-                        <span>📂 {{ $listing->category->name }}</span>
+                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-sm text-gray-500">
+                        <span class="inline-flex items-center gap-1">📍 {{ $listing->city->name }}</span>
+                        <span class="inline-flex items-center gap-1">📂 {{ $listing->category->name }}</span>
                         @if($listing->condition)
-                            <span>🔧 {{ str_replace('_', ' ', ucfirst($listing->condition)) }}</span>
+                            <span class="inline-flex items-center gap-1">🔧 {{ str_replace('_', ' ', ucfirst($listing->condition)) }}</span>
                         @endif
-                        <span class="font-mono text-xs text-gray-400">Ref: {{ $listing->reference_id }}</span>
+                        <span class="font-mono text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-md">Ref: {{ $listing->reference_id }}</span>
                     </div>
                 </div>
 
                 {{-- Description --}}
-                <div class="prose max-w-none">
-                    <h2 class="text-lg font-semibold text-gray-900">Description</h2>
-                    <p class="text-gray-700 whitespace-pre-wrap">{{ $listing->description }}</p>
+                <div class="bg-gray-50 rounded-2xl p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 mb-3">Description</h2>
+                    <p class="text-gray-700 whitespace-pre-wrap leading-relaxed">{{ $listing->description }}</p>
                 </div>
 
                 {{-- Offer history --}}
@@ -148,7 +153,7 @@
                 @auth
                     @if(auth()->id() === $listing->user_id && $listing->status !== 'sold')
                         <a href="{{ route('listings.edit', $listing->slug) }}"
-                           class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                           class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors shadow-sm">
                             Edit Listing
                         </a>
 
@@ -158,15 +163,15 @@
                 @endauth
 
                 {{-- Seller Card --}}
-                <div class="bg-white rounded-xl border p-5">
+                <div class="bg-white rounded-xl border border-gray-200 p-5 shadow-sm">
                     <h3 class="font-semibold text-gray-900">Seller</h3>
                     <div class="mt-3 flex items-center gap-3">
-                        <img src="{{ $seller->avatar }}" alt="" class="w-10 h-10 rounded-full" />
+                        <img src="{{ $seller->avatar }}" alt="" class="w-12 h-12 rounded-full ring-2 ring-gray-100" />
                         <div>
-                            <p class="font-medium text-gray-900 flex items-center gap-1">
+                            <p class="font-medium text-gray-900 flex items-center gap-1.5">
                                 {{ $seller->publicName() }}
                                 @if($seller->gcash_verified_at)
-                                    <span title="GCash Verified" class="inline-flex items-center justify-center w-4 h-4 bg-green-500 text-white rounded-full text-[10px] font-bold">&#10003;</span>
+                                    <span title="GCash Verified" class="inline-flex items-center justify-center w-4 h-4 bg-green-500 text-white rounded-full text-[9px] font-bold shadow-sm">✓</span>
                                 @endif
                             </p>
                             <p class="text-xs text-gray-500">
@@ -174,13 +179,13 @@
                             </p>
                         </div>
                     </div>
-                    <div class="mt-3 text-sm text-gray-500 space-y-1">
+                    <div class="mt-3 text-sm text-gray-500 space-y-1.5">
                         <p>Member since {{ $seller->created_at->format('M Y') }}</p>
                         @php
                             $sellerStats = app(\App\Services\ReputationService::class)->userStats($seller);
                         @endphp
                         @if($sellerStats['total_points'] > 0)
-                            <p>{{ number_format($sellerStats['seller_points']) }} seller pts · {{ number_format($sellerStats['buyer_points']) }} buyer pts</p>
+                            <p class="text-xs">{{ number_format($sellerStats['seller_points']) }} seller pts · {{ number_format($sellerStats['buyer_points']) }} buyer pts</p>
                         @endif
                         {{-- Last Active --}}
                         @if($seller->last_active_at)
@@ -215,7 +220,7 @@
                     </div>
                 @else
                     <a href="{{ route('login') }}"
-                       class="flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors text-sm">
+                       class="flex items-center justify-center gap-2 py-3 border border-dashed border-gray-300 rounded-xl text-gray-400 hover:text-red-400 hover:border-red-300 transition-all text-sm font-medium">
                         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                         </svg>
@@ -226,42 +231,39 @@
                 {{-- Actions --}}
                 @auth
                     @if($listing->status === 'sold' && auth()->id() !== $listing->user_id)
-                        {{-- Sold listing — no actions for buyers --}}
-                        <div class="bg-gray-100 text-gray-500 text-center py-3 rounded-xl text-sm font-medium">
+                        <div class="bg-gray-100 text-gray-500 text-center py-4 rounded-xl text-sm font-medium">
                             This item has been sold
                         </div>
                     @else
                         @if(auth()->id() !== $listing->user_id)
                             <button wire:click="openInquiry"
-                                    class="w-full text-center bg-white border border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-colors">
+                                    class="w-full text-center bg-white border-2 border-blue-600 text-blue-600 py-3 rounded-xl font-semibold hover:bg-blue-50 transition-all">
                                 {{ $alreadyContacted ? 'Open Chat' : 'Message Seller' }}
                             </button>
                         @endif
 
-                        <button
-                            wire:click="$dispatch('openOfferModal', { listingId: {{ $listing->id }} })"
-                            class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-                        >
-                            Send Offer
-                        </button>
+                        @if(auth()->id() !== $listing->user_id)
+                            <button wire:click="$dispatch('openOfferModal', { listingId: {{ $listing->id }} })"
+                                    class="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-sm">
+                                Send Offer
+                            </button>
+                        @endif
 
                         @if(auth()->id() === $listing->user_id)
-                            <button
-                                wire:click="markAsSold"
-                                class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors"
-                            >
+                            <button wire:click="markAsSold"
+                                    class="w-full bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-all shadow-sm">
                                 Mark as Sold
                             </button>
                         @endif
                     @endif
                 @else
                     @if($listing->status === 'sold')
-                        <div class="bg-gray-100 text-gray-500 text-center py-3 rounded-xl text-sm font-medium">
+                        <div class="bg-gray-100 text-gray-500 text-center py-4 rounded-xl text-sm font-medium">
                             This item has been sold
                         </div>
                     @else
                         <a href="{{ route('login') }}"
-                           class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                           class="block w-full text-center bg-blue-600 text-white py-3 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-sm">
                             Log in to send offer
                         </a>
                     @endif

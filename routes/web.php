@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReceiptController;
 use App\Livewire\CreateListing;
 use App\Livewire\EditListing;
+use App\Livewire\DiscoveryFeed;
 use App\Livewire\Homepage;
 use App\Livewire\Notifications as NotificationsPage;
 use App\Livewire\ListingDetail;
@@ -19,6 +20,9 @@ use App\Notifications\NewInquiry;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', Homepage::class)->name('home');
+
+Route::get('/ganaps', DiscoveryFeed::class)->name('ganaps.index');
+Route::get('/ganaps/{slug}', DiscoveryFeed::class)->name('ganaps.show');
 
 Route::get('/category/{slug}', SearchListings::class)->name('category.show');
 Route::get('/search', SearchResults::class)->name('search');

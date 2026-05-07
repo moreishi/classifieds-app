@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             ListingSeeder::class,
+            EventSeeder::class,
         ]);
 
         // Sample data (listings, users, credit transactions, photos) is optional.

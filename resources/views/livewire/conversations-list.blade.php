@@ -8,12 +8,18 @@
         </div>
 
         @if($conversations->isEmpty())
-            <div class="text-center py-16 bg-gray-50 rounded-xl">
+            <div class="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                 @if($showArchived)
-                    <p class="text-gray-500 text-lg">No archived conversations</p>
-                    <button wire:click="toggleShowArchived" class="text-sm text-blue-600 hover:text-blue-800 underline mt-2">View active conversations</button>
+                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
+                    </svg>
+                    <p class="text-gray-500 text-lg font-medium">No archived conversations</p>
+                    <button wire:click="toggleShowArchived" class="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium">← View active conversations</button>
                 @else
-                    <p class="text-gray-500 text-lg">No conversations yet</p>
+                    <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <p class="text-gray-500 text-lg font-medium">No conversations yet</p>
                     <p class="text-gray-400 text-sm mt-1">Message a seller about a listing to get started.</p>
                 @endif
             </div>

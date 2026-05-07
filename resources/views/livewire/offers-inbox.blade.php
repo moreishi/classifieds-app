@@ -1,13 +1,13 @@
 <div>
     <div class="max-w-5xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
         @if(session('message'))
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl mb-6 text-sm">
                 {{ session('message') }}
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+            <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl mb-6 text-sm">
                 {{ session('error') }}
             </div>
         @endif
@@ -17,21 +17,24 @@
 
             <div class="flex gap-2">
                 <button wire:click="$set('tab', 'received')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                               {{ $tab === 'received' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                               {{ $tab === 'received' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Received ({{ auth()->user()->receivedOffers()->count() }})
                 </button>
                 <button wire:click="$set('tab', 'sent')"
-                        class="px-4 py-2 rounded-lg text-sm font-medium transition-colors
-                               {{ $tab === 'sent' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                        class="px-4 py-2 rounded-xl text-sm font-semibold transition-all
+                               {{ $tab === 'sent' ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                     Sent
                 </button>
             </div>
         </div>
 
         @if($offers->isEmpty())
-            <div class="text-center py-16 bg-gray-50 rounded-xl">
-                <p class="text-gray-500 text-lg">No offers yet</p>
+            <div class="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                <p class="text-gray-500 text-lg font-medium">No offers yet</p>
                 <p class="text-gray-400 text-sm mt-1">
                     @if($tab === 'sent')
                         You haven't made any offers.

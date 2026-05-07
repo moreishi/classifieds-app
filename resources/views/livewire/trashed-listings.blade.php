@@ -6,8 +6,11 @@
                 <p class="text-sm text-gray-500 mt-1">Deleted listings can be restored within 30 days.</p>
             </div>
             <a href="{{ route('listings.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-                + New Listing
+               class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                New Listing
             </a>
         </div>
 
@@ -18,8 +21,11 @@
         @endif
 
         @if($listings->isEmpty())
-            <div class="text-center py-16 bg-gray-50 rounded-xl">
-                <p class="text-gray-500 text-lg">No trashed listings</p>
+            <div class="flex flex-col items-center justify-center py-20 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                <p class="text-gray-500 text-lg font-medium">No trashed listings</p>
                 <p class="text-gray-400 text-sm mt-1">Deleted listings will appear here for 30 days.</p>
             </div>
         @else

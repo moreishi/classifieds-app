@@ -7,14 +7,17 @@
                 <p class="text-sm text-gray-500 mt-1">Overview of your listings and activity.</p>
             </div>
             <a href="{{ route('listings.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors">
-                + New Listing
+               class="inline-flex items-center gap-1.5 bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition-all shadow-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                </svg>
+                New Listing
             </a>
         </div>
 
         {{-- Stats Cards --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <div class="bg-white rounded-xl border border-gray-200 p-5">
+            <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-blue-100 rounded-lg">
                         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +31,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-200 p-5">
+            <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-green-100 rounded-lg">
                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -42,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-200 p-5">
+            <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-purple-100 rounded-lg">
                         <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-gray-200 p-5">
+            <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow">
                 <div class="flex items-center gap-3">
                     <div class="p-2 bg-amber-100 rounded-lg">
                         <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
