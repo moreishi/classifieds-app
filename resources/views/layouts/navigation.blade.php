@@ -15,11 +15,8 @@
                     <x-nav-link :href="route('home')" :active="request()->routeIs('home')">
                         {{ __('Home') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('ganaps.index')" :active="request()->routeIs('ganaps.*')">
-                        {{ __('Ganaps') }}
-                    </x-nav-link>
                     <x-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
-                        {{ __('Create Listing') }}
+                        {{ __('Post an Ad') }}
                     </x-nav-link>
                     @auth
                         <x-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
@@ -148,13 +145,9 @@
                 {{ __('Home') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('ganaps.index')" :active="request()->routeIs('ganaps.*')">
-                {{ __('Ganaps') }}
-            </x-responsive-nav-link>
-
             @auth
                 <x-responsive-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
-                    {{ __('Create Listing') }}
+                    {{ __('Post an Ad') }}
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
                     {{ __('Offers') }}
