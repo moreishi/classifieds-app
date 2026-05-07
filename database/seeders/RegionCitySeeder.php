@@ -114,10 +114,14 @@ class RegionCitySeeder extends Seeder
         // CITIES & MUNICIPALITIES
         // We lookup province ID by slug for the parent_id to remain portable.
         // ========================================================================
-        $provinceMap = [];
-        foreach ($provinces as $p) {
-            $provinceMap[Str::slug($p['name'])] = $p['id'];
-        }
+        // Build province map from DB to use real IDs (not hardcoded ones)
+        $provinceMap = DB::table('cities')
+            ->where('type', 'province')
+            ->where('is_active', true)
+            ->get()
+            ->keyBy(fn($c) => $c->slug)
+            ->map(fn($c) => $c->id)
+            ->toArray();
         // Helper to resolve parent_id
         $pid = fn(string $slug) => $provinceMap[$slug] ?? null;
 
