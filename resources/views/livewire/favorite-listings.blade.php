@@ -30,8 +30,8 @@
                     <div class="group bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200">
                         {{-- Photo --}}
                         <div class="aspect-[4/3] bg-gray-100 relative overflow-hidden">
-                            @if($listing->getFirstMediaUrl('photos', 'card'))
-                                <img src="{{ $listing->getFirstMediaUrl('photos', 'card') }}"
+                            @if($listing->getFirstMediaUrl('photos', 'grid'))
+                                <img src="{{ $listing->getFirstMediaUrl('photos', 'grid') }}"
                                      alt="{{ $listing->title }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                             @else

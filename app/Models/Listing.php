@@ -41,9 +41,15 @@ class Listing extends Model implements HasMedia
             ->nonQueued();
 
         $this->addMediaConversion('card')
+            ->width(1200)
+            ->height(800)
+            ->quality(90)
+            ->nonQueued();
+
+        $this->addMediaConversion('grid')
             ->width(600)
             ->height(400)
-            ->quality(90)
+            ->quality(85)
             ->nonQueued();
     }
 
