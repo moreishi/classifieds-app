@@ -3,7 +3,7 @@
     <div x-data="broadcastModal()"
          x-on:open-broadcast-modal.window="open()"
          x-on:keydown.escape.window="close()"
-         x-show="open"
+         x-show="isOpen"
          x-cloak
          class="fixed inset-0 z-50 flex items-center justify-center"
          style="display: none;">
@@ -14,7 +14,7 @@
 
         {{-- Modal content --}}
         <div class="relative bg-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl border border-gray-700"
-             x-show="open"
+             x-show="isOpen"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
              x-transition:enter-end="opacity-100 scale-100"
@@ -220,11 +220,11 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('broadcastModal', () => ({
-                open: false,
+                isOpen: false,
                 videoStream: null,
 
                 open() {
-                    this.open = true;
+                    this.isOpen = true;
                     this.$nextTick(() => {
                         this.startCamera();
                         this.detectGps();
@@ -236,7 +236,7 @@
                     if (typeof this.$wire !== 'undefined') {
                         this.$wire.close();
                     }
-                    this.open = false;
+                    this.isOpen = false;
                 },
 
                 async startCamera() {
