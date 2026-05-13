@@ -44,7 +44,8 @@ class UserForm
                 Toggle::make('gcash_verified_at')
                     ->label('GCash Verified')
                     ->formatStateUsing(fn($state) => !is_null($state))
-                    ->afterStateHydrated(fn($component, $state) => $component->state(!is_null($state))),
+                    ->afterStateHydrated(fn($component, $state) => $component->state(!is_null($state)))
+                    ->mutateDehydratedStateUsing(fn($state) => $state ? now()->toDateTimeString() : null),
                 Select::make('city_id')
                     ->relationship('city', 'name')
                     ->searchable(),
