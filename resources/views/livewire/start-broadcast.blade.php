@@ -142,7 +142,8 @@
                         <textarea wire:model="description"
                                   placeholder="What are you selling? E.g., Fresh lumpia, assorted flavors, 3 for ₱50"
                                   class="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white text-sm placeholder-gray-500 focus:border-neon-pink focus:ring-1 focus:ring-neon-pink outline-none resize-none"
-                                  rows="3" maxlength="200"></textarea>
+                                  rows="3" maxlength="200"
+                                  x-init="$nextTick(() => $el.scrollIntoView({ behavior: 'smooth', block: 'center' }))"></textarea>
                         <div class="text-right text-xs text-gray-500 mt-1">{{ strlen($description) }}/200</div>
                         @error('description') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -178,13 +179,10 @@
                     @if($gpsStatus === 'captured' && $latitude && $longitude)
                         <div class="mt-2 rounded-xl border border-gray-700 relative select-none" style="height: 170px;">
                             <div id="compose-map-{{ $this->getId() }}"
-                                 class="h-full w-full rounded-xl overflow-hidden"
-                                 x-init="setTimeout(() => initComposeMap({{ $latitude }}, {{ $longitude }}), 300)"></div>
-                            {{-- Fixed center pin --}}
-                            <div class="absolute inset-0 z-[10000] pointer-events-none flex items-center justify-center" style="margin-top: -20px;">
-                                <span class="text-4xl" style="filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)) drop-shadow(0 0 4px rgba(0,0,0,0.5));">📍</span>
+                                 class="h-full w-full rounded-xl overflow-hidden relative"
+                                 x-init="setTimeout(() => initComposeMap({{ $latitude }}, {{ $longitude }}), 300)">
+                                <p class="absolute bottom-1 left-1/2 -translate-x-1/2 z-[10000] text-[10px] text-white bg-black/70 px-2 py-0.5 rounded-full whitespace-nowrap pointer-events-none">Drag map to adjust location</p>
                             </div>
-                            <p class="absolute bottom-1 left-1/2 -translate-x-1/2 z-[100] text-[10px] text-white bg-black/70 px-2 py-0.5 rounded-full whitespace-nowrap pointer-events-none">Drag map to adjust location</p>
                         </div>
                     @endif
                     </div>
@@ -329,7 +327,11 @@
                 },
 
                 initComposeMap(lat, lng) {
-                    if (this.composeMap) return;
+                    // Destroy existing map first so re-init works after Livewire re-renders
+                    if (this.composeMap) {
+                        this.composeMap.remove();
+                        this.composeMap = null;
+                    }
                     if (typeof L === 'undefined') {
                         setTimeout(() => this.initComposeMap(lat, lng), 300);
                         return;
@@ -347,9 +349,20 @@
                         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                             maxZoom: 19,
                         }).addTo(this.composeMap);
-                        // Update Livewire coords + location name when map is panned/zoomed
+                        // Fixed blue marker pinned to center
+                        L.marker([lat, lng], {
+                            interactive: false,
+                            keyboard: false,
+                        }).addTo(this.composeMap);
+                        // Update Livewire coords + marker position when map is panned/zoomed
                         this.composeMap.on('moveend', () => {
                             const c = this.composeMap.getCenter();
+                            // Move marker to new center
+                            this.composeMap.eachLayer((layer) => {
+                                if (layer instanceof L.Marker) {
+                                    layer.setLatLng([c.lat, c.lng]);
+                                }
+                            });
                             if (typeof this.$wire !== 'undefined') {
                                 this.$wire.latitude = c.lat.toFixed(7);
                                 this.$wire.longitude = c.lng.toFixed(7);
