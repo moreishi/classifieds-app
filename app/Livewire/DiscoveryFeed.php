@@ -27,6 +27,20 @@ class DiscoveryFeed extends Component
         $this->resetPage();
     }
 
+    public function updateBeaconLocation(int $id, float $lat, float $lng): void
+    {
+        $beacon = LiveBeacon::findOrFail($id);
+
+        if ($beacon->user_id !== auth()->id()) {
+            return;
+        }
+
+        $beacon->update([
+            'latitude' => $lat,
+            'longitude' => $lng,
+        ]);
+    }
+
     public function render()
     {
         $events = Event::active()

@@ -4,9 +4,10 @@
         description="Find the best local events, pop-ups, and ganaps in Cebu. From night markets to art jams, discover what's happening near you."
         :url="route('ganaps.index')"
     />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 @endpush
 
-<div>
+<div x-data="beaconDetail()">
     {{-- Hero --}}
     <div class="relative overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
         <div class="relative max-w-7xl mx-auto px-4 py-16 sm:py-20 lg:py-24 text-center">
@@ -34,8 +35,22 @@
                 </div>
                 <div class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
                     @foreach($liveBeacons as $beacon)
+                        @php
+                            $_bd = [
+                                'id' => $beacon->id,
+                                'photo' => $beacon->getFirstMediaUrl('snapshot', 'card') ?: $beacon->getFirstMediaUrl('snapshot'),
+                                'description' => $beacon->description,
+                                'lat' => $beacon->latitude,
+                                'lng' => $beacon->longitude,
+                                'locationName' => $beacon->location_name ?? '',
+                                'vendor' => $beacon->user->publicName(),
+                                'avatar' => $beacon->user->avatar ?? '',
+                                'isOwner' => auth()->check() && auth()->id() === $beacon->user_id,
+                            ];
+                        @endphp
                         <div wire:key="beacon-{{ $beacon->id }}"
-                             class="snap-start flex-shrink-0 w-44 group relative rounded-2xl overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
+                             class="snap-start flex-shrink-0 w-44 group relative rounded-2xl overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+                             x-on:click="open(@json($_bd))">
 
                             {{-- Snapshot --}}
                             <div class="aspect-[3/4] overflow-hidden">
@@ -254,4 +269,189 @@
             @endif
         </div>
     </div>
+
+    {{-- Beacon Detail Modal --}}
+    <div x-show="show" x-cloak
+         class="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+         style="display: none;">
+        {{-- Backdrop --}}
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+             x-on:click="close()"></div>
+
+        {{-- Content --}}
+        <div class="relative z-10 w-full sm:max-w-lg bg-gray-900 sm:rounded-2xl shadow-2xl border border-gray-700 overflow-hidden max-h-[95vh] flex flex-col"
+             x-show="show"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-8 sm:translate-y-4 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:translate-y-0 sm:scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0"
+             x-transition:leave-end="opacity-0 translate-y-8"
+             @click.outside="close()">
+
+            {{-- Close button --}}
+            <button x-on:click="close()"
+                    class="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+
+            {{-- Photo --}}
+            <div class="relative aspect-[4/3] bg-gray-800 flex-shrink-0">
+                <template x-if="beacon?.photo">
+                    <img :src="beacon.photo" class="w-full h-full object-cover">
+                </template>
+                <template x-if="!beacon?.photo">
+                    <div class="w-full h-full flex items-center justify-center">
+                        <span class="text-5xl">📸</span>
+                    </div>
+                </template>
+                <div class="absolute top-3 left-3">
+                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neon-pink text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-neon-pink/40">
+                        <span class="relative flex h-1.5 w-1.5">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                        </span>
+                        SELLING
+                    </span>
+                </div>
+            </div>
+
+            {{-- Info --}}
+            <div class="p-5 space-y-4 flex-1 overflow-y-auto">
+                {{-- Vendor + Location --}}
+                <div class="flex items-center gap-3">
+                    <img :src="beacon?.avatar" alt="" class="w-10 h-10 rounded-full ring-2 ring-gray-700 flex-shrink-0">
+                    <div class="min-w-0">
+                        <p class="text-white font-bold truncate" x-text="beacon?.vendor"></p>
+                        <p class="text-gray-400 text-xs truncate" x-text="beacon?.locationName || 'No location set'"></p>
+                    </div>
+                </div>
+
+                {{-- Description --}}
+                <div class="bg-gray-800 rounded-xl p-4">
+                    <p class="text-gray-200 text-sm leading-relaxed" x-text="beacon?.description"></p>
+                </div>
+
+                {{-- Map --}}
+                <div x-show="beacon?.lat && beacon?.lng">
+                    <div id="beacon-map" class="h-56 w-full rounded-xl overflow-hidden"></div>
+
+                    {{-- Draggable pin controls --}}
+                    <div x-show="changed" class="mt-3 p-3 bg-gray-800 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-gray-400">
+                                <span x-text="newLat"></span>, <span x-text="newLng"></span>
+                            </div>
+                            <button x-show="beacon?.isOwner" x-on:click="saveLocation()"
+                                    :disabled="saving"
+                                    class="px-4 py-2 rounded-lg bg-gradient-to-r from-neon-pink to-neon-purple text-white text-xs font-bold hover:shadow-lg transition-all duration-300 disabled:opacity-50">
+                                <span x-text="saving ? 'Saving...' : 'Save Location'"></span>
+                            </button>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-2" x-show="!beacon?.isOwner">Pin location shown for reference</p>
+                        <p class="text-xs text-gray-500 mt-2" x-show="beacon?.isOwner">Drag the pin to update your location</p>
+                    </div>
+                </div>
+
+                {{-- No GPS --}}
+                <div x-show="!beacon?.lat || !beacon?.lng"
+                     class="bg-gray-800 rounded-xl p-4 text-center">
+                    <p class="text-gray-400 text-sm">No precise location available</p>
+                    <p class="text-gray-500 text-xs mt-1" x-text="beacon?.locationName || 'Location not provided'"></p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('beaconDetail', () => ({
+            show: false,
+            beacon: null,
+            map: null,
+            marker: null,
+            newLat: null,
+            newLng: null,
+            changed: false,
+            saving: false,
+
+            open(data) {
+                this.beacon = data;
+                this.changed = false;
+                this.newLat = null;
+                this.newLng = null;
+                this.show = true;
+                this.$nextTick(() => {
+                    if (this.beacon?.lat && this.beacon?.lng) {
+                        this.initMap();
+                    }
+                });
+            },
+
+            close() {
+                this.destroyMap();
+                this.show = false;
+                this.beacon = null;
+            },
+
+            initMap() {
+                if (this.map) this.destroyMap();
+
+                const lat = parseFloat(this.beacon.lat);
+                const lng = parseFloat(this.beacon.lng);
+
+                this.map = L.map('beacon-map', {
+                    center: [lat, lng],
+                    zoom: 16,
+                    zoomControl: true,
+                });
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                    maxZoom: 19,
+                }).addTo(this.map);
+
+                this.marker = L.marker([lat, lng], {
+                    draggable: this.beacon.isOwner,
+                }).addTo(this.map);
+
+                this.marker.on('dragend', (e) => {
+                    const pos = e.target.getLatLng();
+                    this.newLat = pos.lat.toFixed(7);
+                    this.newLng = pos.lng.toFixed(7);
+                    this.changed = true;
+                });
+
+                // Fix map rendering after modal animation completes
+                setTimeout(() => this.map?.invalidateSize(), 400);
+            },
+
+            destroyMap() {
+                if (this.map) {
+                    this.map.remove();
+                    this.map = null;
+                    this.marker = null;
+                }
+            },
+
+            saveLocation() {
+                if (!this.changed || !this.newLat || !this.newLng) return;
+                this.saving = true;
+                $wire.updateBeaconLocation(this.beacon.id, this.newLat, this.newLng)
+                    .then(() => {
+                        this.beacon.lat = this.newLat;
+                        this.beacon.lng = this.newLng;
+                        this.changed = false;
+                        this.saving = false;
+                    })
+                    .catch(() => {
+                        this.saving = false;
+                    });
+            },
+        }));
+    });
+</script>
