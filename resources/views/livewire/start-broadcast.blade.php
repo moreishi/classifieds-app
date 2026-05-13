@@ -13,7 +13,7 @@
              x-on:click="close()"></div>
 
         {{-- Modal content --}}
-        <div class="relative bg-gray-900 rounded-2xl w-full max-w-md mx-4 overflow-hidden shadow-2xl border border-gray-700"
+        <div class="relative bg-gray-900 rounded-2xl w-full max-w-md mx-4 shadow-2xl border border-gray-700 flex flex-col max-h-[90vh]"
              x-show="isOpen"
              x-transition:enter="transition ease-out duration-300"
              x-transition:enter-start="opacity-0 scale-95"
@@ -29,6 +29,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
+
+            {{-- Scrollable content --}}
+            <div class="overflow-y-auto flex-1 rounded-2xl">
 
             {{-- Step 1: Capture --}}
             @if($step === 'capture')
@@ -173,10 +176,18 @@
 
                     {{-- Map preview in compose --}}
                     @if($gpsStatus === 'captured' && $latitude && $longitude)
-                        <div class="mt-2 rounded-xl overflow-hidden border border-gray-700">
+                        <div class="mt-2 rounded-xl overflow-hidden border border-gray-700 relative" style="height: 160px;">
                             <div id="compose-map-{{ $this->getId() }}"
-                                 class="h-36 w-full"
+                                 class="h-full w-full"
                                  x-init="setTimeout(() => initComposeMap({{ $latitude }}, {{ $longitude }}), 300)"></div>
+                            {{-- Fixed center pin --}}
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 pointer-events-none text-3xl drop-shadow-lg" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">
+                                <svg class="w-8 h-8" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#e11d48"/>
+                                    <circle cx="12" cy="9" r="4.5" fill="white"/>
+                                </svg>
+                            </div>
+                            <p class="absolute bottom-1 left-1/2 -translate-x-1/2 z-10 text-[10px] text-white bg-black/60 px-2 py-0.5 rounded-full whitespace-nowrap">Drag map to adjust location</p>
                         </div>
                     @endif
                     </div>
@@ -246,6 +257,7 @@
                     </div>
                 </div>
             @endif
+            </div>{{-- /scrollable --}}
         </div>
     </div>
 
@@ -327,9 +339,21 @@
                     this.$nextTick(() => {
                         const el = document.getElementById(id);
                         if (!el) return;
-                        this.composeMap = L.map(el, { center: [lat, lng], zoom: 15, zoomControl: false });
+                        this.composeMap = L.map(el, {
+                            center: [lat, lng],
+                            zoom: 16,
+                            zoomControl: true,
+                            attributionControl: false,
+                        });
                         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this.composeMap);
-                        L.marker([lat, lng]).addTo(this.composeMap);
+                        // Update Livewire coords when map is panned/zoomed
+                        this.composeMap.on('moveend', () => {
+                            const c = this.composeMap.getCenter();
+                            if (typeof this.$wire !== 'undefined') {
+                                this.$wire.latitude = c.lat.toFixed(7);
+                                this.$wire.longitude = c.lng.toFixed(7);
+                            }
+                        });
                         setTimeout(() => this.composeMap?.invalidateSize(), 200);
                     });
                 },
