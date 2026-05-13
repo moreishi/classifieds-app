@@ -310,9 +310,8 @@
                 }
                 const lat = parseFloat(this.beacon.lat);
                 const lng = parseFloat(this.beacon.lng);
-                this.map = L.map('beacon-map', { center: [lat, lng], zoom: 16, zoomControl: true });
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; OpenStreetMap',
+                this.map = L.map('beacon-map', { center: [lat, lng], zoom: 16, zoomControl: false, attributionControl: false });
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
                     maxZoom: 19,
                 }).addTo(this.map);
                 this.marker = L.marker([lat, lng], { draggable: this.beacon.isOwner }).addTo(this.map);
