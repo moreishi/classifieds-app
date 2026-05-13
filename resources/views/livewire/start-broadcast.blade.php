@@ -181,13 +181,8 @@
                                  class="h-full w-full rounded-xl overflow-hidden"
                                  x-init="setTimeout(() => initComposeMap({{ $latitude }}, {{ $longitude }}), 300)"></div>
                             {{-- Fixed center pin --}}
-                            <div class="absolute inset-0 z-[100] pointer-events-none flex items-center justify-center">
-                                <div class="-mt-4">
-                                    <svg class="w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]" viewBox="0 0 24 24" fill="none">
-                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="#e11d48" stroke="#fff" stroke-width="1.5"/>
-                                        <circle cx="12" cy="9" r="4" fill="white"/>
-                                    </svg>
-                                </div>
+                            <div class="absolute inset-0 z-[10000] pointer-events-none flex items-center justify-center" style="margin-top: -20px;">
+                                <span class="text-4xl" style="filter: drop-shadow(0 2px 8px rgba(0,0,0,0.8)) drop-shadow(0 0 4px rgba(0,0,0,0.5));">📍</span>
                             </div>
                             <p class="absolute bottom-1 left-1/2 -translate-x-1/2 z-[100] text-[10px] text-white bg-black/70 px-2 py-0.5 rounded-full whitespace-nowrap pointer-events-none">Drag map to adjust location</p>
                         </div>
@@ -346,10 +341,12 @@
                         this.composeMap = L.map(el, {
                             center: [lat, lng],
                             zoom: 16,
-                            zoomControl: true,
+                            zoomControl: false,
                             attributionControl: false,
                         });
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this.composeMap);
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                            maxZoom: 19,
+                        }).addTo(this.composeMap);
                         // Update Livewire coords + location name when map is panned/zoomed
                         this.composeMap.on('moveend', () => {
                             const c = this.composeMap.getCenter();
