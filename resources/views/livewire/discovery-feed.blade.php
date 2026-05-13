@@ -361,6 +361,15 @@
                     <p class="text-gray-400 text-sm">No precise location available</p>
                     <p class="text-gray-500 text-xs mt-1" x-text="beacon?.locationName || 'Location not provided'"></p>
                 </div>
+
+                {{-- Stop Selling --}}
+                <div x-show="beacon?.isOwner">
+                    <hr class="border-gray-700">
+                    <button x-on:click="stopSelling()"
+                            class="w-full mt-4 px-4 py-3 rounded-xl border border-red-500/50 text-red-400 text-sm font-bold hover:bg-red-500/10 transition-colors">
+                        Stop Selling
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -436,6 +445,12 @@
                     this.map = null;
                     this.marker = null;
                 }
+            },
+
+            stopSelling() {
+                if (!confirm('End your selling session?')) return;
+                $wire.stopSelling();
+                this.close();
             },
 
             saveLocation() {

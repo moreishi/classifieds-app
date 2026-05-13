@@ -27,6 +27,16 @@ class DiscoveryFeed extends Component
         $this->resetPage();
     }
 
+    public function stopSelling(): void
+    {
+        $beacon = LiveBeacon::where('user_id', auth()->id())
+            ->where('status', 'live')
+            ->first();
+
+        $beacon?->end();
+        $this->dispatch('beacon-ended');
+    }
+
     public function updateBeaconLocation(int $id, float $lat, float $lng): void
     {
         $beacon = LiveBeacon::findOrFail($id);
