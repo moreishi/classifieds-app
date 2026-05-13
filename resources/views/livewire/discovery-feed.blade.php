@@ -20,7 +20,7 @@
         </div>
     </div>
 
-    {{-- Live Now section --}}
+    {{-- Now Selling section --}}
     @if($liveBeacons->isNotEmpty())
         <div class="bg-white border-b border-gray-100" wire:poll.30s>
             <div class="max-w-7xl mx-auto px-4 py-4">
@@ -29,7 +29,7 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-pink opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-3 w-3 bg-neon-pink"></span>
                     </span>
-                    <h2 class="text-lg font-bold text-gray-900">Live Now</h2>
+                    <h2 class="text-lg font-bold text-gray-900">Now Selling</h2>
                     <span class="text-xs text-gray-400">{{ $liveBeacons->count() }} selling</span>
                 </div>
                 <div class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
@@ -41,7 +41,7 @@
                             <div class="aspect-[3/4] overflow-hidden">
                                 @if($beacon->getFirstMediaUrl('snapshot', 'thumb'))
                                     <img src="{{ $beacon->getFirstMediaUrl('snapshot', 'thumb') }}"
-                                         alt="Live selling"
+                                         alt="Now selling"
                                          class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
                                          loading="lazy">
                                 @else
@@ -58,7 +58,7 @@
                                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                                         <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
                                     </span>
-                                    LIVE
+                                    SELLING
                                 </span>
                             </div>
 

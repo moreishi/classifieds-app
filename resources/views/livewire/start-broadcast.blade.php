@@ -206,7 +206,7 @@
                             </span>
                             <div class="min-w-0">
                                 <p class="text-white text-sm font-medium truncate">{{ $activeBeacon->description }}</p>
-                                <p class="text-gray-500 text-xs">Live now</p>
+                                <p class="text-gray-500 text-xs">Selling now</p>
                             </div>
                         </div>
                     @endif
