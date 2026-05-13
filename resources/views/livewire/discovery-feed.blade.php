@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 @endpush
 
-<div x-data="beaconDetail()">
+<div>
     {{-- Hero --}}
     <div class="relative overflow-hidden bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500">
         <div class="relative max-w-7xl mx-auto px-4 py-16 sm:py-20 lg:py-24 text-center">
@@ -50,7 +50,7 @@
                         @endphp
                         <div wire:key="beacon-{{ $beacon->id }}"
                              class="snap-start flex-shrink-0 w-44 group relative rounded-2xl overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                             x-on:click="open(@json($_bd))">
+                             x-on:click="window.dispatchEvent(new CustomEvent('open-beacon-detail', { detail: @json($_bd) }))">
 
                             {{-- Snapshot --}}
                             <div class="aspect-[3/4] overflow-hidden">
@@ -271,9 +271,76 @@
     </div>
 
     {{-- Beacon Detail Modal --}}
-    <div x-show="show" x-cloak
-         class="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-         style="display: none;">
+    <div x-data="{
+            show: false,
+            beacon: null,
+            map: null,
+            marker: null,
+            newLat: null,
+            newLng: null,
+            changed: false,
+            saving: false,
+
+            init() {
+                window.addEventListener('open-beacon-detail', (e) => this.open(e.detail));
+            },
+
+            open(data) {
+                this.beacon = data;
+                this.changed = false;
+                this.newLat = null;
+                this.newLng = null;
+                this.show = true;
+                this.$nextTick(() => {
+                    if (this.beacon?.lat && this.beacon?.lng) this.initMap();
+                });
+            },
+
+            close() {
+                this.destroyMap();
+                this.show = false;
+                this.beacon = null;
+            },
+
+            initMap() {
+                if (this.map) this.destroyMap();
+                const lat = parseFloat(this.beacon.lat);
+                const lng = parseFloat(this.beacon.lng);
+                this.map = L.map('beacon-map', { center: [lat, lng], zoom: 16, zoomControl: true });
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap',
+                    maxZoom: 19,
+                }).addTo(this.map);
+                this.marker = L.marker([lat, lng], { draggable: this.beacon.isOwner }).addTo(this.map);
+                this.marker.on('dragend', (e) => {
+                    const pos = e.target.getLatLng();
+                    this.newLat = pos.lat.toFixed(7);
+                    this.newLng = pos.lng.toFixed(7);
+                    this.changed = true;
+                });
+                setTimeout(() => this.map?.invalidateSize(), 400);
+            },
+
+            destroyMap() {
+                if (this.map) { this.map.remove(); this.map = null; this.marker = null; }
+            },
+
+            stopSelling() {
+                if (!confirm('End your selling session?')) return;
+                $wire.stopSelling();
+                this.close();
+            },
+
+            saveLocation() {
+                if (!this.changed || !this.newLat || !this.newLng) return;
+                this.saving = true;
+                $wire.updateBeaconLocation(this.beacon.id, this.newLat, this.newLng)
+                    .then(() => { this.beacon.lat = this.newLat; this.beacon.lng = this.newLng; this.changed = false; this.saving = false; })
+                    .catch(() => { this.saving = false; });
+            },
+        }"
+         x-show="show"
+         class="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
         {{-- Backdrop --}}
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm"
              x-on:click="close()"></div>
@@ -376,97 +443,3 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('beaconDetail', () => ({
-            show: false,
-            beacon: null,
-            map: null,
-            marker: null,
-            newLat: null,
-            newLng: null,
-            changed: false,
-            saving: false,
-
-            open(data) {
-                this.beacon = data;
-                this.changed = false;
-                this.newLat = null;
-                this.newLng = null;
-                this.show = true;
-                this.$nextTick(() => {
-                    if (this.beacon?.lat && this.beacon?.lng) {
-                        this.initMap();
-                    }
-                });
-            },
-
-            close() {
-                this.destroyMap();
-                this.show = false;
-                this.beacon = null;
-            },
-
-            initMap() {
-                if (this.map) this.destroyMap();
-
-                const lat = parseFloat(this.beacon.lat);
-                const lng = parseFloat(this.beacon.lng);
-
-                this.map = L.map('beacon-map', {
-                    center: [lat, lng],
-                    zoom: 16,
-                    zoomControl: true,
-                });
-
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                    maxZoom: 19,
-                }).addTo(this.map);
-
-                this.marker = L.marker([lat, lng], {
-                    draggable: this.beacon.isOwner,
-                }).addTo(this.map);
-
-                this.marker.on('dragend', (e) => {
-                    const pos = e.target.getLatLng();
-                    this.newLat = pos.lat.toFixed(7);
-                    this.newLng = pos.lng.toFixed(7);
-                    this.changed = true;
-                });
-
-                // Fix map rendering after modal animation completes
-                setTimeout(() => this.map?.invalidateSize(), 400);
-            },
-
-            destroyMap() {
-                if (this.map) {
-                    this.map.remove();
-                    this.map = null;
-                    this.marker = null;
-                }
-            },
-
-            stopSelling() {
-                if (!confirm('End your selling session?')) return;
-                $wire.stopSelling();
-                this.close();
-            },
-
-            saveLocation() {
-                if (!this.changed || !this.newLat || !this.newLng) return;
-                this.saving = true;
-                $wire.updateBeaconLocation(this.beacon.id, this.newLat, this.newLng)
-                    .then(() => {
-                        this.beacon.lat = this.newLat;
-                        this.beacon.lng = this.newLng;
-                        this.changed = false;
-                        this.saving = false;
-                    })
-                    .catch(() => {
-                        this.saving = false;
-                    });
-            },
-        }));
-    });
-</script>
