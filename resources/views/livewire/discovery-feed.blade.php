@@ -50,7 +50,8 @@
                         @endphp
                         <div wire:key="beacon-{{ $beacon->id }}"
                              class="snap-start flex-shrink-0 w-44 group relative rounded-2xl overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                             x-on:click="window.dispatchEvent(new CustomEvent('open-beacon-detail', { detail: @json($_bd) }))">
+                             x-on:click="window.dispatchEvent(new CustomEvent('open-beacon-detail', { detail: JSON.parse($el.dataset.beacon) }))"
+                             data-beacon="{{ json_encode($_bd) }}">
 
                             {{-- Snapshot --}}
                             <div class="aspect-[3/4] overflow-hidden">
