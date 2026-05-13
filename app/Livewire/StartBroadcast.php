@@ -65,11 +65,13 @@ class StartBroadcast extends Component
         $this->step = 'compose';
     }
 
-    public function setGalleryPhoto(): void
+    public function updatedPhoto(): void
     {
-        $this->validate(['photo' => 'image|max:5120']);
-        $this->error = '';
-        $this->step = 'compose';
+        if ($this->photo) {
+            $this->validate(['photo' => 'image|max:5120']);
+            $this->error = '';
+            $this->step = 'compose';
+        }
     }
 
     public function captureGps(float $lat, float $lng, string $locationName = ''): void
