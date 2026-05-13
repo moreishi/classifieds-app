@@ -114,8 +114,8 @@
 
                     {{-- Photo thumbnail --}}
                     <div class="relative rounded-xl overflow-hidden aspect-[4/3] bg-gray-800">
-                        @if($photo)
-                            <img src="{{ $photo->temporaryUrl() }}" class="w-full h-full object-cover">
+                        @if($capturedPhoto)
+                            <img src="{{ $capturedPhoto }}" class="w-full h-full object-cover">
                         @endif
                         <button wire:click="$set('step', 'capture')"
                                 class="absolute top-2 left-2 px-3 py-1 rounded-full bg-black/60 text-white text-xs hover:bg-black/80 transition-colors">

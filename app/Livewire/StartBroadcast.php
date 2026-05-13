@@ -5,14 +5,11 @@ namespace App\Livewire;
 use App\Models\City;
 use App\Models\LiveBeacon;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 class StartBroadcast extends Component
 {
-    use WithFileUploads;
-
     public string $step = 'capture';
-    public $photo;
+    public string $capturedPhoto = '';
     public string $description = '';
     public ?float $latitude = null;
     public ?float $longitude = null;
@@ -25,7 +22,6 @@ class StartBroadcast extends Component
     protected function rules(): array
     {
         return [
-            'photo' => 'required|image|max:5120',
             'description' => 'required|string|max:200',
             'latitude' => 'nullable|numeric|between:-90,90',
             'longitude' => 'nullable|numeric|between:-180,180',
@@ -54,13 +50,7 @@ class StartBroadcast extends Component
             return;
         }
 
-        $tmpPath = tempnam(sys_get_temp_dir(), 'beacon_') . '.jpg';
-        file_put_contents($tmpPath, $decoded);
-
-        $this->photo = new \Illuminate\Http\UploadedFile(
-            $tmpPath, 'snapshot.jpg', 'image/jpeg', null, true
-        );
-
+        $this->capturedPhoto = $photoData;
         $this->error = '';
         $this->step = 'compose';
     }
@@ -95,6 +85,15 @@ class StartBroadcast extends Component
             return;
         }
 
+        $decoded = base64_decode(explode(',', $this->capturedPhoto)[1] ?? '');
+        if (empty($decoded)) {
+            $this->error = 'Photo data is invalid. Please capture again.';
+            return;
+        }
+
+        $tmpPath = tempnam(sys_get_temp_dir(), 'beacon_') . '.jpg';
+        file_put_contents($tmpPath, $decoded);
+
         $beacon = LiveBeacon::create([
             'user_id' => $user->id,
             'description' => $this->description,
@@ -105,13 +104,12 @@ class StartBroadcast extends Component
             'status' => 'live',
         ]);
 
-        // Attach the snapshot
-        if ($this->photo) {
-            $beacon
-                ->addMedia($this->photo->path())
-                ->usingName($this->photo->getClientOriginalName())
-                ->toMediaCollection('snapshot');
-        }
+        $beacon
+            ->addMedia($tmpPath)
+            ->usingName('snapshot.jpg')
+            ->toMediaCollection('snapshot');
+
+        @unlink($tmpPath);
 
         $this->step = 'done';
         $this->dispatch('beacon-started');
