@@ -19,6 +19,15 @@
                         {{ __('Post an Ad') }}
                     </x-nav-link>
                     @auth
+                        {{-- Go Live button --}}
+                        <button x-on:click="$dispatch('open-broadcast-modal')"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 my-auto bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold rounded-full text-xs shadow-lg hover:shadow-neon-pink/40 transition-all duration-300 animate-glow-pulse">
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                            </span>
+                            Go Live
+                        </button>
                         <x-nav-link :href="route('offers.index')" :active="request()->routeIs('offers.*')">
                             {{ __('Offers') }}
                         </x-nav-link>
@@ -146,6 +155,17 @@
             </x-responsive-nav-link>
 
             @auth
+                {{-- Mobile Go Live --}}
+                <div class="px-3 pt-1">
+                    <button x-on:click="$dispatch('open-broadcast-modal')"
+                            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-neon-pink to-neon-purple text-white font-bold rounded-xl text-sm shadow-lg transition-all duration-300">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                        </span>
+                        Go Live
+                    </button>
+                </div>
                 <x-responsive-nav-link :href="route('listings.create')" :active="request()->routeIs('listings.create')">
                     {{ __('Post an Ad') }}
                 </x-responsive-nav-link>

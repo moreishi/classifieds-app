@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\ExpireBeacons;
 use App\Console\Commands\SendUnansweredInquiryReminders;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
@@ -14,3 +15,6 @@ Schedule::command(SendUnansweredInquiryReminders::class)->hourly();
 
 // Expire promotions whose duration has ended (run hourly during business hours, daily at midnight minimal)
 Schedule::command('promotions:expire')->everyMinute();
+
+// Expire stale live beacons (older than 2 hours)
+Schedule::command(ExpireBeacons::class)->everyFiveMinutes();

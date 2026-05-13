@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Event;
+use App\Models\LiveBeacon;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,6 +15,11 @@ class DiscoveryFeed extends Component
 
     protected $queryString = [
         'vibe' => ['except' => ''],
+    ];
+
+    protected $listeners = [
+        'beacon-started' => '$refresh',
+        'beacon-ended' => '$refresh',
     ];
 
     public function updatingVibe(): void
@@ -28,6 +34,11 @@ class DiscoveryFeed extends Component
             ->orderBy('event_date')
             ->paginate(12);
 
+        $liveBeacons = LiveBeacon::with('user')
+            ->active()
+            ->latest('started_at')
+            ->get();
+
         $vibes = [
             'Party',
             'Hustle',
@@ -41,6 +52,7 @@ class DiscoveryFeed extends Component
 
         return view('livewire.discovery-feed', [
             'events' => $events,
+            'liveBeacons' => $liveBeacons,
             'vibes' => $vibes,
         ])->layout('layouts.app');
     }

@@ -20,6 +20,71 @@
         </div>
     </div>
 
+    {{-- Live Now section --}}
+    @if($liveBeacons->isNotEmpty())
+        <div class="bg-white border-b border-gray-100" wire:poll.30s>
+            <div class="max-w-7xl mx-auto px-4 py-4">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-pink opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-neon-pink"></span>
+                    </span>
+                    <h2 class="text-lg font-bold text-gray-900">Live Now</h2>
+                    <span class="text-xs text-gray-400">{{ $liveBeacons->count() }} selling</span>
+                </div>
+                <div class="flex gap-4 overflow-x-auto pb-2 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
+                    @foreach($liveBeacons as $beacon)
+                        <div wire:key="beacon-{{ $beacon->id }}"
+                             class="snap-start flex-shrink-0 w-44 group relative rounded-2xl overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer">
+
+                            {{-- Snapshot --}}
+                            <div class="aspect-[3/4] overflow-hidden">
+                                @if($beacon->getFirstMediaUrl('snapshot', 'thumb'))
+                                    <img src="{{ $beacon->getFirstMediaUrl('snapshot', 'thumb') }}"
+                                         alt="Live selling"
+                                         class="w-full h-full object-cover transition-all duration-500 group-hover:scale-105"
+                                         loading="lazy">
+                                @else
+                                    <div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                                        <span class="text-4xl">📸</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            {{-- LIVE badge --}}
+                            <div class="absolute top-3 left-3">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-neon-pink text-white text-[10px] font-bold uppercase tracking-wider shadow-lg shadow-neon-pink/40">
+                                    <span class="relative flex h-1.5 w-1.5">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                                    </span>
+                                    LIVE
+                                </span>
+                            </div>
+
+                            {{-- Bottom overlay --}}
+                            <div class="absolute bottom-0 left-0 right-0">
+                                <div class="h-28 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+                                <div class="absolute bottom-0 left-0 right-0 p-3">
+                                    <p class="text-white text-xs font-bold leading-tight line-clamp-2 drop-shadow-lg">
+                                        {{ $beacon->description }}
+                                    </p>
+                                    <div class="flex items-center gap-1.5 mt-1.5">
+                                        <img src="{{ $beacon->user->avatar }}" alt="" class="w-4 h-4 rounded-full flex-shrink-0">
+                                        <span class="text-[11px] text-gray-300 truncate">{{ $beacon->user->publicName() }}</span>
+                                    </div>
+                                    @if($beacon->location_name)
+                                        <p class="text-[10px] text-gray-400 mt-0.5 truncate">{{ $beacon->location_name }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+    @endif
+
     {{-- Vibe filter bar --}}
     <div class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 py-3">

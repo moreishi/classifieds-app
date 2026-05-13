@@ -109,5 +109,10 @@
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- Global broadcast modal --}}
+        @auth
+            @livewire('start-broadcast')
+        @endauth
     </body>
 </html>
