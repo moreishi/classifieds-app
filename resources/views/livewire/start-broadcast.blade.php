@@ -81,12 +81,14 @@
                                        x-on:change="
                                            const file = $event.target.files[0];
                                            if (!file) return;
+                                           capturing = true;
                                            const reader = new FileReader();
                                            reader.onload = (e) => {
                                                if (typeof this.$wire !== 'undefined') {
-                                                   this.$wire.setPhoto(e.target.result);
-                                               }
+                                                   this.$wire.setPhoto(e.target.result).finally(() => { capturing = false; });
+                                               } else { capturing = false; }
                                            };
+                                           reader.onerror = () => { capturing = false; };
                                            reader.readAsDataURL(file);
                                            $event.target.value = '';
                                        ">
@@ -100,6 +102,15 @@
 
                             {{-- Spacer for symmetry --}}
                             <div class="w-16"></div>
+                        </div>
+                    </div>
+
+                    {{-- Capturing spinner --}}
+                    <div x-show="capturing"
+                         class="absolute inset-0 z-20 bg-black/80 flex items-center justify-center">
+                        <div class="text-center">
+                            <div class="w-12 h-12 border-[3px] border-neon-pink border-t-transparent rounded-full animate-spin mx-auto"></div>
+                            <p class="text-white text-sm mt-3 font-medium">Processing photo...</p>
                         </div>
                     </div>
 
@@ -133,13 +144,14 @@
                         @error('description') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
 
-                    {{-- Location --}}
-                    <div class="flex items-center gap-2 text-sm">
-                        @if($gpsStatus === 'captured' && $locationName)
-                            <span class="text-neon-green">📍 {{ $locationName }}</span>
-                        @elseif($gpsStatus === 'captured')
-                            <span class="text-neon-green">📍 Location detected</span>
-                        @elseif($gpsStatus === 'denied')
+                    {{-- Location + Map preview --}}
+                    <div>
+                        <div class="flex items-center gap-2 text-sm">
+                            @if($gpsStatus === 'captured' && $locationName)
+                                <span class="text-neon-green">📍 {{ $locationName }}</span>
+                            @elseif($gpsStatus === 'captured')
+                                <span class="text-neon-green">📍 Location detected</span>
+                            @elseif($gpsStatus === 'denied')
                             <div class="flex-1">
                                 <label class="text-gray-400 text-xs block mb-1">Select your location</label>
                                 <select wire:model="cityId"
@@ -157,6 +169,16 @@
                         @else
                             <span class="text-yellow-400">⏳ Detecting location...</span>
                         @endif
+                    </div>
+
+                    {{-- Map preview in compose --}}
+                    @if($gpsStatus === 'captured' && $latitude && $longitude)
+                        <div class="mt-2 rounded-xl overflow-hidden border border-gray-700">
+                            <div id="compose-map-{{ $this->getId() }}"
+                                 class="h-36 w-full"
+                                 x-init="setTimeout(() => initComposeMap({{ $latitude }}, {{ $longitude }}), 300)"></div>
+                        </div>
+                    @endif
                     </div>
 
                     {{-- Error --}}
@@ -233,6 +255,8 @@
             Alpine.data('broadcastModal', () => ({
                 isOpen: false,
                 videoStream: null,
+                capturing: false,
+                composeMap: null,
 
                 open() {
                     this.isOpen = true;
@@ -243,6 +267,7 @@
                 },
 
                 close() {
+                    this.destroyComposeMap();
                     this.stopCamera();
                     if (typeof this.$wire !== 'undefined') {
                         this.$wire.close();
@@ -270,10 +295,12 @@
 
                 capture() {
                     const video = this.$refs.video;
-                    if (!video) return;
+                    if (!video || this.capturing) return;
 
                     const canvas = document.getElementById('canvas-{{ $this->getId() }}');
                     if (!canvas) return;
+
+                    this.capturing = true;
 
                     canvas.width = video.videoWidth || 1080;
                     canvas.height = video.videoHeight || 1920;
@@ -282,8 +309,33 @@
                     const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
 
                     if (typeof this.$wire !== 'undefined') {
-                        this.$wire.setPhoto(dataUrl);
+                        this.$wire.setPhoto(dataUrl).finally(() => {
+                            this.capturing = false;
+                        });
+                    } else {
+                        this.capturing = false;
                     }
+                },
+
+                initComposeMap(lat, lng) {
+                    if (this.composeMap) return;
+                    if (typeof L === 'undefined') {
+                        setTimeout(() => this.initComposeMap(lat, lng), 300);
+                        return;
+                    }
+                    const id = 'compose-map-{{ $this->getId() }}';
+                    this.$nextTick(() => {
+                        const el = document.getElementById(id);
+                        if (!el) return;
+                        this.composeMap = L.map(el, { center: [lat, lng], zoom: 15, zoomControl: false });
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(this.composeMap);
+                        L.marker([lat, lng]).addTo(this.composeMap);
+                        setTimeout(() => this.composeMap?.invalidateSize(), 200);
+                    });
+                },
+
+                destroyComposeMap() {
+                    if (this.composeMap) { this.composeMap.remove(); this.composeMap = null; }
                 },
 
                 detectGps() {

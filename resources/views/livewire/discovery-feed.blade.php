@@ -4,7 +4,6 @@
         description="Find the best local events, pop-ups, and ganaps in Cebu. From night markets to art jams, discover what's happening near you."
         :url="route('ganaps.index')"
     />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 @endpush
 
 <div>
@@ -305,6 +304,10 @@
 
             initMap() {
                 if (this.map) this.destroyMap();
+                if (typeof L === 'undefined') {
+                    setTimeout(() => this.initMap(), 300);
+                    return;
+                }
                 const lat = parseFloat(this.beacon.lat);
                 const lng = parseFloat(this.beacon.lng);
                 this.map = L.map('beacon-map', { center: [lat, lng], zoom: 16, zoomControl: true });
@@ -442,5 +445,3 @@
         </div>
     </div>
 </div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
