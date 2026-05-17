@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', Homepage::class)->name('home');
 
 Route::get('/ganaps', DiscoveryFeed::class)->name('ganaps.index');
-Route::get('/ganaps/{slug}', DiscoveryFeed::class)->name('ganaps.show');
+Route::get('/ganaps/{slug}', \App\Livewire\EventDetail::class)->name('ganaps.show');
 
 Route::get('/category/{slug}', SearchListings::class)->name('category.show');
 Route::get('/search', SearchResults::class)->name('search');

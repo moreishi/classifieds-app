@@ -173,6 +173,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return strtoupper(substr($this->name ?? $this->username ?? '?', 0, 2));
     }
 
+    public function events(): HasMany
+    {
+        return $this->hasMany(Event::class);
+    }
+
     public function archivedConversations(): HasMany
     {
         return $this->hasMany(Conversation::class, 'buyer_id')
