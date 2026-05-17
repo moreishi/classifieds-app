@@ -11,9 +11,15 @@ class EventDetail extends Component
 
     public function mount(string $slug): void
     {
-        $this->event = Event::active()
+        $event = Event::active()
             ->where('slug', $slug)
-            ->firstOrFail();
+            ->first();
+
+        if (!$event) {
+            abort(404);
+        }
+
+        $this->event = $event;
     }
 
     public function render()
