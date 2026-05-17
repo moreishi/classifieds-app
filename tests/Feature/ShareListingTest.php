@@ -63,6 +63,6 @@ class ShareListingTest extends TestCase
         $response = $this->get(route('listing.show', $this->listing->slug));
 
         $response->assertStatus(200);
-        $response->assertSee('copy');
+        $response->assertSee("Copy");
     }
 }
